@@ -6,11 +6,12 @@ const {
     loginUser, 
     getUsuario, 
     getUsuarios, 
-    deleteUsuario 
+    deleteUsuario,
+    activarUsuario
 } = require('../controllers/userController');
 
 // Ruta para obtener todos los usuarios
-router.get('/', getUsuarios);
+router.get('/list', getUsuarios);
 
 // Ruta para obtener un usuario específico por su ID
 router.get('/:id', getUsuario);
@@ -26,5 +27,8 @@ router.put('/:id', updateUsuario);
 
 // Ruta para eliminar un usuario por su ID
 router.delete('/:id', deleteUsuario);
+
+
+router.put('/estado/:id', activarUsuario);
 
 module.exports = router;

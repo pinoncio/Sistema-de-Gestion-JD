@@ -1,11 +1,9 @@
-const app = require("./src/app"); // Importar el archivo de la configuración del servidor
+const server = require("./src/server");  // Importar la instancia de Server
 
 const PORT = process.env.PORT || 3001;
 
 // Iniciar el servidor
-const server = app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
-});
+server.listen();  // Llamamos a 'listen' directamente desde la instancia
 
 // Manejador de la señal SIGINT (Ctrl + C)
 process.on('SIGINT', (signal) => {
@@ -17,9 +15,7 @@ process.on('SIGINT', (signal) => {
     const confirmation = input.toString().trim().toLowerCase();
     if (confirmation === 's' || confirmation === 'sí') {
       console.log('Cerrando el servidor...');
-      server.close(() => {
-        process.exit(); // Cerrar el servidor
-      });
+      process.exit(); // Cerrar el servidor
     } else {
       console.log('El servidor sigue corriendo...');
       process.stdin.pause(); // Detener la escucha
