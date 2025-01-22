@@ -1,9 +1,18 @@
+require('dotenv').config();
 const { Pool } = require('pg');
 
-// Configuración de la conexión a la base de datos
 const pool = new Pool({
-  connectionString: 'postgresql://Sistema%20JD_owner:npg_GCDFybu71kEg@ep-empty-pine-a8c3xb3g.eastus2.azure.neon.tech/Sistema%20JD?sslmode=require',
+  connectionString: process.env.DATABASE_URL,
 });
 
-// Exportar el pool para usarlo en otros módulos
+// Probar la conexión
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error al conectar con la base de datos:', err.stack);
+  } else {
+    console.log('Conexión exitosa a la base de datos');
+    release(); // Liberar el cliente después de la prueba
+  }
+});
+
 module.exports = pool;

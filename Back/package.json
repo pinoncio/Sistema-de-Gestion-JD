@@ -8,12 +8,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.1"
   },
   "directories": {
     "test": "tests"
   },
-  "devDependencies": {},
   "keywords": [],
   "description": ""
 }
