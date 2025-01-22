@@ -1,25 +1,28 @@
-const express = require('express');
-const pool = require('./src/config/db'); // Importa la configuración de la base de datos
+const app = require("./src/app"); // Importar el archivo de la configuración del servidor
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Probar conexión a la base de datos
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('Error al conectar con la base de datos:', err.stack);
-  } else {
-    console.log('Conexión exitosa a la base de datos');
-    release(); // Libera el cliente después de probar
-  }
-});
-
-// Ruta principal
-app.get('/', (req, res) => {
-  res.send('¡Servidor funcionando correctamente!');
-});
+const PORT = process.env.PORT || 3001;
 
 // Iniciar el servidor
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
+});
+
+// Manejador de la señal SIGINT (Ctrl + C)
+process.on('SIGINT', (signal) => {
+  console.log('\nRecibí la señal de interrupción (Ctrl + C)');
+  // Pide confirmación antes de cerrar el servidor
+  process.stdout.write('¿Estás seguro de que deseas cerrar el servidor? (s/n): ');
+
+  process.stdin.on('data', (input) => {
+    const confirmation = input.toString().trim().toLowerCase();
+    if (confirmation === 's' || confirmation === 'sí') {
+      console.log('Cerrando el servidor...');
+      server.close(() => {
+        process.exit(); // Cerrar el servidor
+      });
+    } else {
+      console.log('El servidor sigue corriendo...');
+      process.stdin.pause(); // Detener la escucha
+    }
+  });
 });
