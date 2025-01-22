@@ -1,13 +1,12 @@
 const express = require('express');
-const dbRoutes = require('./routes/dbRoutes'); // Importar las rutas
+const usuarioRoutes = require('./routes/userRoutes');
 
 const app = express();
 
 // Usar las rutas
-app.use('/api', dbRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 module.exports = app;
-
 
 require("dotenv").config();
 
