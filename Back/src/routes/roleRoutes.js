@@ -10,8 +10,8 @@ const {
 const router = Router();
 
 router.post("/", newRol);
-router.put("/update/:id_rol", updateRol);
-router.delete("/delete/:id_rol", deleteRol);
+router.put("/:id_rol", updateRol);
+router.delete("/:id_rol", deleteRol);
 router.get("/list", getRoles);
 router.get("/:id_rol", getRol);
 

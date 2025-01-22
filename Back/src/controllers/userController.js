@@ -103,6 +103,7 @@ const loginUser = (req, res) =>
 // Actualizar un usuario
 const updateUsuario = async (req, res) => {
   const { id_usuario } = req.params;
+  console.log(id_usuario);
   const {
     nombre_usuario,
     apellido_usuario,
@@ -147,9 +148,10 @@ const updateUsuario = async (req, res) => {
       msg: "Usuario actualizado correctamente",
     });
   } catch (error) {
+    console.error("Error al actualizar el usuario:", error); // Esto imprimirá el error en la consola
     return res.status(400).json({
       msg: "Ha ocurrido un error al actualizar el usuario",
-      error,
+      error: error.message || error, // Incluye el mensaje del error
     });
   }
 };
@@ -202,53 +204,56 @@ const getUsuario = async (req, res) => {
   }
 };
 
-const activarUsuario = (req, res) =>
-  __awaiter(void 0, void 0, void 0, function* () {
-    const { id_usuario } = req.params;
-    const { trigger } = req.body;
-    const usuario = yield usuarioModel_1.Usuario.findOne({
-      where: { ID_USUARIO: id_usuario },
-    });
-    if (!usuario) {
-      return res.status(404).json({
-        msg: "El usuario ingresado no existe",
-      });
-    }
-    try {
-      if (trigger == 1) {
-        yield usuarioModel_1.Usuario.update(
-          {
-            ESTADO_CUENTA: true,
-          },
-          { where: { ID_USUARIO: id_usuario } }
-        );
-        return res.json({
-          msg:
-            "Se ha activado la cuenta del usuario " +
-            id_usuario +
-            " correctamente",
-        });
-      } else {
-        yield usuarioModel_1.Usuario.update(
-          {
-            ESTADO_CUENTA: false,
-          },
-          { where: { ID_USUARIO: id_usuario } }
-        );
-        return res.json({
-          msg:
-            "Se ha desactivado la cuenta del usuario " +
-            id_usuario +
-            " correctamente",
-        });
-      }
-    } catch (error) {
-      return res.status(400).json({
-        msg: "Ha ocurrido un error al activar la cuenta : " + id_usuario,
-        error,
-      });
-    }
+const activarUsuario = async (req, res) => {
+  const { id_usuario } = req.params;
+  const { trigger } = req.body;
+
+  // Usar directamente 'Usuario' sin 'usuarioModel_1'
+  const usuario = await Usuario.findOne({
+    where: { ID_USUARIO: id_usuario },
   });
+  if (!usuario) {
+    return res.status(404).json({
+      msg: "El usuario ingresado no existe",
+    });
+  }
+
+  try {
+    if (trigger == 1) {
+      await Usuario.update(
+        {
+          ESTADO_USUARIO: true, // Cambiado a estado_usuario
+        },
+        { where: { ID_USUARIO: id_usuario } }
+      );
+      return res.json({
+        msg:
+          "Se ha activado la cuenta del usuario " +
+          id_usuario +
+          " correctamente",
+      });
+    } else {
+      await Usuario.update(
+        {
+          ESTADO_USUARIO: false, // Cambiado a estado_usuario
+        },
+        { where: { ID_USUARIO: id_usuario } }
+      );
+      return res.json({
+        msg:
+          "Se ha desactivado la cuenta del usuario " +
+          id_usuario +
+          " correctamente",
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      msg: "Ha ocurrido un error al activar la cuenta : " + id_usuario,
+      error,
+    });
+  }
+};
+
 
 module.exports = {
   newUsuario,
