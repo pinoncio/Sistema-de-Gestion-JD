@@ -1,8 +1,14 @@
-const { DataTypes } = require('sequelize');
-const dbConnection = require('../config/db');
+const { DataTypes } = require("sequelize");
+const db = require("../config/db");
 
-const Usuario = dbConnection.define('usuario', {
-    ID_USUARIO: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+const Usuario = db.define(
+  "usuario",
+  {
+    ID_USUARIO: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     NOMBRE1_USUARIO: { type: DataTypes.STRING },
     NOMBRE2_USUARIO: { type: DataTypes.STRING },
     APELLIDO1_USUARIO: { type: DataTypes.STRING },
@@ -10,9 +16,11 @@ const Usuario = dbConnection.define('usuario', {
     RUT_USUARIO: { type: DataTypes.STRING },
     CONTRASENIA_USUARIO: { type: DataTypes.STRING },
     EMAIL_USUARIO: { type: DataTypes.STRING },
-}, {
+  },
+  {
     freezeTableName: true,
-    timestamps: false
-});
+    timestamps: false,
+  }
+);
 
 module.exports = { Usuario };

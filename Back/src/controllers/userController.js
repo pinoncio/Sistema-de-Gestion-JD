@@ -118,7 +118,7 @@ const loginUser = async (req, res) => {
 
   const token = jwt.sign(
     { email, rol: usuario.ID_ROL_USUARIO },
-    process.env.SECRET_KEY || "PRUEBA1",
+    process.env.JWT_SECRE || "PRUEBA1",
     { expiresIn: "30m" }
   );
   res.json({
@@ -162,7 +162,7 @@ const deleteUsuario = (req, res) =>
 
     try {
       // Verificar si el usuario existe
-      const usuario = yield usuarioModel_1.Usuario.findOne({
+      const usuario = yield Usuario.findOne({
         where: { ID_USUARIO: id_usuario },
       });
 

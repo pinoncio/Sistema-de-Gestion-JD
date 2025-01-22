@@ -1,45 +1,47 @@
-const express = require("express");
-const dbRoutes = require("./routes/dbRoutes"); // Importar las rutas
-const { Sequelize } = require("sequelize");
-require("dotenv").config();
+// server.js
+const express = require('express');
+const cors = require('cors');
+const usuarioRoutes = require('./routes/userRoutes');
+const { Usuario } = require('./models/userModel');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+class Server {
+    constructor() {
+        this.app = express();
+        this.port = process.env.PORT || '3001';
+        this.middlewares();
+        this.routes();
+        this.listen();
+        this.dbConnect();
+    }
 
-// Middleware para analizar JSON
-app.use(express.json());
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log('Ejecutándose en el puerto ' + this.port);
+        });
+    }
 
-// Configuración de la conexión a la base de datos usando Sequelize
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false, // Esto es necesario para la mayoría de las conexiones SSL
-    },
-  },
-  logging: false, // Cambia a true si quieres ver las consultas SQL
-});
+    routes() {
+        this.app.use('/api/usuarios', usuarioRoutes); 
+    }
 
-// Ruta principal (solo como ejemplo)
-app.get("/", (req, res) => {
-  res.send("¡Servidor funcionando correctamente!");
-});
+    middlewares() {
+        this.app.use(express.json());
+        this.app.use(cors());
+    }
 
-// Usar las rutas
-app.use("/api", dbRoutes);
+    dbConnect() {
+        return new Promise((resolve, reject) => {
+            Usuario.sync()  // Solo sincronizar el modelo de usuarios
+                .then(() => {
+                    console.log("Base de datos sincronizada correctamente.");
+                    resolve();
+                })
+                .catch(error => {
+                    console.log('No se ha podido establecer conexión a la base de datos', error);
+                    reject(error);
+                });
+        });
+    }
+}
 
-// Sincronizar Sequelize y arrancar el servidor
-(async () => {
-  try {
-    await sequelize.sync({ alter: true }); // Sincroniza los modelos con la base de datos
-    console.log("Base de datos sincronizada con Sequelize.");
-
-    // Inicia el servidor después de la sincronización exitosa
-    app.listen(PORT, () => {
-      console.log(`Servidor escuchando en el puerto ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Error al sincronizar Sequelize:", error);
-  }
-})();
+module.exports = Server;

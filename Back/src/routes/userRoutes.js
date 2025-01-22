@@ -1,13 +1,13 @@
-const { Router } = require('express');
+const express = require('express');
+const router = express.Router();
 const { 
-    getUsuarios, 
-    getUsuario, 
-    createUsuario, 
+    newUsuario, 
     updateUsuario, 
+    loginUser, 
+    getUsuario, 
+    getUsuarios, 
     deleteUsuario 
-} = require('../controllers/usuarioController');
-
-const router = Router();
+} = require('../controllers/userController');
 
 // Ruta para obtener todos los usuarios
 router.get('/', getUsuarios);
@@ -16,7 +16,10 @@ router.get('/', getUsuarios);
 router.get('/:id', getUsuario);
 
 // Ruta para crear un nuevo usuario
-router.post('/', createUsuario);
+router.post('/', newUsuario);
+
+// Ruta para el login de un usuario
+router.post('/login', loginUser);
 
 // Ruta para actualizar un usuario por su ID
 router.put('/:id', updateUsuario);
