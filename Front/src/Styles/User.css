@@ -1,44 +1,55 @@
 .user-page-container {
-    padding: 20px;
-    margin-top: 20px;
-    max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 1300px;
+  margin: 0 auto; /* Center the content horizontally */
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
+  color: #333; /* Darker text for better contrast */
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.user-actions {
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #4285f4; /* Material Blue */
+  color: #fff; /* White text for contrast */
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none; /* Remove default button border */
+}
+
+button:hover {
+  background-color: #337ab7; /* Darken blue on hover */
+}
+
+.user-table-container {
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px; /* Add padding for content within the card */
+}
+
+.MuiCardContent-root {
+  padding: 0;
+}
+
+/* Optional: Responsive styles for smaller screens */
+@media (max-width: 768px) {
   h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 32px;
   }
-  
-  .search-bar {
-    margin-bottom: 20px;
+  .user-page-container {
+    padding: 16px;
   }
-  
-  .user-actions {
-    margin-bottom: 20px;
-  }
-  
-  button {
-    background-color: #f0f0f0;
-    color: #333;
-    font-weight: bold;
-    border-radius: 4px;
-    padding: 8px 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .user-table-container {
-    margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .MuiCardContent-root {
-    padding: 0;
-  }
-  
+}

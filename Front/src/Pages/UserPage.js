@@ -41,15 +41,17 @@ const UserPage = () => {
 
   const fetchUsuarios = async () => {
     try {
-        const data = await getUsuarios();
+      const data = await getUsuarios();
 
-        const usuariosOrdenados = data.sort((a, b) => a.ID_USUARIO - b.ID_USUARIO);
+      const usuariosOrdenados = data.sort(
+        (a, b) => a.ID_USUARIO - b.ID_USUARIO
+      );
 
-        setUsuarios(usuariosOrdenados);
+      setUsuarios(usuariosOrdenados);
     } catch (error) {
-        console.error("Error al obtener los usuarios", error);
+      console.error("Error al obtener los usuarios", error);
     }
-};
+  };
 
   const fetchRoles = async () => {
     try {
@@ -198,6 +200,7 @@ const UserPage = () => {
   };
 
   return (
+    
     <AdminLayout>
       <h1>Lista completa de usuarios</h1>
 
@@ -210,7 +213,7 @@ const UserPage = () => {
           fullWidth
           margin="normal"
           InputAdornment={
-            <InputAdornment position="start">
+            <InputAdornment position="start" style={{ margin: "0 10px" }}>
               <SearchIcon />
             </InputAdornment>
           }

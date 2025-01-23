@@ -11,8 +11,15 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit, getRoleName }) => {
+const UserTable = ({
+  usuarios,
+  onDelete,
+  onToggleStatus,
+  onEdit,
+  getRoleName,
+}) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
 
@@ -68,7 +75,11 @@ const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit, getRoleName }) 
           <TableCell>Email</TableCell>
           <TableCell>Rol</TableCell>
           <TableCell>Estado</TableCell>
-          <TableCell>Acciones</TableCell>
+          <TableCell>
+            <IconButton onClick={() => {}}>
+              {/* Placeholder for sorting indicator */}
+            </IconButton>
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -81,7 +92,7 @@ const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit, getRoleName }) 
             <TableCell>{getRoleName(usuario.ROL_USUARIO)}</TableCell>
             <TableCell>
               <Switch
-                checked={usuario.ESTADO_USUARIO} // Este valor debe reflejar el estado del backend
+                checked={usuario.ESTADO_USUARIO} // This value should reflect the state from the backend
                 onChange={() =>
                   onToggleStatus(usuario.ID_USUARIO, !usuario.ESTADO_USUARIO)
                 }
@@ -90,10 +101,19 @@ const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit, getRoleName }) 
               />
             </TableCell>
             <TableCell>
-              <IconButton onClick={() => onEdit(usuario)}>
+              <IconButton>
+                <VisibilityIcon />
+              </IconButton>
+              <IconButton
+                style={{ marginLeft: "10px" }}
+                onClick={() => onEdit(usuario)}
+              >
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={() => onDelete(usuario.ID_USUARIO)}>
+              <IconButton
+                style={{ marginLeft: "10px" }}
+                onClick={() => onDelete(usuario.ID_USUARIO)}
+              >
                 <DeleteIcon />
               </IconButton>
             </TableCell>
