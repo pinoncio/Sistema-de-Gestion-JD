@@ -225,12 +225,12 @@ const UserPage = () => {
           onClick={() => handleOpenModal()}
           startIcon={<AddIcon />}
           style={{
-            backgroundColor: "#f0f0f0",
+            backgroundColor: "#f0f0f1",
             borderRadius: "4px",
             padding: "8px 16px",
           }}
         >
-          Crear Usuario
+          Añadir un Usuario
         </Button>
       </div>
 

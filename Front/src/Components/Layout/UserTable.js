@@ -12,6 +12,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import moment from 'moment';
 
 const UserTable = ({
   usuarios,
@@ -73,6 +74,7 @@ const UserTable = ({
           </TableCell>
           <TableCell>RUT</TableCell>
           <TableCell>Email</TableCell>
+          <TableCell>Fecha de nacimiento</TableCell>
           <TableCell>Rol</TableCell>
           <TableCell>Estado</TableCell>
           <TableCell>
@@ -89,6 +91,7 @@ const UserTable = ({
             <TableCell>{usuario.APELLIDO_USUARIO}</TableCell>
             <TableCell>{usuario.RUT_USUARIO}</TableCell>
             <TableCell>{usuario.EMAIL_USUARIO}</TableCell>
+            <TableCell>{moment(usuario.FECHA_NACIMIENTO_USUARIO).format('DD/MM/YYYY')}</TableCell>
             <TableCell>{getRoleName(usuario.ROL_USUARIO)}</TableCell>
             <TableCell>
               <Switch
