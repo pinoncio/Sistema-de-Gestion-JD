@@ -38,11 +38,14 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  
+
   .modal-content button[type="submit"]:hover {
     background-color: #1565c0;
   }
-  
+
+  .form-actions button {
+  margin-right: 10px;
+}
   /* Estilo para los campos de texto */
   .modal-content .MuiTextField-root {
     margin-bottom: 10px;

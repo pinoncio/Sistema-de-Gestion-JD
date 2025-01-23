@@ -60,6 +60,8 @@ const UserFormModal = ({
     }
   }, [userData]);
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const lowerCaseFormData = Object.fromEntries(
@@ -109,6 +111,7 @@ const UserFormModal = ({
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   };
+  
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -243,6 +246,7 @@ const UserFormModal = ({
           </div>
           <div className="form-actions">
             <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
+            <Button onClick={onClose}>Cancelar</Button>
           </div>
         </form>
         <Snackbar
