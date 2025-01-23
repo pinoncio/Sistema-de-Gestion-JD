@@ -1,5 +1,7 @@
 const { Usuario } = require("../models/userModel");
 const { Rol } = require("../models/roleModel");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Obtener todos los usuarios
 const getUsuarios = async (req, res) => {
@@ -32,13 +34,25 @@ const newUsuario = async (req, res) => {
   } = req.body;
 
   try {
-    // Verificar que el rol existe
-    const rol = await Rol.findOne({ where: { ID_ROL: rol_usuario } });
-    if (!rol) {
-      return res.status(404).json({
-        msg: "El rol especificado no existe",
+    // Verificar existencia del email
+    const existingUser = await Usuario.findOne({
+      where: { EMAIL_USUARIO: email_usuario },
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        msg: "El email ingresado ya está en uso",
       });
     }
+
+    // Validar longitud mínima de la contraseña (ejemplo: mínimo 8 caracteres)
+    if (contrasenia_usuario.length < 8) {
+      return res.status(400).json({
+        msg: "La contraseña debe tener al menos 8 caracteres",
+      });
+    }
+
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(contrasenia_usuario, 10);
 
     // Crear el usuario
     await Usuario.create({
@@ -46,16 +60,17 @@ const newUsuario = async (req, res) => {
       APELLIDO_USUARIO: apellido_usuario,
       RUT_USUARIO: rut_usuario,
       EMAIL_USUARIO: email_usuario,
-      CONTRASENIA_USUARIO: contrasenia_usuario,
+      CONTRASENIA_USUARIO: hashedPassword,
       FECHA_NACIMIENTO_USUARIO: fecha_nacimiento_usuario,
-      ROL_USUARIO: rol_usuario, // Relación con el rol
+      ROL_USUARIO: rol_usuario,
     });
 
     return res.status(201).json({
       msg: "Usuario creado correctamente",
     });
   } catch (error) {
-    res.status(400).json({
+    console.error("Error al crear el usuario:", error);
+    return res.status(400).json({
       msg: "Ocurrió un error al crear el usuario",
       error,
     });
@@ -65,7 +80,7 @@ const newUsuario = async (req, res) => {
 const loginUser = (req, res) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const { email, contrasenia } = req.body;
-    const usuario = yield usuarioModel_1.Usuario.findOne({
+    const usuario = yield userModel.Usuario.findOne({
       where: { EMAIL_USUARIO: email },
     });
     if (!usuario) {
@@ -78,7 +93,7 @@ const loginUser = (req, res) =>
         msg: "La cuenta esta bloqueada, porfavor contacta al administrador",
       });
     }
-    const password = yield bcrypt_1.default.compare(
+    const password = yield bcrypt.default.compare(
       contrasenia,
       usuario.CONTRASENIA_USUARIO
     );
@@ -89,7 +104,7 @@ const loginUser = (req, res) =>
     }
     const usuarioRol = usuario.dataValues.ID_ROL_USUARIO;
     const usuarioId = usuario.dataValues.ID_USUARIO;
-    const token = jsonwebtoken_1.default.sign(
+    const token = jsonwebtoken.default.sign(
       {
         email: email,
         rol: usuarioRol,
@@ -103,7 +118,6 @@ const loginUser = (req, res) =>
 // Actualizar un usuario
 const updateUsuario = async (req, res) => {
   const { id_usuario } = req.params;
-  console.log(id_usuario);
   const {
     nombre_usuario,
     apellido_usuario,
@@ -114,6 +128,8 @@ const updateUsuario = async (req, res) => {
     rol_usuario,
   } = req.body;
 
+  console.log("Datos recibidos en la petición:", req.body); // Imprime el contenido de req.body
+
   const usuario = await Usuario.findOne({ where: { ID_USUARIO: id_usuario } });
   if (!usuario) {
     return res.status(404).json({
@@ -122,12 +138,14 @@ const updateUsuario = async (req, res) => {
   }
 
   try {
-    // Verificar que el rol existe
-    const rol = await Rol.findOne({ where: { ID_ROL: rol_usuario } });
-    if (!rol) {
-      return res.status(404).json({
-        msg: "El rol especificado no existe",
-      });
+    // Verificar que el rol existe (opcional)
+    if (rol_usuario) {
+      const rol = await Rol.findOne({ where: { ID_ROL: rol_usuario } });
+      if (!rol) {
+        return res.status(404).json({
+          msg: "El rol especificado no existe",
+        });
+      }
     }
 
     // Actualizar el usuario
@@ -139,7 +157,7 @@ const updateUsuario = async (req, res) => {
         EMAIL_USUARIO: email_usuario,
         CONTRASENIA_USUARIO: contrasenia_usuario,
         FECHA_NACIMIENTO_USUARIO: fecha_nacimiento_usuario,
-        ROL_USUARIO: rol_usuario, // Relación con el rol
+        ROL_USUARIO: rol_usuario,
       },
       { where: { ID_USUARIO: id_usuario } }
     );
@@ -148,10 +166,10 @@ const updateUsuario = async (req, res) => {
       msg: "Usuario actualizado correctamente",
     });
   } catch (error) {
-    console.error("Error al actualizar el usuario:", error); // Esto imprimirá el error en la consola
+    console.error("Error al actualizar el usuario:", error);
     return res.status(400).json({
       msg: "Ha ocurrido un error al actualizar el usuario",
-      error: error.message || error, // Incluye el mensaje del error
+      error: error.message || error,
     });
   }
 };
@@ -253,7 +271,6 @@ const activarUsuario = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   newUsuario,

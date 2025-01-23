@@ -19,6 +19,7 @@ import {
   Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
 import AdminLayout from "../Components/Layout/AdminLayout";
 import "../Styles/User.css";
@@ -68,12 +69,48 @@ const UserPage = () => {
       user.EMAIL_USUARIO.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const HandleCreateUsuario = async (formData) => {
+    try {
+      const response = await createUsuario(formData);
+      console.log("Usuario creado exitosamente:", response.data);
+      setOpen(false); // Close modal
+      fetchUsuarios(); // Refresh user list
+
+      // Display success message using snackbar
+      setSnackbarMessage("Usuario creado exitosamente!");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error al crear el usuario:", error);
+      // Handle creation error (e.g., display error message using snackbar)
+      setSnackbarMessage("Ha ocurrido un error al crear el usuario.");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleUpdateUsuario = async (id, formData) => {
+    try {
+      const response = await updateUsuario(id, formData);
+      console.log("Usuario actualizado exitosamente:", response.data);
+      setOpen(false); // Close modal
+      fetchUsuarios(); // Refresh user list
+
+      // Display success message using snackbar
+      setSnackbarMessage("Usuario actualizado exitosamente!");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      // Handle update error (e.g., display error message using snackbar)
+      setSnackbarMessage("Ha ocurrido un error al actualizar el usuario.");
+      setSnackbarOpen(true);
+    }
+  };
+
   const handleFormSubmit = async (formData) => {
     try {
       if (editing) {
-        await updateUsuario(editId, formData);
+        await handleUpdateUsuario(editId, formData);
       } else {
-        await createUsuario(formData);
+        await HandleCreateUsuario(formData);
       }
       setOpen(false);
       fetchUsuarios();
@@ -83,12 +120,31 @@ const UserPage = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await deleteUsuario(id);
-      fetchUsuarios();
-    } catch (error) {
-      console.error("Error al eliminar el usuario", error);
-    }
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteUsuario(id);
+          await fetchUsuarios();
+          Swal.fire("Eliminado!", "El usuario ha sido eliminado.", "success");
+        } catch (error) {
+          console.error("Error al eliminar el usuario", error);
+          Swal.fire(
+            "Error",
+            "Ha ocurrido un error al eliminar el usuario.",
+            "error"
+          );
+        }
+      }
+    });
   };
 
   const handleToggleStatus = async (id_usuario, nuevoEstado) => {
@@ -107,7 +163,9 @@ const UserPage = () => {
 
       // Mostrar el mensaje de éxito
       setSnackbarMessage(
-        `El usuario ha sido ${nuevoEstado ? "activado" : "desactivado"} exitosamente.`
+        `El usuario ha sido ${
+          nuevoEstado ? "activado" : "desactivado"
+        } exitosamente.`
       );
       setSnackbarOpen(true);
     } catch (error) {
@@ -176,8 +234,9 @@ const UserPage = () => {
           <UserTable
             usuarios={filteredUsuarios}
             onDelete={handleDelete}
-            onToggleStatus={handleToggleStatus} // Aquí se asegura de pasar handleToggleStatus
+            onToggleStatus={handleToggleStatus}
             onEdit={handleOpenModal}
+            getRoleName={getRoleName}
           />
         </CardContent>
       </Card>
@@ -192,7 +251,6 @@ const UserPage = () => {
         setEditing={setEditing}
         setEditId={setEditId}
         roles={roles}
-        getRoleName={getRoleName}
       />
 
       {/* Snackbar para mostrar mensajes */}
@@ -201,7 +259,11 @@ const UserPage = () => {
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

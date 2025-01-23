@@ -12,7 +12,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit }) => {
+const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit, getRoleName }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
 
@@ -64,7 +64,9 @@ const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit }) => {
               Apellido
             </TableSortLabel>
           </TableCell>
+          <TableCell>RUT</TableCell>
           <TableCell>Email</TableCell>
+          <TableCell>Rol</TableCell>
           <TableCell>Estado</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
@@ -74,12 +76,14 @@ const UserTable = ({ usuarios, onDelete, onToggleStatus, onEdit }) => {
           <TableRow key={usuario.ID_USUARIO}>
             <TableCell>{usuario.NOMBRE_USUARIO}</TableCell>
             <TableCell>{usuario.APELLIDO_USUARIO}</TableCell>
+            <TableCell>{usuario.RUT_USUARIO}</TableCell>
             <TableCell>{usuario.EMAIL_USUARIO}</TableCell>
+            <TableCell>{getRoleName(usuario.ROL_USUARIO)}</TableCell>
             <TableCell>
               <Switch
                 checked={usuario.ESTADO_USUARIO} // Este valor debe reflejar el estado del backend
                 onChange={() =>
-                  onToggleStatus(usuario.ID_USUARIO, !usuario.ESTADO_USUARIO) // Aquí invertimos el estado
+                  onToggleStatus(usuario.ID_USUARIO, !usuario.ESTADO_USUARIO)
                 }
                 name="estado"
                 inputProps={{ "aria-label": "controlled" }}
