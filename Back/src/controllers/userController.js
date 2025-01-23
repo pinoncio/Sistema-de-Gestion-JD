@@ -65,6 +65,11 @@ const newUsuario = async (req, res) => {
       ROL_USUARIO: rol_usuario,
     });
 
+    console.log("Usuario creado exitosamente:", {
+      // ... resto de los datos del usuario
+      contrasenia_usuario: "***CONTRASEÑA OCULTA***",
+    });
+
     return res.status(201).json({
       msg: "Usuario creado correctamente",
     });
@@ -128,7 +133,10 @@ const updateUsuario = async (req, res) => {
     rol_usuario,
   } = req.body;
 
-  console.log("Datos recibidos en la petición:", req.body); // Imprime el contenido de req.body
+  console.log("Datos recibidos en la petición:", {
+    ...req.body,
+    contrasenia_usuario: "***CONTRASEÑA OCULTA***",
+  });
 
   const usuario = await Usuario.findOne({ where: { ID_USUARIO: id_usuario } });
   if (!usuario) {
@@ -148,6 +156,7 @@ const updateUsuario = async (req, res) => {
       }
     }
 
+    const hashedPassword = await bcrypt.hash(contrasenia_usuario, 10);
     // Actualizar el usuario
     await Usuario.update(
       {
@@ -155,7 +164,7 @@ const updateUsuario = async (req, res) => {
         APELLIDO_USUARIO: apellido_usuario,
         RUT_USUARIO: rut_usuario,
         EMAIL_USUARIO: email_usuario,
-        CONTRASENIA_USUARIO: contrasenia_usuario,
+        CONTRASENIA_USUARIO: hashedPassword,
         FECHA_NACIMIENTO_USUARIO: fecha_nacimiento_usuario,
         ROL_USUARIO: rol_usuario,
       },
@@ -177,22 +186,23 @@ const updateUsuario = async (req, res) => {
 // Eliminar un usuario
 const deleteUsuario = async (req, res) => {
   const { id_usuario } = req.params;
-  const usuario = await Usuario.findOne({ where: { ID_USUARIO: id_usuario } });
-  if (!usuario) {
-    return res.status(404).json({
-      msg: "El usuario con id: " + id_usuario + " no existe",
-    });
-  }
 
   try {
-    await Usuario.destroy({ where: { ID_USUARIO: id_usuario } });
-    return res.json({
-      msg: "Usuario con id " + id_usuario + " borrado correctamente",
-    });
+    const result = await Usuario.destroy({ where: { ID_USUARIO: id_usuario } });
+
+    if (result === 1) { 
+      console.log(`Usuario con ID ${id_usuario} eliminado correctamente.`);
+      return res.json({ msg: "Usuario eliminado correctamente" });
+    } else {
+      console.log(`No se encontró ningún usuario con ID ${id_usuario} para eliminar.`);
+      return res.status(404).json({ msg: "No se encontró ningún usuario para eliminar." });
+    }
+
   } catch (error) {
-    return res.status(400).json({
-      msg: "Ha ocurrido un error al borrar el usuario con id: " + id_usuario,
-      error,
+    console.error(`Error al eliminar el usuario con ID ${id_usuario}:`, error);
+    return res.status(500).json({ 
+      msg: "Ha ocurrido un error al eliminar el usuario.", 
+      error: error.message 
     });
   }
 };

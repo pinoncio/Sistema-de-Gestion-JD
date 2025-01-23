@@ -41,12 +41,15 @@ const UserPage = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const data = await getUsuarios();
-      setUsuarios(data);
+        const data = await getUsuarios();
+
+        const usuariosOrdenados = data.sort((a, b) => a.ID_USUARIO - b.ID_USUARIO);
+
+        setUsuarios(usuariosOrdenados);
     } catch (error) {
-      console.error("Error al obtener los usuarios", error);
+        console.error("Error al obtener los usuarios", error);
     }
-  };
+};
 
   const fetchRoles = async () => {
     try {
