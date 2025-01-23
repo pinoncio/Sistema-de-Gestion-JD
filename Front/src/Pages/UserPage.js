@@ -6,6 +6,7 @@ import {
   createUsuario,
   updateUsuario,
 } from "../Services/userService";
+import { getRoles } from "../Services/roleService";
 import UserTable from "../Components/Layout/UserTable";
 import UserFormModal from "../Components/Layout/UserFormModal";
 import {
@@ -24,6 +25,7 @@ import "../Styles/User.css";
 
 const UserPage = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -33,6 +35,7 @@ const UserPage = () => {
 
   useEffect(() => {
     fetchUsuarios();
+    fetchRoles();
   }, []);
 
   const fetchUsuarios = async () => {
@@ -42,6 +45,20 @@ const UserPage = () => {
     } catch (error) {
       console.error("Error al obtener los usuarios", error);
     }
+  };
+
+  const fetchRoles = async () => {
+    try {
+      const data = await getRoles();
+      setRoles(data);
+    } catch (error) {
+      console.error("Error al obtener los roles", error);
+    }
+  };
+
+  const getRoleName = (id_rol) => {
+    const role = roles.find((r) => r.ID_ROL === id_rol);
+    return role ? role.NOMBRE_ROL : "Sin Rol";
   };
 
   const filteredUsuarios = usuarios.filter(
@@ -174,6 +191,8 @@ const UserPage = () => {
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}
+        roles={roles}
+        getRoleName={getRoleName}
       />
 
       {/* Snackbar para mostrar mensajes */}

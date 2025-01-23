@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TextField, Button } from "@mui/material";
+import {
+  Modal,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import "../../Styles/FormUser.css";
 
-const UserFormModal = ({ open, onClose, onSubmit, userData, editing, setEditing, setEditId }) => {
+const UserFormModal = ({
+  open,
+  onClose,
+  onSubmit,
+  userData,
+  editing,
+  setEditing,
+  setEditId,
+  roles, // Este es el que se usa como prop
+}) => {
   const [formData, setFormData] = useState({
     NOMBRE_USUARIO: "",
     APELLIDO_USUARIO: "",
@@ -50,21 +67,27 @@ const UserFormModal = ({ open, onClose, onSubmit, userData, editing, setEditing,
           <TextField
             label="Nombre"
             value={formData.NOMBRE_USUARIO}
-            onChange={(e) => setFormData({ ...formData, NOMBRE_USUARIO: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, NOMBRE_USUARIO: e.target.value })
+            }
             fullWidth
             margin="normal"
           />
           <TextField
             label="Apellido"
             value={formData.APELLIDO_USUARIO}
-            onChange={(e) => setFormData({ ...formData, APELLIDO_USUARIO: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, APELLIDO_USUARIO: e.target.value })
+            }
             fullWidth
             margin="normal"
           />
           <TextField
             label="Correo electrónico"
             value={formData.EMAIL_USUARIO}
-            onChange={(e) => setFormData({ ...formData, EMAIL_USUARIO: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, EMAIL_USUARIO: e.target.value })
+            }
             fullWidth
             margin="normal"
           />
@@ -72,7 +95,9 @@ const UserFormModal = ({ open, onClose, onSubmit, userData, editing, setEditing,
             label="Contraseña"
             type="password"
             value={formData.CONTRASENA_USUARIO}
-            onChange={(e) => setFormData({ ...formData, CONTRASENA_USUARIO: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, CONTRASENA_USUARIO: e.target.value })
+            }
             fullWidth
             margin="normal"
           />
@@ -80,20 +105,34 @@ const UserFormModal = ({ open, onClose, onSubmit, userData, editing, setEditing,
             label="Fecha de Nacimiento"
             type="date"
             value={formData.FECHA_NACIMIENTO_USUARIO}
-            onChange={(e) => setFormData({ ...formData, FECHA_NACIMIENTO_USUARIO: e.target.value })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                FECHA_NACIMIENTO_USUARIO: e.target.value,
+              })
+            }
             fullWidth
             margin="normal"
             InputLabelProps={{
               shrink: true,
             }}
           />
-          <TextField
-            label="Rol"
-            value={formData.ROL_USUARIO}
-            onChange={(e) => setFormData({ ...formData, ROL_USUARIO: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Rol</InputLabel>
+            <Select
+              label="Rol"
+              value={formData.ROL_USUARIO}
+              onChange={(e) =>
+                setFormData({ ...formData, ROL_USUARIO: e.target.value })
+              }
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.ID_ROL} value={role.ID_ROL}>
+                  {role.NOMBRE_ROL}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
         </form>
       </div>
