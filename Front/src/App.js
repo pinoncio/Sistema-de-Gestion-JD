@@ -1,10 +1,11 @@
-// App.js
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Footer from "./Components/Layout/Footer";
-import Home from "./Pages/Home"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home";
 import UserPage from "./Pages/UserPage";
 import RolePage from "./Pages/RolePage";
+import UserProfilePage from "./Pages/UserProfilePage";
+import LoginPage from "./Pages/LoginPage";
+import PrivateRoute from "./Routes/PrivateRoute";
 
 const App = () => {
   return (
@@ -12,12 +13,36 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/users" element={<UserPage />} />
-          <Route path="/role" element={<RolePage />} />
+          
+          {/* Usamos PrivateRoute para proteger estas rutas */}
+          <Route 
+            path="/users" 
+            element={
+              <PrivateRoute>
+                <UserPage />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/role" 
+            element={
+              <PrivateRoute>
+                <RolePage />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/perfil/:id_usuario" 
+            element={
+              <PrivateRoute>
+                <UserProfilePage />
+              </PrivateRoute>
+            } 
+          />
+          
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
 
-        <hr />
-        <Footer />
       </div>
     </Router>
   );

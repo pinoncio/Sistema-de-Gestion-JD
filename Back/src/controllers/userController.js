@@ -82,43 +82,69 @@ const newUsuario = async (req, res) => {
   }
 };
 
-const loginUser = (req, res) =>
-  __awaiter(void 0, void 0, void 0, function* () {
-    const { email, contrasenia } = req.body;
-    const usuario = yield userModel.Usuario.findOne({
-      where: { EMAIL_USUARIO: email },
+const loginUser = async (req, res) => {
+  try {
+    const { rut_usuario, contrasenia_usuario } = req.body;
+
+    // Buscar al usuario por su RUT
+    const usuario = await Usuario.findOne({
+      where: { RUT_USUARIO: rut_usuario },
     });
+
     if (!usuario) {
-      return res.status(401).json({
-        msg: "El email ingresado no es valido",
+      // Si el RUT no existe
+      console.error(`RUT no encontrado: ${rut_usuario}`);  // Imprime el RUT ingresado
+      return res.status(404).json({
+        msg: "El RUT ingresado no es válido. Verifica tus datos.",
       });
     }
-    if (usuario.ESTADO_CUENTA == false) {
-      return res.status(401).json({
-        msg: "La cuenta esta bloqueada, porfavor contacta al administrador",
+
+    // Verificar si la cuenta está deshabilitada
+    if (!usuario.ESTADO_USUARIO) {
+      console.error(`Cuenta deshabilitada para el RUT: ${rut_usuario}`);  // Imprime el RUT si la cuenta está deshabilitada
+      return res.status(403).json({
+        msg: "La cuenta está deshabilitada temporalmente. Contacta al administrador.",
       });
     }
-    const password = yield bcrypt.default.compare(
-      contrasenia,
+
+    // Comparar la contraseña
+    const passwordMatch = await bcrypt.compare(
+      contrasenia_usuario,
       usuario.CONTRASENIA_USUARIO
     );
-    if (!password) {
+    if (!passwordMatch) {
+      // Si la contraseña es incorrecta
+      console.error(`Contraseña incorrecta para el RUT: ${rut_usuario}`);  // Imprime cuando la contraseña es incorrecta
       return res.status(401).json({
-        msg: "Contraseña Incorrecta",
+        msg: "Contraseña incorrecta. Intenta nuevamente.",
       });
     }
-    const usuarioRol = usuario.dataValues.ID_ROL_USUARIO;
-    const usuarioId = usuario.dataValues.ID_USUARIO;
-    const token = jsonwebtoken.default.sign(
+
+    // Si la autenticación es exitosa, generar el token
+    const usuarioRol = usuario.ROL_USUARIO;
+    const usuarioId = usuario.ID_USUARIO;
+    const token = jwt.sign(
       {
-        email: email,
+        rut_usuario: rut_usuario,
         rol: usuarioRol,
       },
       process.env.SECRET_KEY || "PRUEBA1",
       { expiresIn: "30m" }
-    ); // , {expiresIn: '10000'} como tercer parametro para timepo de expiracion del token
-    res.json({ token, rol: usuarioRol, idUsuario: usuarioId });
-  });
+    );
+
+    // Responder con el token y los datos del usuario
+    res.json({
+      token,
+      rol: usuarioRol,
+      idUsuario: usuarioId,
+    });
+  } catch (error) {
+    console.error("Error en el proceso de login:", error);  // Imprime el error completo
+    res.status(500).json({
+      msg: "Error interno del servidor. Intenta más tarde.",
+    });
+  }
+};
 
 // Actualizar un usuario
 const updateUsuario = async (req, res) => {
@@ -190,19 +216,22 @@ const deleteUsuario = async (req, res) => {
   try {
     const result = await Usuario.destroy({ where: { ID_USUARIO: id_usuario } });
 
-    if (result === 1) { 
+    if (result === 1) {
       console.log(`Usuario con ID ${id_usuario} eliminado correctamente.`);
       return res.json({ msg: "Usuario eliminado correctamente" });
     } else {
-      console.log(`No se encontró ningún usuario con ID ${id_usuario} para eliminar.`);
-      return res.status(404).json({ msg: "No se encontró ningún usuario para eliminar." });
+      console.log(
+        `No se encontró ningún usuario con ID ${id_usuario} para eliminar.`
+      );
+      return res
+        .status(404)
+        .json({ msg: "No se encontró ningún usuario para eliminar." });
     }
-
   } catch (error) {
     console.error(`Error al eliminar el usuario con ID ${id_usuario}:`, error);
-    return res.status(500).json({ 
-      msg: "Ha ocurrido un error al eliminar el usuario.", 
-      error: error.message 
+    return res.status(500).json({
+      msg: "Ha ocurrido un error al eliminar el usuario.",
+      error: error.message,
     });
   }
 };

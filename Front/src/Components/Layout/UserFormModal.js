@@ -7,6 +7,8 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import "../../Styles/FormUser.css";
@@ -36,6 +38,8 @@ const UserFormModal = ({
     APELLIDO_USUARIO: "",
     RUT_USUARIO: "",
   });
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -76,6 +80,12 @@ const UserFormModal = ({
     }
   };
 
+  const getMaxDate = () => {
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() - 1);
+    return maxDate.toISOString().split("T")[0];
+  };
+
   const formatRUT = (rut) => {
     // Limitar a 9 dígitos como máximo
     let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
@@ -97,12 +107,8 @@ const UserFormModal = ({
 
   const handleRUTChange = (e) => {
     let value = e.target.value;
-
-    // Eliminar todo lo que no sea número, punto o guion
     let onlyValidChars = value.replace(/[^0-9.-]/g, "");
-
-    // Verificar si se permite el guion y punto solo en posiciones correctas
-    const onlyNumbers = onlyValidChars.replace(/[^\d]/g, ""); // Solo números
+    const onlyNumbers = onlyValidChars.replace(/[^\d]/g, "");
     if (onlyValidChars.length !== value.length) {
       setErrors({
         ...errors,
@@ -112,18 +118,15 @@ const UserFormModal = ({
       setErrors({ ...errors, RUT_USUARIO: "" });
     }
 
-    // Formatear el RUT solo con los números
     let formattedRUT = formatRUT(onlyNumbers);
 
-    // Si el último carácter es un guion y el usuario borra, se elimina el guion
     if (
       formattedRUT.endsWith("-") &&
       e.target.value.length < formData.RUT_USUARIO.length
     ) {
-      formattedRUT = formattedRUT.slice(0, -1); // Eliminar el guion si se está borrando
+      formattedRUT = formattedRUT.slice(0, -1);
     }
 
-    // Actualizar el estado del formulario con el RUT formateado
     setFormData({ ...formData, RUT_USUARIO: formattedRUT });
   };
 
@@ -132,12 +135,15 @@ const UserFormModal = ({
     const lowerCaseFormData = Object.fromEntries(
       Object.entries(formData).map(([key, value]) => [key.toLowerCase(), value])
     );
-  
+
     if (!validateEmail(lowerCaseFormData.email_usuario)) {
-      setErrors({ ...errors, EMAIL_USUARIO: "El correo electrónico no es válido." });
+      setErrors({
+        ...errors,
+        EMAIL_USUARIO: "El correo electrónico no es válido.",
+      });
       return;
     }
-  
+
     if (
       !lowerCaseFormData.nombre_usuario ||
       !lowerCaseFormData.apellido_usuario ||
@@ -149,29 +155,46 @@ const UserFormModal = ({
       });
       return;
     }
-  
+
+    if (lowerCaseFormData.contrasenia_usuario.length < 8) {
+      setOpenSnackbar(true); // Mostrar Snackbar si la contraseña es corta
+      setErrors({
+        ...errors,
+        CONTRASENIA_USUARIO:
+          "La contraseña debe tener un mínimo de 8 caracteres.",
+      });
+      return;
+    }
+
     try {
       await onSubmit(lowerCaseFormData);
       onClose();
       setEditing(false);
       setEditId(null);
-      // Aquí podrías reemplazar la alerta por una notificación global o un mensaje en el UI
-      // Ejemplo: setSuccessMessage("Usuario creado/actualizado exitosamente!");
     } catch (error) {
       console.error("Error al crear/actualizar usuario:", error);
       if (error.response && error.response.data) {
-        setErrors({ ...errors, GENERALES: error.response.data.message || "Ha ocurrido un error." });
+        setErrors({
+          ...errors,
+          GENERALES: error.response.data.message || "Ha ocurrido un error.",
+        });
       } else {
-        setErrors({ ...errors, GENERALES: "Ha ocurrido un error. Intente nuevamente." });
+        setErrors({
+          ...errors,
+          GENERALES: "Ha ocurrido un error. Intente nuevamente.",
+        });
       }
     }
   };
-  
 
   const validateEmail = (email) => {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -247,39 +270,84 @@ const UserFormModal = ({
                 label="Contraseña"
                 type="password"
                 value={formData.CONTRASENIA_USUARIO}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const newPassword = e.target.value;
                   setFormData({
                     ...formData,
-                    CONTRASENIA_USUARIO: e.target.value,
-                  })
-                }
+                    CONTRASENIA_USUARIO: newPassword,
+                  });
+
+                  // Verificar longitud de la contraseña
+                  if (newPassword.length < 8) {
+                    setErrors({
+                      ...errors,
+                      CONTRASENIA_USUARIO:
+                        "La contraseña debe tener un mínimo de 8 caracteres.",
+                    });
+                  } else {
+                    // Si tiene más de 8 caracteres, eliminar el mensaje de error
+                    setErrors({
+                      ...errors,
+                      CONTRASENIA_USUARIO: "",
+                    });
+                  }
+                }}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  !formData.CONTRASENIA_USUARIO
+                  errors.CONTRASENIA_USUARIO ||
+                  (!formData.CONTRASENIA_USUARIO
                     ? "La contraseña es obligatoria."
-                    : ""
+                    : "")
                 }
+                error={!!errors.CONTRASENIA_USUARIO}
               />
+
               <TextField
-                label=""
+                label="Fecha de Nacimiento"
                 type="date"
                 value={formData.FECHA_NACIMIENTO_USUARIO}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    FECHA_NACIMIENTO_USUARIO: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  const inputDate = e.target.value;
+                  const maxDate = getMaxDate();
+                  if (inputDate > maxDate) {
+                    setErrors({
+                      ...errors,
+                      FECHA_NACIMIENTO_USUARIO:
+                        "La fecha no puede ser mayor al 24 de diciembre de 2024.",
+                    });
+                  } else {
+                    setErrors({
+                      ...errors,
+                      FECHA_NACIMIENTO_USUARIO: "",
+                    });
+                    setFormData({
+                      ...formData,
+                      FECHA_NACIMIENTO_USUARIO: inputDate,
+                    });
+                  }
+                }}
                 fullWidth
                 margin="normal"
                 required
-                helperText={
-                  !formData.FECHA_NACIMIENTO_USUARIO
-                    ? "La fecha de nacimiento es obligatoria."
-                    : ""
-                }
+                max={getMaxDate()} // Aplica la fecha máxima
+                helperText={errors.FECHA_NACIMIENTO_USUARIO || ""}
+                error={!!errors.FECHA_NACIMIENTO_USUARIO}
+                InputProps={{
+                  // Estilos para mostrar el campo en gris y deshabilitado si hay error
+                  inputProps: {
+                    style: {
+                      color: errors.FECHA_NACIMIENTO_USUARIO ? "gray" : "black",
+                      pointerEvents: errors.FECHA_NACIMIENTO_USUARIO
+                        ? "none"
+                        : "auto",
+                    },
+                  },
+                }}
+                InputLabelProps={{
+                  shrink: true, // Para mantener la etiqueta en la parte superior
+                }}
               />
             </div>
           </div>
@@ -305,6 +373,16 @@ const UserFormModal = ({
             <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
             <Button onClick={onClose}>Cancelar</Button>
           </div>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Alert severity="error" onClose={handleSnackbarClose}>
+              La contraseña debe tener al menos 8 caracteres.
+            </Alert>
+          </Snackbar>
         </form>
       </div>
     </Modal>

@@ -9,12 +9,17 @@ import {
   Tooltip,
   Card,
 } from "@mui/material";
-import { Facebook, Call } from "@mui/icons-material";
-import { Instagram } from "@mui/icons-material";
+import { Facebook, Call, Instagram, Person } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom"; // Importamos useNavigate
 import logo from "../../assets/images/logo.jpg";
-import { Person } from "@mui/icons-material";
 
 const Header = () => {
+  const navigate = useNavigate(); // Usamos useNavigate para redirigir
+
+  const handleLoginClick = () => {
+    navigate("/login"); // Redirige a la página de login cuando se hace clic
+  };
+
   return (
     <AppBar position="sticky" sx={{ backgroundColor: "#000000" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -76,6 +81,7 @@ const Header = () => {
             </Typography>
           </Card>
 
+          {/* Botón de Iniciar sesión */}
           <Button
             color="inherit"
             sx={{
@@ -85,10 +91,10 @@ const Header = () => {
                 color: "#fff", // Cambia el texto a blanco en hover
               },
             }}
+            onClick={handleLoginClick} // Evento para redirigir
           >
-            <IconButton color="inherit" sx={{ marginRight: 1 }}>
-              <Person />
-            </IconButton>
+            {/* Aquí simplemente usas el ícono directamente dentro del Button */}
+            <Person sx={{ marginRight: 1 }} />
             Iniciar sesión
           </Button>
         </Box>

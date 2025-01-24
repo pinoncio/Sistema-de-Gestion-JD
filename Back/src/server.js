@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const usuarioRoutes = require('./routes/userRoutes');
-const roleRoutes = require('./routes/roleRoutes'); // Asegúrate de tener las rutas de roles correctamente
+const roleRoutes = require('./routes/roleRoutes');
 const { Usuario } = require('./models/userModel');
-const { Rol } = require('./models/roleModel'); // Asumiendo que tienes un modelo para los roles
+const { Rol } = require('./models/roleModel');
 
 class Server {
     constructor() {
@@ -15,15 +15,15 @@ class Server {
     }
 
     listen() {
-        // Ahora escuchamos con app, que es el objeto de Express
         this.app.listen(this.port, () => {
             console.log(`Servidor escuchando en el puerto ${this.port}`);
         });
     }
 
     routes() {
-        this.app.use('/api/usuarios', usuarioRoutes);
-        this.app.use('/api/roles', roleRoutes);
+        // Aquí aplicamos el middleware de autenticación
+        this.app.use('/api/usuarios', usuarioRoutes);  // Protege la ruta de usuarios
+        this.app.use('/api/roles', roleRoutes);        // Protege la ruta de roles
     }
 
     middlewares() {

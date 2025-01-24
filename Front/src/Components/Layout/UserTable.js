@@ -12,6 +12,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Link } from "react-router-dom"; // Importa Link de react-router-dom
 import moment from 'moment';
 
 const UserTable = ({
@@ -104,9 +105,11 @@ const UserTable = ({
               />
             </TableCell>
             <TableCell>
-              <IconButton>
-                <VisibilityIcon />
-              </IconButton>
+              <Link to={`/perfil/${usuario.ID_USUARIO}`}>
+                <IconButton>
+                  <VisibilityIcon />
+                </IconButton>
+              </Link>
               <IconButton
                 style={{ marginLeft: "10px" }}
                 onClick={() => onEdit(usuario)}
