@@ -7,8 +7,6 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 
 import "../../Styles/FormUser.css";
@@ -33,8 +31,11 @@ const UserFormModal = ({
     ROL_USUARIO: "",
   });
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [errors, setErrors] = useState({
+    NOMBRE_USUARIO: "",
+    APELLIDO_USUARIO: "",
+    RUT_USUARIO: "",
+  });
 
   useEffect(() => {
     if (userData) {
@@ -60,107 +61,170 @@ const UserFormModal = ({
     }
   }, [userData]);
 
-  
+  const validateName = (value) => {
+    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
+    return regex.test(value);
+  };
+
+  const handleNameChange = (e, field) => {
+    const { value } = e.target;
+    if (validateName(value) || value === "") {
+      setFormData({ ...formData, [field]: value });
+      setErrors({ ...errors, [field]: "" });
+    } else {
+      setErrors({ ...errors, [field]: "Solo se permiten letras y espacios." });
+    }
+  };
+
+  const formatRUT = (rut) => {
+    // Limitar a 9 dígitos como máximo
+    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
+
+    // Verificar si el RUT tiene 8 o 9 dígitos
+    if (cleanedRUT.length <= 8) {
+      cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
+    } else if (cleanedRUT.length === 9) {
+      cleanedRUT = cleanedRUT.replace(
+        /(\d{2})(\d{3})(\d{3})(\d{1})/,
+        "$1.$2.$3-$4"
+      );
+    } else {
+      cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
+    }
+
+    return cleanedRUT;
+  };
+
+  const handleRUTChange = (e) => {
+    let value = e.target.value;
+
+    // Eliminar todo lo que no sea número, punto o guion
+    let onlyValidChars = value.replace(/[^0-9.-]/g, "");
+
+    // Verificar si se permite el guion y punto solo en posiciones correctas
+    const onlyNumbers = onlyValidChars.replace(/[^\d]/g, ""); // Solo números
+    if (onlyValidChars.length !== value.length) {
+      setErrors({
+        ...errors,
+        RUT_USUARIO: "Solo se permiten números, puntos y guiones.",
+      });
+    } else {
+      setErrors({ ...errors, RUT_USUARIO: "" });
+    }
+
+    // Formatear el RUT solo con los números
+    let formattedRUT = formatRUT(onlyNumbers);
+
+    // Si el último carácter es un guion y el usuario borra, se elimina el guion
+    if (
+      formattedRUT.endsWith("-") &&
+      e.target.value.length < formData.RUT_USUARIO.length
+    ) {
+      formattedRUT = formattedRUT.slice(0, -1); // Eliminar el guion si se está borrando
+    }
+
+    // Actualizar el estado del formulario con el RUT formateado
+    setFormData({ ...formData, RUT_USUARIO: formattedRUT });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const lowerCaseFormData = Object.fromEntries(
       Object.entries(formData).map(([key, value]) => [key.toLowerCase(), value])
     );
-
-    // Basic validation
+  
     if (!validateEmail(lowerCaseFormData.email_usuario)) {
-      setSnackbarMessage("El correo electrónico no es válido.");
-      setSnackbarOpen(true);
+      setErrors({ ...errors, EMAIL_USUARIO: "El correo electrónico no es válido." });
       return;
     }
-
+  
     if (
       !lowerCaseFormData.nombre_usuario ||
       !lowerCaseFormData.apellido_usuario ||
       !lowerCaseFormData.contrasenia_usuario
     ) {
-      setSnackbarMessage("Todos los campos obligatorios deben ser llenados.");
-      setSnackbarOpen(true);
+      setErrors({
+        ...errors,
+        GENERALES: "Todos los campos obligatorios deben ser llenados.",
+      });
       return;
     }
-
+  
     try {
       await onSubmit(lowerCaseFormData);
       onClose();
       setEditing(false);
       setEditId(null);
-      setSnackbarMessage("Usuario creado/actualizado exitosamente!");
-      setSnackbarOpen(true); // Open success snackbar
+      // Aquí podrías reemplazar la alerta por una notificación global o un mensaje en el UI
+      // Ejemplo: setSuccessMessage("Usuario creado/actualizado exitosamente!");
     } catch (error) {
       console.error("Error al crear/actualizar usuario:", error);
-      // Check for specific errors from the backend (if applicable)
       if (error.response && error.response.data) {
-        setSnackbarMessage(
-          error.response.data.message || "Ha ocurrido un error."
-        );
+        setErrors({ ...errors, GENERALES: error.response.data.message || "Ha ocurrido un error." });
       } else {
-        setSnackbarMessage("Ha ocurrido un error. Intente nuevamente.");
+        setErrors({ ...errors, GENERALES: "Ha ocurrido un error. Intente nuevamente." });
       }
-      setSnackbarOpen(true); // Open error snackbar
     }
   };
+  
 
   const validateEmail = (email) => {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   };
-  
 
   return (
     <Modal open={open} onClose={onClose}>
       <div className="modal-content">
-        <h2>{editing ? "Formulario para editar Usuario" : "Formulario para crear Usuario"}</h2>
+        <h2>
+          {editing
+            ? "Formulario para editar Usuario"
+            : "Formulario para crear Usuario"}
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
               <TextField
                 label="Nombre"
                 value={formData.NOMBRE_USUARIO}
-                onChange={(e) =>
-                  setFormData({ ...formData, NOMBRE_USUARIO: e.target.value })
-                }
+                onChange={(e) => handleNameChange(e, "NOMBRE_USUARIO")}
                 fullWidth
                 margin="normal"
-                required // Mark required field
+                required
                 helperText={
-                  !formData.NOMBRE_USUARIO ? "El nombre es obligatorio." : ""
-                } // Error helper text
+                  errors.NOMBRE_USUARIO ||
+                  (!formData.NOMBRE_USUARIO ? "El nombre es obligatorio." : "")
+                }
+                error={!!errors.NOMBRE_USUARIO}
               />
               <TextField
                 label="Apellido"
                 value={formData.APELLIDO_USUARIO}
-                onChange={(e) =>
-                  setFormData({ ...formData, APELLIDO_USUARIO: e.target.value })
-                }
+                onChange={(e) => handleNameChange(e, "APELLIDO_USUARIO")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  !formData.APELLIDO_USUARIO
+                  errors.APELLIDO_USUARIO ||
+                  (!formData.APELLIDO_USUARIO
                     ? "El apellido es obligatorio."
-                    : ""
+                    : "")
                 }
+                error={!!errors.APELLIDO_USUARIO}
               />
               <TextField
                 label="Rut"
                 value={formData.RUT_USUARIO}
-                onChange={(e) =>
-                  setFormData({ ...formData, RUT_USUARIO: e.target.value })
-                }
+                onChange={handleRUTChange}
                 fullWidth
                 margin="normal"
                 required
-
                 helperText={
-                  !formData.RUT_USUARIO ? "El Rut es obligatorio." : ""
+                  errors.RUT_USUARIO ||
+                  "Por favor ingrese su RUT sin punto(.) y guión(-)"
                 }
+                error={!!errors.RUT_USUARIO}
               />
             </div>
             <div className="form-group">
@@ -173,7 +237,6 @@ const UserFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-
                 helperText={
                   !formData.EMAIL_USUARIO
                     ? "El correo electrónico es obligatorio."
@@ -193,7 +256,6 @@ const UserFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-
                 helperText={
                   !formData.CONTRASENIA_USUARIO
                     ? "La contraseña es obligatoria."
@@ -213,7 +275,6 @@ const UserFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-
                 helperText={
                   !formData.FECHA_NACIMIENTO_USUARIO
                     ? "La fecha de nacimiento es obligatoria."
@@ -231,17 +292,13 @@ const UserFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, ROL_USUARIO: e.target.value })
                 }
-                
               >
                 {roles.map((role) => (
                   <MenuItem key={role.ID_ROL} value={role.ID_ROL}>
                     {role.NOMBRE_ROL}
                   </MenuItem>
                 ))}
-                
               </Select>
-              
-              
             </FormControl>
           </div>
           <div className="form-actions">
@@ -249,13 +306,6 @@ const UserFormModal = ({
             <Button onClick={onClose}>Cancelar</Button>
           </div>
         </form>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={() => setSnackbarOpen(false)}
-        >
-          <Alert severity="error">{snackbarMessage}</Alert>
-        </Snackbar>
       </div>
     </Modal>
   );

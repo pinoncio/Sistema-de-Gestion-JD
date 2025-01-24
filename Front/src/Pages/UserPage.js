@@ -33,6 +33,7 @@ const UserPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // New state for severity
 
   useEffect(() => {
     fetchUsuarios();
@@ -42,11 +43,9 @@ const UserPage = () => {
   const fetchUsuarios = async () => {
     try {
       const data = await getUsuarios();
-
       const usuariosOrdenados = data.sort(
         (a, b) => a.ID_USUARIO - b.ID_USUARIO
       );
-
       setUsuarios(usuariosOrdenados);
     } catch (error) {
       console.error("Error al obtener los usuarios", error);
@@ -78,16 +77,17 @@ const UserPage = () => {
     try {
       const response = await createUsuario(formData);
       console.log("Usuario creado exitosamente:", response.data);
-      setOpen(false); // Close modal
-      fetchUsuarios(); // Refresh user list
+      setOpen(false);
+      fetchUsuarios();
 
       // Display success message using snackbar
       setSnackbarMessage("Usuario creado exitosamente!");
+      setSnackbarSeverity("success"); // Set severity to success
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al crear el usuario:", error);
-      // Handle creation error (e.g., display error message using snackbar)
       setSnackbarMessage("Ha ocurrido un error al crear el usuario.");
+      setSnackbarSeverity("error"); // Set severity to error
       setSnackbarOpen(true);
     }
   };
@@ -96,16 +96,16 @@ const UserPage = () => {
     try {
       const response = await updateUsuario(id, formData);
       console.log("Usuario actualizado exitosamente:", response.data);
-      setOpen(false); // Close modal
-      fetchUsuarios(); // Refresh user list
+      setOpen(false);
+      fetchUsuarios();
 
-      // Display success message using snackbar
       setSnackbarMessage("Usuario actualizado exitosamente!");
+      setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
-      // Handle update error (e.g., display error message using snackbar)
       setSnackbarMessage("Ha ocurrido un error al actualizar el usuario.");
+      setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
@@ -157,7 +157,6 @@ const UserPage = () => {
       const estadoNumerico = nuevoEstado ? 1 : 0;
       await toggleUsuarioStatus(id_usuario, estadoNumerico);
 
-      // Actualizamos el estado localmente para reflejar el cambio
       setUsuarios((prevUsuarios) =>
         prevUsuarios.map((usuario) =>
           usuario.ID_USUARIO === id_usuario
@@ -166,12 +165,10 @@ const UserPage = () => {
         )
       );
 
-      // Mostrar el mensaje de éxito
       setSnackbarMessage(
-        `El usuario ha sido ${
-          nuevoEstado ? "activado" : "desactivado"
-        } exitosamente.`
+        `El usuario ha sido ${nuevoEstado ? "activado" : "desactivado"} exitosamente.`
       );
+      setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al activar/desactivar la cuenta:", error);
@@ -200,11 +197,9 @@ const UserPage = () => {
   };
 
   return (
-    
     <AdminLayout>
       <h1>Lista completa de usuarios</h1>
 
-      {/* Campo de búsqueda con icono de lupa */}
       <div className="search-bar">
         <TextField
           label="Buscar usuario"
@@ -212,11 +207,13 @@ const UserPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth
           margin="normal"
-          InputAdornment={
-            <InputAdornment position="start" style={{ margin: "0 10px" }}>
-              <SearchIcon />
-            </InputAdornment>
-          }
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" style={{ margin: "0 10px" }}>
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
         />
       </div>
 
@@ -234,7 +231,6 @@ const UserPage = () => {
         </Button>
       </div>
 
-      {/* Contenedor sutil para la tabla de usuarios */}
       <Card className="user-table-container">
         <CardContent>
           <UserTable
@@ -247,7 +243,6 @@ const UserPage = () => {
         </CardContent>
       </Card>
 
-      {/* Modal para crear/editar usuario */}
       <UserFormModal
         open={open}
         onClose={handleCloseModal}
@@ -259,16 +254,20 @@ const UserPage = () => {
         roles={roles}
       />
 
-      {/* Snackbar para mostrar mensajes */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
+          severity={snackbarSeverity} // Use dynamic severity
+          sx={{
+            width: "auto",
+            fontSize: "1.2rem",
+            padding: "16px",
+          }}
         >
           {snackbarMessage}
         </Alert>
