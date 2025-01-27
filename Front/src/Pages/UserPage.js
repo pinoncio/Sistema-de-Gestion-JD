@@ -7,8 +7,8 @@ import {
   updateUsuario,
 } from "../Services/userService";
 import { getRoles } from "../Services/roleService";
-import UserTable from "../Components/Layout/UserTable";
-import UserFormModal from "../Components/Layout/UserFormModal";
+import UserTable from "../Components/UserTable";
+import UserFormModal from "../Components/UserFormModal";
 import {
   Button,
   TextField,

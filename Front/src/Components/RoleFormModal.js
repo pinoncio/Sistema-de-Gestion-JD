@@ -6,7 +6,7 @@ import {
   Snackbar,
   Alert
 } from "@mui/material";
-import "../../Styles/FormRole.css";
+import "../Styles/FormRole.css";
 
 const RoleFormModal = ({
   open,

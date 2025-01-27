@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import "../../Styles/FormUser.css";
+import "../Styles/FormUser.css";
 
 const UserFormModal = ({
   open,

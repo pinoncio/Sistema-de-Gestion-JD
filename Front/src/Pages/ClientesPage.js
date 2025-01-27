@@ -6,8 +6,8 @@ import {
   createCliente,
   updateCliente,
 } from "../Services/clienteService";
-import ClienteTable from "../Components/Layout/ClienteTable";
-import ClienteFormModal from "../Components/Layout/ClienteFormModal";
+import ClienteTable from "../Components/ClienteTable";
+import ClienteFormModal from "../Components/ClienteFormModal";
 import {
   Button,
   TextField,

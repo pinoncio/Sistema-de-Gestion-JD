@@ -5,8 +5,8 @@ import {
   createRole,
   updateRole,
 } from "../Services/roleService";
-import RoleTable from "../Components/Layout/RoleTable";
-import RoleFormModal from "../Components/Layout/RoleFormModal";
+import RoleTable from "../Components/RoleTable";
+import RoleFormModal from "../Components/RoleFormModal";
 import { Button, Card, CardContent, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
