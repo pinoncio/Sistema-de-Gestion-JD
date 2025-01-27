@@ -1,0 +1,29 @@
+const express = require("express");
+const router = express.Router();
+const {
+  agregarMetodoPagoCliente,
+  obtenerMetodosPagoCliente,
+  obtenerMetodoPagoClientePorId,
+  actualizarMetodoPagoCliente,
+  eliminarMetodoPagoCliente,
+} = require("../controllers/clienteMetodoPagoController");
+
+// Ruta para obtener todos los métodos de pago de un cliente
+router.get("/:id_cliente", obtenerMetodosPagoCliente);
+
+// Ruta para obtener un método de pago específico de un cliente por su id_metodo_pago
+router.get(
+  "/:id_cliente/metodospago/:id_metodo_pago",
+  obtenerMetodoPagoClientePorId
+);
+
+// Ruta para agregar un nuevo método de pago a un cliente
+router.post("/metodospago", agregarMetodoPagoCliente);
+
+// Ruta para actualizar un método de pago de un cliente
+router.put("/:id_cliente/metodospago/:id_metodo_pago", actualizarMetodoPagoCliente);
+
+// Ruta para eliminar un método de pago de un cliente
+router.delete("/:id_cliente/metodospago/:id_metodo_pago", eliminarMetodoPagoCliente);
+
+module.exports = router;

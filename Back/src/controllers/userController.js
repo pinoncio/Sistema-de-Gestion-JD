@@ -93,7 +93,7 @@ const loginUser = async (req, res) => {
 
     if (!usuario) {
       // Si el RUT no existe
-      console.error(`RUT no encontrado: ${rut_usuario}`);  // Imprime el RUT ingresado
+      console.error(`RUT no encontrado: ${rut_usuario}`); // Imprime el RUT ingresado
       return res.status(404).json({
         msg: "El RUT ingresado no es válido. Verifica tus datos.",
       });
@@ -101,7 +101,7 @@ const loginUser = async (req, res) => {
 
     // Verificar si la cuenta está deshabilitada
     if (!usuario.ESTADO_USUARIO) {
-      console.error(`Cuenta deshabilitada para el RUT: ${rut_usuario}`);  // Imprime el RUT si la cuenta está deshabilitada
+      console.error(`Cuenta deshabilitada para el RUT: ${rut_usuario}`); // Imprime el RUT si la cuenta está deshabilitada
       return res.status(403).json({
         msg: "La cuenta está deshabilitada temporalmente. Contacta al administrador.",
       });
@@ -114,7 +114,7 @@ const loginUser = async (req, res) => {
     );
     if (!passwordMatch) {
       // Si la contraseña es incorrecta
-      console.error(`Contraseña incorrecta para el RUT: ${rut_usuario}`);  // Imprime cuando la contraseña es incorrecta
+      console.error(`Contraseña incorrecta para el RUT: ${rut_usuario}`); // Imprime cuando la contraseña es incorrecta
       return res.status(401).json({
         msg: "Contraseña incorrecta. Intenta nuevamente.",
       });
@@ -139,7 +139,7 @@ const loginUser = async (req, res) => {
       idUsuario: usuarioId,
     });
   } catch (error) {
-    console.error("Error en el proceso de login:", error);  // Imprime el error completo
+    console.error("Error en el proceso de login:", error); // Imprime el error completo
     res.status(500).json({
       msg: "Error interno del servidor. Intenta más tarde.",
     });
