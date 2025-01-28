@@ -1,4 +1,4 @@
-import api from './api';  // Importa la configuración de axios
+import api from './api';  
 
 // Obtener todos los clientes
 export const getClientes = async () => {

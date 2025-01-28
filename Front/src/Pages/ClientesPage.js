@@ -56,7 +56,8 @@ const ClientePage = () => {
 
   const handleCreateCliente = async (formData) => {
     try {
-      await createCliente(formData);
+      const response = await createCliente(formData);
+      console.log("Cliente creado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();
 
@@ -73,7 +74,8 @@ const ClientePage = () => {
 
   const handleUpdateCliente = async (id, formData) => {
     try {
-      await updateCliente(id, formData);
+      const response = await updateCliente(id, formData);
+      console.log("Cliente actualizado exitosamente:", response.data );
       setOpen(false);
       fetchClientes();
 

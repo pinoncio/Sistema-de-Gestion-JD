@@ -7,6 +7,7 @@ import UserProfilePage from "./Pages/UserProfilePage";
 import LoginPage from "./Pages/LoginPage";
 import PrivateRoute from "./Routes/PrivateRoute";
 import ClientePage from "./Pages/ClientesPage";
+import AdminHome from "./Pages/AdminPage";
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
           
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cliente" element={<ClientePage />} />
+          <Route path="/admin" element={<AdminHome/>} />
         </Routes>
 
       </div>

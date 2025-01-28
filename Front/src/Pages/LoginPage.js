@@ -99,7 +99,7 @@ const LoginPage = () => {
         "user",
         JSON.stringify({ idUsuario: data.idUsuario, rol: data.rol })
       );
-      navigate("/users");
+      navigate("/admin");
     } catch (err) {
       console.error("Error recibido:", err); // Imprime el error completo
 

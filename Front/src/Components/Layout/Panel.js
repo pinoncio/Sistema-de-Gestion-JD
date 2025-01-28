@@ -1,6 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; 
 
 const Panel = ({ onMenuClick }) => {
@@ -13,16 +12,20 @@ const Panel = ({ onMenuClick }) => {
     navigate('/'); 
   };
 
+  const handleAdminPanelClick = () => {
+    navigate('/admin'); // Redirige a la página de administración
+  };
+
   return (
     <AppBar position="sticky" sx={{ backgroundColor: '#000000' }}>
       <Toolbar>
-        {/* Icono de menú */}
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={onMenuClick} sx={{ mr: 2 }}>
-          <MenuIcon />
-        </IconButton>
-
-        {/* Título */}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        {/* Título con click para redirigir */}
+        <Typography 
+          variant="h6" 
+          component="div" 
+          sx={{ flexGrow: 1, cursor: 'pointer' }}
+          onClick={handleAdminPanelClick}  // Se añade el click aquí
+        >
           Panel de Administración
         </Typography>
 
