@@ -8,10 +8,12 @@ import {
   TableSortLabel,
   Switch,
   IconButton,
+
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Link } from "react-router-dom";
 
 const ClienteTable = ({
   clientes,
@@ -82,6 +84,11 @@ const ClienteTable = ({
               />
             </TableCell>
             <TableCell>
+            <Link to={`/perfil/${cliente.ID_CLIENTE}`}>
+                <IconButton>
+                  <VisibilityIcon />
+                </IconButton>
+              </Link>
               <IconButton onClick={() => onEdit(cliente)}>
                 <EditIcon />
               </IconButton>
