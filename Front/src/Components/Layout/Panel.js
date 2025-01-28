@@ -6,6 +6,9 @@ const Panel = ({ onMenuClick }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // Limpiar el localStorage al cerrar sesión
+    localStorage.clear(); // O usar localStorage.removeItem('clave') si solo quieres borrar algo específico
+    
     // Limpiar el estado del usuario (si es necesario)
     // ...
 
