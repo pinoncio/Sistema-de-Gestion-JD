@@ -84,14 +84,14 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     if (!validateRut(rut)) {
       setError("El RUT ingresado no es válido.");
       setOpenSnackbar(true);
       setLoading(false);
       return;
     }
-
+  
     try {
       const data = await loginUser(rut, contrasenia);
       localStorage.setItem("token", data.token);
@@ -99,19 +99,28 @@ const LoginPage = () => {
         "user",
         JSON.stringify({ idUsuario: data.idUsuario, rol: data.rol })
       );
-      navigate("/admin");
+  
+      // Redirige según el rol del usuario
+      if (data.rol === 1) {
+        navigate("/admin");
+      } else if (data.rol === 2) {
+        navigate("/cliente");
+      } else {
+        throw new Error("Rol no permitido");
+      }
     } catch (err) {
-      console.error("Error recibido:", err); // Imprime el error completo
-
-      // Si el error tiene respuesta, mostramos el mensaje apropiado
-      let errorMessage = err.message || "Hubo un problema con la autenticación. Intenta nuevamente.";
-
+      console.error("Error recibido:", err);
+  
+      const errorMessage =
+        err.message || "Hubo un problema con la autenticación. Intenta nuevamente.";
+  
       setError(errorMessage);
       setOpenSnackbar(true);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <Box className="login-container">

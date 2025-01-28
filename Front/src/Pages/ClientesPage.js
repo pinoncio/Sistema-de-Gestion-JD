@@ -20,8 +20,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
-import AdminLayout from "../Components/Layout/AdminLayout";
 import "../Styles/User.css";
+import UserLayout from "../Components/Layout/UserLayout";
 
 const ClientePage = () => {
   const [clientes, setClientes] = useState([]);
@@ -175,7 +175,7 @@ const ClientePage = () => {
   };
 
   return (
-    <AdminLayout>
+    <UserLayout>
       <h1>Lista completa de clientes</h1>
 
       <div className="search-bar">
@@ -248,7 +248,7 @@ const ClientePage = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </AdminLayout>
+    </UserLayout>
   );
 };
 

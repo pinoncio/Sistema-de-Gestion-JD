@@ -83,13 +83,13 @@ const ClienteFormModal = ({
   };
 
   const formatRUT = (rut) => {
-    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
+    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); // Permite números y "k" o "K" al final
 
     if (cleanedRUT.length <= 8) {
       cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
     } else if (cleanedRUT.length === 9) {
       cleanedRUT = cleanedRUT.replace(
-        /(\d{2})(\d{3})(\d{3})(\d{1})/,
+        /(\d{2})(\d{3})(\d{3})(\d{1}|k|K)/,
         "$1.$2.$3-$4"
       );
     } else {
@@ -101,18 +101,19 @@ const ClienteFormModal = ({
 
   const handleRUTChange = (e) => {
     let value = e.target.value;
-    let onlyValidChars = value.replace(/[^0-9.-]/g, "");
-    const onlyNumbers = onlyValidChars.replace(/[^\d]/g, "");
+    let onlyValidChars = value.replace(/[^0-9kK.-]/g, ""); // Permite números, ".", "-", "k", "K"
+    const onlyNumbersAndK = onlyValidChars.replace(/[^0-9kK]/g, ""); // Limpia todo menos números y "k/K"
+
     if (onlyValidChars.length !== value.length) {
       setErrors({
         ...errors,
-        RUT: "Solo se permiten números, puntos y guiones.",
+        RUT: "Solo se permiten números, puntos, guiones y la letra 'k'.",
       });
     } else {
       setErrors({ ...errors, RUT: "" });
     }
 
-    let formattedRUT = formatRUT(onlyNumbers);
+    let formattedRUT = formatRUT(onlyNumbersAndK);
 
     if (
       formattedRUT.endsWith("-") &&
@@ -207,8 +208,8 @@ const ClienteFormModal = ({
   };
 
   const validateDireccion = (value) => {
-    // Permite letras, números, espacios, comas y puntos
-    const regex = /^[A-Za-z0-9\s,.]+$/;
+    // Permite letras, números, espacios, comas, puntos y #
+    const regex = /^[A-Za-z0-9\s,.#]+$/;
     return regex.test(value);
   };
 
@@ -221,7 +222,7 @@ const ClienteFormModal = ({
       setErrors({
         ...errors,
         DIRECCION:
-          "La dirección solo puede contener letras, números, comas y puntos.",
+          "La dirección solo puede contener letras, números, comas, puntos y el símbolo #.",
       });
     }
   };
