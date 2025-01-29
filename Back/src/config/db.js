@@ -1,4 +1,3 @@
-// db.js
 const { Sequelize } = require('sequelize');
 require('dotenv').config(); // Cargar variables de entorno desde .env
 
@@ -15,4 +14,4 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
   logging: false, 
 });
 
-module.exports = sequelize; 
+module.exports = sequelize;  // Esto debe ser el objeto sequelize directamente

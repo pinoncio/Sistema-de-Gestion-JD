@@ -1,6 +1,9 @@
 const { Cliente } = require("../models/clienteModel");
 const { MetodoPago } = require("../models/metodoPagoModel");
 const { ClienteMetodoPago } = require("../models/clienteMetodoPagoModel");
+const { ContactoComercial } = require("../models/contactoComercialModel");
+const { InformacionDePago } = require("../models/informacionPagoModel");
+const  sequelize  = require('../config/db');
 
 // Obtener todos los clientes
 const getClientes = async (req, res) => {
@@ -71,7 +74,6 @@ const getCliente = async (req, res) => {
   }
 };
 
-// Crear un nuevo cliente
 const newCliente = async (req, res) => {
   const {
     codigo_cliente,
@@ -82,7 +84,11 @@ const newCliente = async (req, res) => {
     direccion,
     ciudad,
     comuna,
+    contacto_comercial, // Datos de contacto comercial
+    informacion_de_pago, // Datos de información de pago
   } = req.body;
+
+  const transaction = await sequelize.transaction(); // Use sequelize to start the transaction
 
   try {
     // Verificar existencia del RUT
@@ -96,24 +102,59 @@ const newCliente = async (req, res) => {
     }
 
     // Crear el cliente
-    const cliente = await Cliente.create({
-      CODIGO_CLIENTE: codigo_cliente,
-      NOMBRE_RAZON_SOCIAL: nombre_razon_social,
-      NOMBRE_FANTASIA: nombre_fantasia,
-      RUT: rut,
-      GIRO: giro,
-      DIRECCION: direccion,
-      CIUDAD: ciudad,
-      COMUNA: comuna,
-    });
+    const cliente = await Cliente.create(
+      {
+        CODIGO_CLIENTE: codigo_cliente,
+        NOMBRE_RAZON_SOCIAL: nombre_razon_social,
+        NOMBRE_FANTASIA: nombre_fantasia,
+        RUT: rut,
+        GIRO: giro,
+        DIRECCION: direccion,
+        CIUDAD: ciudad,
+        COMUNA: comuna,
+      },
+      { transaction } // Asociar la transacción al cliente
+    );
 
-    console.log("Cliente creado exitosamente:", cliente);
+    // Crear el contacto comercial si se proporciona
+    if (contacto_comercial) {
+      await ContactoComercial.create(
+        {
+          ID_CLIENTE: cliente.ID_CLIENTE,
+          CONTACTO_COMERCIAL: contacto_comercial.contacto_comercial,
+          CORREO_ELECTRONICO_COMERCIAL: contacto_comercial.correo_electronico,
+          TELEFONO_FIJO: contacto_comercial.telefono_fijo,
+          TELEFONO_CELULAR: contacto_comercial.telefono_celular,
+        },
+        { transaction } // Asociar la transacción al contacto comercial
+      );
+    }
+
+    // Crear la información de pago si se proporciona
+    if (informacion_de_pago) {
+      await InformacionDePago.create(
+        {
+          ID_CLIENTE: cliente.ID_CLIENTE,
+          NOMBRE_RESPONSABLE: informacion_de_pago.nombre_responsable,
+          CORREO_ELECTRONICO: informacion_de_pago.correo_electronico,
+          TELEFONO_RESPONSABLE: informacion_de_pago.telefono_responsable,
+        },
+        { transaction } // Asociar la transacción a la información de pago
+      );
+    }
+
+    // Confirmar la transacción
+    await transaction.commit();
+
+    console.log("Cliente y datos relacionados creados exitosamente:", cliente);
 
     return res.status(201).json({
       msg: "Cliente creado correctamente",
       cliente,
     });
   } catch (error) {
+    // Si ocurre un error, revertir la transacción
+    await transaction.rollback();
     console.error("Error al crear el cliente:", error);
     return res.status(400).json({
       msg: "Ocurrió un error al crear el cliente",
@@ -132,7 +173,7 @@ const updateCliente = async (req, res) => {
     giro,
     direccion,
     ciudad,
-    comuna
+    comuna,
   } = req.body;
 
   const cliente = await Cliente.findOne({ where: { ID_CLIENTE: id_cliente } });
@@ -152,7 +193,7 @@ const updateCliente = async (req, res) => {
         GIRO: giro,
         DIRECCION: direccion,
         CIUDAD: ciudad,
-        COMUNA: comuna
+        COMUNA: comuna,
       },
       { where: { ID_CLIENTE: id_cliente } }
     );

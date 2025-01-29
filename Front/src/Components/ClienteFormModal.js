@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TextField, Button, Snackbar, Alert } from "@mui/material";
+import { Modal, TextField, Button, Snackbar, Alert, Grid } from "@mui/material";
+import { getContactoComercial } from "../Services/contactoService";
+import { getInformacionDePago } from "../Services/informacionService";
 import "../Styles/FormUser.css";
 
 const ClienteFormModal = ({
@@ -20,6 +22,17 @@ const ClienteFormModal = ({
     DIRECCION: "",
     CIUDAD: "",
     COMUNA: "",
+    CONTACTO_COMERCIAL: {
+      CONTACTO_COMERCIAL: "",
+      CORREO_ELECTRONICO: "",
+      TELEFONO_FIJO: "",
+      TELEFONO_CELULAR: "",
+    },
+    INFORMACION_DE_PAGO: {
+      NOMBRE_RESPONSABLE: "",
+      CORREO_ELECTRONICO: "",
+      TELEFONO_RESPONSABLE: "",
+    },
   });
 
   const [errors, setErrors] = useState({
@@ -39,222 +52,93 @@ const ClienteFormModal = ({
         DIRECCION: clienteData.DIRECCION || "",
         CIUDAD: clienteData.CIUDAD || "",
         COMUNA: clienteData.COMUNA || "",
+        CONTACTO_COMERCIAL: clienteData.CONTACTO_COMERCIAL || {
+          CONTACTO_COMERCIAL: "",
+          CORREO_ELECTRONICO: "",
+          TELEFONO_FIJO: "",
+          TELEFONO_CELULAR: "",
+        },
+        INFORMACION_DE_PAGO: clienteData.INFORMACION_DE_PAGO || {
+          NOMBRE_RESPONSABLE: "",
+          CORREO_ELECTRONICO: "",
+          TELEFONO_RESPONSABLE: "",
+        },
       });
-    } else {
-      setFormData({
-        CODIGO_CLIENTE: "",
-        NOMBRE_RAZON_SOCIAL: "",
-        NOMBRE_FANTASIA: "",
-        RUT: "",
-        GIRO: "",
-        DIRECCION: "",
-        CIUDAD: "",
-        COMUNA: "",
-      });
+
+      // Llamar a las API para obtener información adicional
+      const fetchAdditionalData = async () => {
+        try {
+          const contacto = await getContactoComercial(
+            clienteData.CODIGO_CLIENTE
+          );
+          const infoPago = await getInformacionDePago(
+            clienteData.CODIGO_CLIENTE
+          );
+
+          setFormData((prevData) => ({
+            ...prevData,
+            CONTACTO_COMERCIAL: contacto || prevData.CONTACTO_COMERCIAL,
+            INFORMACION_DE_PAGO: infoPago || prevData.INFORMACION_DE_PAGO,
+          }));
+        } catch (error) {
+          console.error("Error obteniendo datos adicionales:", error);
+        }
+      };
+
+      fetchAdditionalData();
     }
   }, [clienteData]);
 
-  const validateName = (value) => {
-    // Modificado para permitir letras y puntos
-    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s.]+$/;
-    return regex.test(value);
-  };
-
-  const handleNameChange = (e, field) => {
-    const { value } = e.target;
-    if (validateName(value) || value === "") {
+  const handleInputChange = (e, field, section) => {
+    const { name, value } = e.target;
+    if (section) {
+      setFormData({
+        ...formData,
+        [section]: { ...formData[section], [name]: value },
+      });
+    } else {
       setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else {
-      setErrors({
-        ...errors,
-        [field]: "Solo se permiten letras, espacios y puntos.",
-      });
-    }
-  };
-
-  const formatRUT = (rut) => {
-    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); // Permite números y "k" o "K" al final
-
-    if (cleanedRUT.length <= 8) {
-      cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
-    } else if (cleanedRUT.length === 9) {
-      cleanedRUT = cleanedRUT.replace(
-        /(\d{2})(\d{3})(\d{3})(\d{1}|k|K)/,
-        "$1.$2.$3-$4"
-      );
-    } else {
-      cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
-    }
-
-    return cleanedRUT;
-  };
-
-  const handleRUTChange = (e) => {
-    let value = e.target.value;
-    let onlyValidChars = value.replace(/[^0-9kK.-]/g, ""); // Permite números, ".", "-", "k", "K"
-    const onlyNumbersAndK = onlyValidChars.replace(/[^0-9kK]/g, ""); // Limpia todo menos números y "k/K"
-
-    if (onlyValidChars.length !== value.length) {
-      setErrors({
-        ...errors,
-        RUT: "Solo se permiten números, puntos, guiones y la letra 'k'.",
-      });
-    } else {
-      setErrors({ ...errors, RUT: "" });
-    }
-
-    let formattedRUT = formatRUT(onlyNumbersAndK);
-
-    if (
-      formattedRUT.endsWith("-") &&
-      e.target.value.length < formData.RUT.length
-    ) {
-      formattedRUT = formattedRUT.slice(0, -1);
-    }
-
-    setFormData({ ...formData, RUT: formattedRUT });
-  };
-
-
-
-  // Función para validar el campo CODIGO_CLIENTE
-  const validateCodigoCliente = (value) => {
-    // Permite letras, números y guiones, pero no números negativos ni símbolos especiales.
-    const regex = /^[A-Za-z0-9-]+$/;
-    return regex.test(value);
-  };
-
-  // Actualización en el manejo de cambios de CODIGO_CLIENTE
-  const handleCodigoClienteChange = (e) => {
-    const { value } = e.target;
-
-    // Validamos si el valor cumple con la expresión regular
-    if (validateCodigoCliente(value) || value === "") {
-      setFormData({ ...formData, CODIGO_CLIENTE: value });
-      setErrors({ ...errors, CODIGO_CLIENTE: "" });
-    } else {
-      setErrors({
-        ...errors,
-        CODIGO_CLIENTE: "Solo se permiten letras, números y guiones.",
-      });
-    }
-  };
-
-  const validateNombreFantasía = (value) => {
-    // Permite solo letras (mayúsculas, minúsculas) y espacios
-    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
-    return regex.test(value);
-  };
-
-  const handleNombreFantasíaChange = (e) => {
-    const { value } = e.target;
-    if (validateNombreFantasía(value) || value === "") {
-      setFormData({ ...formData, NOMBRE_FANTASIA: value });
-      setErrors({ ...errors, NOMBRE_FANTASIA: "" });
-    } else {
-      setErrors({
-        ...errors,
-        NOMBRE_FANTASIA: "Solo se permiten letras y espacios.",
-      });
-    }
-  };
-
-  const validateGiro = (value) => {
-    // Permite solo letras y espacios
-    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
-    return regex.test(value);
-  };
-
-  const handleGiroChange = (e) => {
-    const { value } = e.target;
-    if (validateGiro(value) || value === "") {
-      setFormData({ ...formData, GIRO: value });
-      setErrors({ ...errors, GIRO: "" });
-    } else {
-      setErrors({
-        ...errors,
-        GIRO: "Solo se permiten letras y espacios.",
-      });
-    }
-  };
-
-  const validateDireccion = (value) => {
-    // Permite letras, números, espacios, comas, puntos y #
-    const regex = /^[A-Za-z0-9\s,.#]+$/;
-    return regex.test(value);
-  };
-
-  const handleDireccionChange = (e) => {
-    const { value } = e.target;
-    if (validateDireccion(value) || value === "") {
-      setFormData({ ...formData, DIRECCION: value });
-      setErrors({ ...errors, DIRECCION: "" });
-    } else {
-      setErrors({
-        ...errors,
-        DIRECCION:
-          "La dirección solo puede contener letras, números, comas, puntos y el símbolo #.",
-      });
-    }
-  };
-
-  const validateCiudad = (value) => {
-    // Permite solo letras (mayúsculas, minúsculas) y espacios
-    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
-    return regex.test(value);
-  };
-
-  const handleCiudadChange = (e) => {
-    const { value } = e.target;
-    if (validateCiudad(value) || value === "") {
-      setFormData({ ...formData, CIUDAD: value });
-      setErrors({ ...errors, CIUDAD: "" });
-    } else {
-      setErrors({
-        ...errors,
-        CIUDAD: "Solo se permiten letras y espacios.",
-      });
-    }
-  };
-
-  const validateComuna = (value) => {
-    // Permite solo letras y espacios
-    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
-    return regex.test(value);
-  };
-
-  const handleComunaChange = (e) => {
-    const { value } = e.target;
-    if (validateComuna(value) || value === "") {
-      setFormData({ ...formData, COMUNA: value });
-      setErrors({ ...errors, COMUNA: "" });
-    } else {
-      setErrors({
-        ...errors,
-        COMUNA: "Solo se permiten letras y espacios.",
-      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const lowerCaseFormData = Object.fromEntries(
-      Object.entries(formData).map(([key, value]) => [key.toLowerCase(), value])
-    );
+    // Primero, inicializa la variable lowerCaseFormData
+    const lowerCaseFormData = {
+      ...formData,
+      CODIGO_CLIENTE: formData.CODIGO_CLIENTE.toLowerCase(),
+      NOMBRE_RAZON_SOCIAL: formData.NOMBRE_RAZON_SOCIAL.toLowerCase(),
+      NOMBRE_FANTASIA: formData.NOMBRE_FANTASIA.toLowerCase(),
+      RUT: formData.RUT.toLowerCase(),
+      GIRO: formData.GIRO.toLowerCase(),
+      DIRECCION: formData.DIRECCION.toLowerCase(),
+      CIUDAD: formData.CIUDAD.toLowerCase(),
+      COMUNA: formData.COMUNA.toLowerCase(),
+    };
+
+    // Imprimir los datos en la consola
+    console.log("Datos del formulario enviados:", lowerCaseFormData);
 
     let hasError = false;
 
     // Verificar si los campos obligatorios están llenos
+    if (!lowerCaseFormData.RUT) {
+      setErrors({
+        ...errors,
+        RUT: "El RUT es obligatorio",
+      });
+      hasError = true;
+    }
+
     if (
-      !lowerCaseFormData.codigo_cliente ||
-      !lowerCaseFormData.nombre_razon_social ||
-      !lowerCaseFormData.rut ||
-      !lowerCaseFormData.giro ||
-      !lowerCaseFormData.direccion ||
-      !lowerCaseFormData.ciudad ||
-      !lowerCaseFormData.comuna
+      !lowerCaseFormData.CODIGO_CLIENTE ||
+      !lowerCaseFormData.NOMBRE_RAZON_SOCIAL ||
+      !lowerCaseFormData.RUT ||
+      !lowerCaseFormData.GIRO ||
+      !lowerCaseFormData.DIRECCION ||
+      !lowerCaseFormData.CIUDAD ||
+      !lowerCaseFormData.COMUNA
     ) {
       setErrors({
         ...errors,
@@ -292,143 +176,232 @@ const ClienteFormModal = ({
     <Modal open={open} onClose={onClose}>
       <div className="modal-content">
         <h2>
+          {" "}
           {editing
             ? "Formulario para editar Cliente"
-            : "Formulario para crear Cliente"}
-        </h2>
+            : "Formulario para crear Cliente"}{" "}
+        </h2>{" "}
         <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="form-group">
+          {" "}
+          {/* Contenedor principal para las secciones */}{" "}
+          <Grid container spacing={4}>
+            {" "}
+            {/* Datos del Cliente */}{" "}
+            <Grid item xs={12} sm={4}>
+              <h3> Datos del Cliente </h3>{" "}
               <TextField
                 label="Código Cliente"
+                name="CODIGO_CLIENTE"
                 value={formData.CODIGO_CLIENTE}
-                onChange={handleCodigoClienteChange} // Cambié el manejador de cambios
+                onChange={(e) => handleInputChange(e, "CODIGO_CLIENTE")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.CODIGO_CLIENTE ||
-                  (!formData.CODIGO_CLIENTE
-                    ? "El Código cliente es obligatorio."
-                    : " ")
+                  errors.CODIGO_CLIENTE || "El Código cliente es obligatorio."
                 }
                 error={!!errors.CODIGO_CLIENTE}
-              />
-
+              />{" "}
               <TextField
                 label="Razón Social"
+                name="NOMBRE_RAZON_SOCIAL"
                 value={formData.NOMBRE_RAZON_SOCIAL}
-                onChange={(e) => handleNameChange(e, "NOMBRE_RAZON_SOCIAL")} // Usamos handleNameChange aquí
+                onChange={(e) => handleInputChange(e, "NOMBRE_RAZON_SOCIAL")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
                   errors.NOMBRE_RAZON_SOCIAL ||
-                  (!formData.NOMBRE_RAZON_SOCIAL
-                    ? "La Razón Social es obligatoria."
-                    : " ")
+                  "La Razón Social es obligatoria."
                 }
                 error={!!errors.NOMBRE_RAZON_SOCIAL}
-              />
-
+              />{" "}
               <TextField
                 label="Nombre Fantasía"
+                name="NOMBRE_FANTASIA"
                 value={formData.NOMBRE_FANTASIA}
-                onChange={handleNombreFantasíaChange} // Usamos la función de validación aquí
-                fullWidth
-                margin="normal"
-                helperText={
-                  errors.NOMBRE_FANTASIA ||
-                  (!formData.NOMBRE_FANTASIA
-                    ? "El Nombre Fantasía es obligatorio."
-                    : " ")
-                }
-                error={!!errors.NOMBRE_FANTASIA}
-              />
-
-              <TextField
-                label="RUT"
-                value={formData.RUT}
-                onChange={handleRUTChange}
+                onChange={(e) => handleInputChange(e, "NOMBRE_FANTASIA")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.RUT ||
-                  "Por favor ingrese su RUT sin punto(.) y guión(-)"
+                  errors.NOMBRE_FANTASIA || "El Nombre Fantasía es obligatorio."
                 }
+                error={!!errors.NOMBRE_FANTASIA}
+              />{" "}
+              <TextField
+                label="RUT"
+                name="RUT"
+                value={formData.RUT}
+                onChange={(e) => handleInputChange(e, "RUT")}
+                fullWidth
+                margin="normal"
+                required
+                helperText={errors.RUT || "Por favor ingrese su RUT"}
                 error={!!errors.RUT}
-              />
+              />{" "}
               <TextField
                 label="Giro"
+                name="GIRO"
                 value={formData.GIRO}
-                onChange={handleGiroChange} // Usa el manejador de cambios aquí
+                onChange={(e) => handleInputChange(e, "GIRO")}
                 fullWidth
                 margin="normal"
-                helperText={
-                  errors.GIRO ||
-                  (!formData.GIRO ? "El Giro es obligatorio." : " ")
-                }
-                error={!!errors.GIRO}
+                required
               />
-
               <TextField
                 label="Dirección"
+                name="DIRECCION"
                 value={formData.DIRECCION}
-                onChange={handleDireccionChange} // Usamos el nuevo manejador de cambios
+                onChange={(e) => handleInputChange(e, "DIRECCION")}
                 fullWidth
                 margin="normal"
-                helperText={
-                  errors.DIRECCION ||
-                  (!formData.DIRECCION ? "La Dirección es obligatoria." : " ")
-                }
-                error={!!errors.DIRECCION}
+                required
               />
-            </div>
-            <div className="form-group">
               <TextField
                 label="Ciudad"
+                name="CIUDAD"
                 value={formData.CIUDAD}
-                onChange={handleCiudadChange} // Usamos el manejador de cambios aquí
+                onChange={(e) => handleInputChange(e, "CIUDAD")}
                 fullWidth
                 margin="normal"
-                helperText={
-                  errors.CIUDAD ||
-                  (!formData.CIUDAD ? "La Ciudad es obligatoria." : " ")
-                }
-                error={!!errors.CIUDAD}
+                required
               />
-
               <TextField
                 label="Comuna"
+                name="COMUNA"
                 value={formData.COMUNA}
-                onChange={handleComunaChange} // Usamos el manejador de cambios aquí
+                onChange={(e) => handleInputChange(e, "COMUNA")}
                 fullWidth
                 margin="normal"
-                helperText={
-                  errors.COMUNA ||
-                  (!formData.COMUNA ? "La Comuna es obligatoria." : " ")
-                }
-                error={!!errors.COMUNA}
+                required
               />
-            </div>
-          </div>
-          <div className="form-actions">
-            <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
-            <Button onClick={onClose}>Cancelar</Button>
-          </div>
+            </Grid>{" "}
+            {/ * Contacto Comercial * /}{" "}
+            <Grid item xs={12} sm={4}>
+              <h3> Contacto Comercial </h3>{" "}
+              <TextField
+                label="Contacto Comercial"
+                name="CONTACTO_COMERCIAL"
+                value={formData.CONTACTO_COMERCIAL.CONTACTO_COMERCIAL}
+                onChange={(e) =>
+                  handleInputChange(
+                    e,
+                    "CONTACTO_COMERCIAL",
+                    "CONTACTO_COMERCIAL"
+                  )
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                label="Correo Electrónico"
+                name="CORREO_ELECTRONICO"
+                value={formData.CONTACTO_COMERCIAL.CORREO_ELECTRONICO}
+                onChange={(e) =>
+                  handleInputChange(
+                    e,
+                    "CORREO_ELECTRONICO",
+                    "CONTACTO_COMERCIAL"
+                  )
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                label="Teléfono Fijo"
+                name="TELEFONO_FIJO"
+                value={formData.CONTACTO_COMERCIAL.TELEFONO_FIJO}
+                onChange={(e) =>
+                  handleInputChange(e, "TELEFONO_FIJO", "CONTACTO_COMERCIAL")
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                label="Teléfono Celular"
+                name="TELEFONO_CELULAR"
+                value={formData.CONTACTO_COMERCIAL.TELEFONO_CELULAR}
+                onChange={(e) =>
+                  handleInputChange(e, "TELEFONO_CELULAR", "CONTACTO_COMERCIAL")
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+            </Grid>{" "}
+            {/ * Información de Pago * /}{" "}
+            <Grid item xs={12} sm={4}>
+              <h3> Información de Pago </h3>{" "}
+              <TextField
+                label="Nombre Responsable"
+                name="NOMBRE_RESPONSABLE"
+                value={formData.INFORMACION_DE_PAGO.NOMBRE_RESPONSABLE}
+                onChange={(e) =>
+                  handleInputChange(
+                    e,
+                    "NOMBRE_RESPONSABLE",
+                    "INFORMACION_DE_PAGO"
+                  )
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                label="Correo Electrónico"
+                name="CORREO_ELECTRONICO"
+                value={formData.INFORMACION_DE_PAGO.CORREO_ELECTRONICO}
+                onChange={(e) =>
+                  handleInputChange(
+                    e,
+                    "CORREO_ELECTRONICO",
+                    "INFORMACION_DE_PAGO"
+                  )
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                label="Teléfono Responsable"
+                name="TELEFONO_RESPONSABLE"
+                value={formData.INFORMACION_DE_PAGO.TELEFONO_RESPONSABLE}
+                onChange={(e) =>
+                  handleInputChange(
+                    e,
+                    "TELEFONO_RESPONSABLE",
+                    "INFORMACION_DE_PAGO"
+                  )
+                }
+                fullWidth
+                margin="normal"
+                required
+              />
+            </Grid>{" "}
+          </Grid>{" "}
+          {/* Botón de Envío */}{" "}
+          <Button type="submit" variant="contained" color="primary">
+            {" "}
+            {editing ? "Editar Cliente" : "Crear Cliente"}{" "}
+          </Button>{" "}
+        </form>{" "}
+        {errors.GENERALES && (
           <Snackbar
             open={openSnackbar}
             autoHideDuration={6000}
             onClose={handleSnackbarClose}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            <Alert severity="error" onClose={handleSnackbarClose}>
-              La contraseña debe tener al menos 8 caracteres.
-            </Alert>
+            <Alert onClose={handleSnackbarClose} severity="error">
+              {" "}
+              {errors.GENERALES}{" "}
+            </Alert>{" "}
           </Snackbar>
-        </form>
-      </div>
+        )}{" "}
+      </div>{" "}
     </Modal>
   );
 };

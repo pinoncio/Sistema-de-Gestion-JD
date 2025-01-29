@@ -1,9 +1,9 @@
-import api from './apiService';  
+import api from "./apiService";
 
 // Obtener todos los clientes
 export const getClientes = async () => {
   try {
-    const response = await api.get('/clientes/list');
+    const response = await api.get("/clientes/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener los clientes:", error);
@@ -25,10 +25,31 @@ export const getCliente = async (id_cliente) => {
 // Crear un nuevo cliente
 export const createCliente = async (clienteData) => {
   try {
-    const response = await api.post('/clientes/', clienteData);
+    const response = await api.post("/clientes/", {
+      CODIGO_CLIENTE: clienteData.CODIGO_CLIENTE,
+      NOMBRE_RAZON_SOCIAL: clienteData.NOMBRE_RAZON_SOCIAL,
+      NOMBRE_FANTASIA: clienteData.NOMBRE_FANTASIA,
+      RUT: clienteData.RUT,
+      GIRO: clienteData.GIRO,
+      DIRECCION: clienteData.DIRECCION,
+      CIUDAD: clienteData.CIUDAD,
+      COMUNA: clienteData.COMUNA,
+      CONTACTO_COMERCIAL: clienteData.CONTACTO_COMERCIAL || null, // Verifica si hay contacto comercial
+      INFORMACION_DE_PAGO: clienteData.INFORMACION_DE_PAGO || null, // Verifica si hay info de pago
+    });
+
     return response.data;
   } catch (error) {
-    console.error("Error al crear el cliente:", error);
+    if (error.response) {
+      console.error("Error en la respuesta del backend:", error.response.data);
+    } else if (error.request) {
+      console.error("No se recibió respuesta del servidor:", error.request);
+    } else {
+      console.error(
+        "Error en la configuración de la solicitud:",
+        error.message
+      );
+    }
     throw error;
   }
 };
@@ -58,7 +79,9 @@ export const deleteCliente = async (id_cliente) => {
 // Activar o desactivar un cliente
 export const toggleClienteStatus = async (id_cliente, trigger) => {
   try {
-    const response = await api.put(`/clientes/activar/${id_cliente}`, { trigger });
+    const response = await api.put(`/clientes/activar/${id_cliente}`, {
+      trigger,
+    });
     return response.data;
   } catch (error) {
     console.error("Error al activar/desactivar el cliente:", error);
