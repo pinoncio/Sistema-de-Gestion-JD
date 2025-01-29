@@ -20,9 +20,6 @@ const ClienteFormModal = ({
     DIRECCION: "",
     CIUDAD: "",
     COMUNA: "",
-    TELEFONO_FIJO: "",
-    TELEFONO_CELULAR: "",
-    CORREO_ELECTRONICO: "",
   });
 
   const [errors, setErrors] = useState({
@@ -42,9 +39,6 @@ const ClienteFormModal = ({
         DIRECCION: clienteData.DIRECCION || "",
         CIUDAD: clienteData.CIUDAD || "",
         COMUNA: clienteData.COMUNA || "",
-        TELEFONO_FIJO: clienteData.TELEFONO_FIJO || "",
-        TELEFONO_CELULAR: clienteData.TELEFONO_CELULAR || "",
-        CORREO_ELECTRONICO: clienteData.CORREO_ELECTRONICO || "",
       });
     } else {
       setFormData({
@@ -56,9 +50,6 @@ const ClienteFormModal = ({
         DIRECCION: "",
         CIUDAD: "",
         COMUNA: "",
-        TELEFONO_FIJO: "",
-        TELEFONO_CELULAR: "",
-        CORREO_ELECTRONICO: "",
       });
     }
   }, [clienteData]);
@@ -125,26 +116,7 @@ const ClienteFormModal = ({
     setFormData({ ...formData, RUT: formattedRUT });
   };
 
-  const validateEmail = (email) => {
-    // Permite solo letras, números, @ y . en el correo electrónico
-    const regex = /^[a-zA-Z0-9@.]+$/;
-    return regex.test(email);
-  };
 
-  const handleCorreoElectronicoChange = (e) => {
-    const { value } = e.target;
-
-    if (validateEmail(value) || value === "") {
-      setFormData({ ...formData, CORREO_ELECTRONICO: value });
-      setErrors({ ...errors, CORREO_ELECTRONICO: "" });
-    } else {
-      setErrors({
-        ...errors,
-        CORREO_ELECTRONICO:
-          "El correo electrónico solo puede contener letras, números y @.",
-      });
-    }
-  };
 
   // Función para validar el campo CODIGO_CLIENTE
   const validateCodigoCliente = (value) => {
@@ -265,54 +237,6 @@ const ClienteFormModal = ({
     }
   };
 
-  const validateTelefono = (value) => {
-    // Permite solo números, el signo "+" y espacios
-    const regex = /^[0-9+\s]*$/;
-    return regex.test(value);
-  };
-
-  const handleTelefonoFijoChange = (e) => {
-    let value = e.target.value;
-
-    // Eliminar caracteres no permitidos (solo números, espacios y el signo +)
-    const cleanedValue = value.replace(/[^0-9+\s]/g, "");
-
-    // Formatear el número a +56 9 75409843
-    let formattedValue = cleanedValue.replace(
-      /^(\+56)(\d{1})(\d{0,8})(\d{0,4})$/,
-      "$1 $2 $3$4"
-    );
-
-    // Actualizar el valor del teléfono fijo con el formato
-    setFormData({ ...formData, TELEFONO_FIJO: formattedValue });
-
-    // Validación opcional de formato aquí si deseas
-    if (!validateTelefono(cleanedValue)) {
-      setErrors({ ...errors, TELEFONO_FIJO: "" });
-    }
-  };
-
-  const handleTelefonoCelularChange = (e) => {
-    let value = e.target.value;
-
-    // Eliminar caracteres no permitidos (solo números, espacios y el signo +)
-    const cleanedValue = value.replace(/[^0-9+\s]/g, "");
-
-    // Formatear el número a +56 9 75409843
-    let formattedValue = cleanedValue.replace(
-      /^(\+56)(\d{1})(\d{0,8})(\d{0,4})$/,
-      "$1 $2 $3$4"
-    );
-
-    // Actualizar el valor del teléfono celular con el formato
-    setFormData({ ...formData, TELEFONO_CELULAR: formattedValue });
-
-    // Validación opcional de formato aquí si deseas
-    if (!validateTelefono(cleanedValue)) {
-      setErrors({ ...errors, TELEFONO_CELULAR: "" });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -323,38 +247,7 @@ const ClienteFormModal = ({
     let hasError = false;
 
     // Validar teléfono fijo solo al enviar el formulario
-    if (
-      formData.TELEFONO_FIJO.replace(/\s/g, "").replace(/\+/g, "").length !== 11
-    ) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        TELEFONO_FIJO:
-          "El teléfono fijo debe tener 11 dígitos (incluyendo el código de país y área).",
-      }));
-      hasError = true;
-    }
 
-    // Validar teléfono celular solo al enviar el formulario
-    if (
-      formData.TELEFONO_CELULAR.replace(/\s/g, "").replace(/\+/g, "").length !==
-      11
-    ) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        TELEFONO_CELULAR:
-          "El teléfono celular debe tener 11 dígitos (incluyendo el código de país y área).",
-      }));
-      hasError = true;
-    }
-
-    // Validar correo electrónico
-    if (!validateEmail(lowerCaseFormData.correo_electronico)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        CORREO_ELECTRONICO: "El correo electrónico no es válido.",
-      }));
-      hasError = true;
-    }
 
     // Verificar si los campos obligatorios están llenos
     if (
@@ -364,9 +257,7 @@ const ClienteFormModal = ({
       !lowerCaseFormData.giro ||
       !lowerCaseFormData.direccion ||
       !lowerCaseFormData.ciudad ||
-      !lowerCaseFormData.comuna ||
-      !lowerCaseFormData.telefono_fijo ||
-      !lowerCaseFormData.telefono_celular
+      !lowerCaseFormData.comuna
     ) {
       setErrors({
         ...errors,
@@ -522,54 +413,6 @@ const ClienteFormModal = ({
                   (!formData.COMUNA ? "La Comuna es obligatoria." : " ")
                 }
                 error={!!errors.COMUNA}
-              />
-
-              <TextField
-                label="Teléfono Fijo"
-                value={formData.TELEFONO_FIJO}
-                onChange={handleTelefonoFijoChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.TELEFONO_FIJO ||
-                  (!formData.TELEFONO_FIJO
-                    ? "El Teléfono Fijo es obligatorio."
-                    : " ")
-                }
-                error={!!errors.TELEFONO_FIJO}
-              />
-
-              <TextField
-                label="Teléfono Celular"
-                value={formData.TELEFONO_CELULAR}
-                onChange={handleTelefonoCelularChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.TELEFONO_CELULAR ||
-                  (!formData.TELEFONO_CELULAR
-                    ? "El Teléfono Celular es obligatorio."
-                    : " ")
-                }
-                error={!!errors.TELEFONO_CELULAR}
-              />
-
-              <TextField
-                label="Correo Electrónico"
-                value={formData.CORREO_ELECTRONICO}
-                onChange={handleCorreoElectronicoChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.CORREO_ELECTRONICO ||
-                  (!formData.CORREO_ELECTRONICO
-                    ? "El Correo Electrónico es obligatorio."
-                    : " ")
-                }
-                error={!!errors.CORREO_ELECTRONICO}
               />
             </div>
           </div>

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getCliente } from "../Services/clienteService";
 import { getMetodosPago } from "../Services/metodoPagoService";
 import { addMetodoPagoCliente } from "../Services/ClientePagoService";
+import { getContactoComercial } from "../Services/contactoService";
+import { getInformacionDePago } from "../Services/informacionService";
 import {
   Card,
   CardContent,
@@ -18,7 +20,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import AdminLayout from "../Components/Layout/AdminLayout";
+import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/UserProfilePage.css";
 
 const ClientProfilePage = () => {
@@ -31,6 +33,8 @@ const ClientProfilePage = () => {
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [informacionPago, setInformacionPago] = useState(null);
+  const [contactoComercial, setContactoComercial] = useState(null);
   const navigate = useNavigate();
 
   const fetchClient = useCallback(async () => {
@@ -41,9 +45,19 @@ const ClientProfilePage = () => {
       // Llamar a los métodos de pago después de obtener el cliente
       const metodosData = await getMetodosPago();
       setMetodosPago(metodosData);
+
+      // Obtener la información de pago
+      const informacionPagoData = await getInformacionDePago(id_cliente);
+      setInformacionPago(informacionPagoData); // Usar un nuevo estado para la información de pago
+
+      // Obtener el contacto comercial
+      const contactoData = await getContactoComercial(data.ID_CLIENTE); // Suponiendo que 'ID_CONTACTO_COMERCIAL' es la propiedad del cliente
+      setContactoComercial(contactoData); // Usar un nuevo estado para el contacto comercial
     } catch (error) {
-      setError("Error al obtener el cliente o los métodos de pago.");
-      console.error("Error al obtener el cliente", error);
+      setError(
+        "Error al obtener el cliente, los métodos de pago, la información de pago o el contacto comercial."
+      );
+      console.error("Error al obtener datos", error);
     } finally {
       setLoading(false);
     }
@@ -145,14 +159,14 @@ const ClientProfilePage = () => {
   }
 
   return (
-    <AdminLayout>
+    <UserLayout>
       <div className="profile-container">
         <Card className="profile-card">
           <CardContent>
             <Typography variant="h5" className="profile-title">
               Detalles del Cliente
             </Typography>
-            <Divider sx={{ marginBottom: 2 }} />
+            <Divider sx={{ marginBottom: 3 }} />
             <Box
               component="form"
               sx={{
@@ -218,29 +232,122 @@ const ClientProfilePage = () => {
                 readOnly
               />
               <TextField
-                label="Teléfono Fijo"
-                value={client.TELEFONO_FIJO || ""}
-                variant="outlined"
-                fullWidth
-                readOnly
-              />
-              <TextField
-                label="Teléfono Celular"
-                value={client.TELEFONO_CELULAR || ""}
-                variant="outlined"
-                fullWidth
-                readOnly
-              />
-              <TextField
-                label="Correo Electrónico"
-                value={client.CORREO_ELECTRONICO || ""}
+                label="Cliente Vigente"
+                value={client.CLIENTE_VIGENTE ? "Sí" : "No"}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
             </Box>
+            <Divider sx={{ marginBottom: 2 }} />
+            {/* Mostrar la información del cliente aquí */}
+            <Box
+              component="form"
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 2,
+                marginBottom: 4,
+              }}
+            >
+              {/* Información de Pago */}
+              {informacionPago && (
+                <Box
+                  sx={{
+                    padding: 3,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                    Información de Pago
+                  </Typography>
+                  <Divider sx={{ marginBottom: 2 }} />
+                  <TextField
+                    label="Nombre Responsable"
+                    value={
+                      informacionPago.NOMBRE_RESPONSABLE || "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label="Correo Electrónico"
+                    value={
+                      informacionPago.CORREO_ELECTRONICO || "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label="Teléfono Responsable"
+                    value={
+                      informacionPago.TELEFONO_RESPONSABLE || "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                  />
+                </Box>
+              )}
+
+              {/* Contacto Comercial */}
+              {contactoComercial && (
+                <Box
+                  sx={{
+                    padding: 3,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                    Contacto Comercial
+                  </Typography>
+                  <Divider sx={{ marginBottom: 2 }} />
+                  <TextField
+                    label="Contacto Comercial"
+                    value={
+                      contactoComercial.CONTACTO_COMERCIAL || "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label="Correo Electrónico Comercial"
+                    value={
+                      contactoComercial.CORREO_ELECTRONICO_COMERCIAL ||
+                      "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label="Teléfono Fijo"
+                    value={contactoComercial.TELEFONO_FIJO || "No disponible"}
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label="Teléfono Celular"
+                    value={
+                      contactoComercial.TELEFONO_CELULAR || "No disponible"
+                    }
+                    variant="outlined"
+                    fullWidth
+                    readOnly
+                  />
+                </Box>
+              )}
+            </Box>
+
             <Typography variant="h6" sx={{ marginTop: 2 }}>
-              Métodos de Pago
+              Formas de Pago
             </Typography>
             <Divider sx={{ marginBottom: 3 }} />
             <Box
@@ -262,7 +369,7 @@ const ClientProfilePage = () => {
                     }}
                   >
                     <TextField
-                      label="Método de Pago"
+                      label="Formas de Pago"
                       value={metodo.metodoPago.NOMBRE_METODO}
                       variant="outlined"
                       fullWidth
@@ -281,17 +388,17 @@ const ClientProfilePage = () => {
                 ))
               ) : (
                 <Typography variant="body1">
-                  No hay métodos de pago registrados.
+                  No hay Formas de pago registrados.
                 </Typography>
               )}
             </Box>
 
             <Typography variant="h6" sx={{ marginTop: 3 }}>
-              Métodos de Pago
+              Formas de Pago
             </Typography>
             <Divider sx={{ marginBottom: 2 }} />
             <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <InputLabel id="select-metodo-label">Método de Pago</InputLabel>
+              <InputLabel id="select-metodo-label">Formas de Pago</InputLabel>
               <Select
                 labelId="select-metodo-label"
                 value={selectedMetodoPago}
@@ -349,7 +456,7 @@ const ClientProfilePage = () => {
           style: snackbarStyle, // Aplica el color según el tipo de mensaje
         }}
       />
-    </AdminLayout>
+    </UserLayout>
   );
 };
 

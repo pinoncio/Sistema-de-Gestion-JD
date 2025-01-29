@@ -17,9 +17,6 @@ const Cliente = db.define(
     DIRECCION: { type: DataTypes.STRING },
     CIUDAD: { type: DataTypes.STRING },
     COMUNA: { type: DataTypes.STRING },
-    TELEFONO_FIJO: { type: DataTypes.STRING },
-    TELEFONO_CELULAR: { type: DataTypes.STRING },
-    CORREO_ELECTRONICO: { type: DataTypes.STRING, unique: true },
     CLIENTE_VIGENTE: { type: DataTypes.BOOLEAN, defaultValue: true },
   },
   {

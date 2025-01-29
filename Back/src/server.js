@@ -7,6 +7,8 @@ const roleRoutes = require("./routes/roleRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const clientePagoRoutes = require("./routes/clienteMetodoPagoRoute");
 const metodoPagoRoutes = require("./routes/metodoPagoRoute");
+const ContactoComercialRoutes = require("./routes/contactoComercialRoute");
+const InformacionDePagoRoutes = require("./routes/informacionPagoRoute");
 
 // Importar modelos
 const { Usuario } = require("./models/userModel");
@@ -14,6 +16,8 @@ const { Rol } = require("./models/roleModel");
 const { ClienteMetodoPago } = require("./models/clienteMetodoPagoModel");
 const { Cliente } = require("./models/clienteModel");
 const { MetodoPago } = require("./models/metodoPagoModel");
+const { ContactoComercial } = require("./models/contactoComercialModel");
+const { InformacionDePago } = require("./models/informacionPagoModel");
 
 class Server {
   constructor() {
@@ -36,6 +40,8 @@ class Server {
     this.app.use("/api/clientes", clienteRoutes);
     this.app.use("/api/pago", clientePagoRoutes);
     this.app.use("/api/metodo", metodoPagoRoutes);
+    this.app.use("/api/contacto", ContactoComercialRoutes);
+    this.app.use("/api/informacion", InformacionDePagoRoutes);
   }
 
   middlewares() {
@@ -50,6 +56,8 @@ class Server {
       await Cliente.sync({ alter: true });
       await ClienteMetodoPago.sync({ alter: true });
       await MetodoPago.sync({ alter: true });
+      await ContactoComercial.sync({ alter: true });
+      await InformacionDePago.sync({ alter: true });
       console.log("Base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(

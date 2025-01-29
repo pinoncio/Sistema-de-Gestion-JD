@@ -54,7 +54,7 @@ const ClienteTable = ({
     <Table>
       <TableHead>
         <TableRow>
-          {["Código", "Razón Social", "Nombre Fantasía", "RUT", "Giro", "Teléfono Fijo", " Telefono Celular",  "Email Cliente", "Estado Vigente", "Acciones"].map((header) => (
+          {["Código", "Razón Social", "Nombre Fantasía", "RUT", "Giro", "Estado Vigente", "Acciones"].map((header) => (
             <TableCell key={header}>
               <TableSortLabel
                 active={orderBy === header}
@@ -75,9 +75,6 @@ const ClienteTable = ({
             <TableCell>{cliente.NOMBRE_FANTASIA}</TableCell>
             <TableCell>{cliente.RUT}</TableCell>
             <TableCell>{cliente.GIRO}</TableCell>
-            <TableCell>{cliente.TELEFONO_FIJO}</TableCell>
-            <TableCell>{cliente.TELEFONO_CELULAR}</TableCell>
-            <TableCell>{cliente.CORREO_ELECTRONICO}</TableCell>
             <TableCell>
               <Switch
                 checked={cliente.CLIENTE_VIGENTE}

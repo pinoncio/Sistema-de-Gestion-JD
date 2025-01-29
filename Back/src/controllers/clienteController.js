@@ -82,9 +82,6 @@ const newCliente = async (req, res) => {
     direccion,
     ciudad,
     comuna,
-    telefono_fijo,
-    telefono_celular,
-    correo_electronico,
   } = req.body;
 
   try {
@@ -108,9 +105,6 @@ const newCliente = async (req, res) => {
       DIRECCION: direccion,
       CIUDAD: ciudad,
       COMUNA: comuna,
-      TELEFONO_FIJO: telefono_fijo,
-      TELEFONO_CELULAR: telefono_celular,
-      CORREO_ELECTRONICO: correo_electronico,
     });
 
     console.log("Cliente creado exitosamente:", cliente);
@@ -138,10 +132,7 @@ const updateCliente = async (req, res) => {
     giro,
     direccion,
     ciudad,
-    comuna,
-    telefono_fijo,
-    telefono_celular,
-    correo_electronico,
+    comuna
   } = req.body;
 
   const cliente = await Cliente.findOne({ where: { ID_CLIENTE: id_cliente } });
@@ -161,10 +152,7 @@ const updateCliente = async (req, res) => {
         GIRO: giro,
         DIRECCION: direccion,
         CIUDAD: ciudad,
-        COMUNA: comuna,
-        TELEFONO_FIJO: telefono_fijo,
-        TELEFONO_CELULAR: telefono_celular,
-        CORREO_ELECTRONICO: correo_electronico,
+        COMUNA: comuna
       },
       { where: { ID_CLIENTE: id_cliente } }
     );
