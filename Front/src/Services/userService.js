@@ -1,4 +1,4 @@
-import api from './api';  // Importa la configuración de axios
+import api from './apiService';  // Importa la configuración de axios
 
 // Obtener todos los usuarios
 export const getUsuarios = async () => {

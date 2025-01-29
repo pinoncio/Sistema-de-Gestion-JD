@@ -1,4 +1,4 @@
-import api from "./api"; // Importamos la configuración de la API
+import api from "./apiService"; // Importamos la configuración de la API
 
 const loginUser = async (rut, contrasenia) => {
   try {

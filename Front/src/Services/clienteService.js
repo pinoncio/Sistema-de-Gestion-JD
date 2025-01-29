@@ -1,4 +1,4 @@
-import api from './api';  
+import api from './apiService';  
 
 // Obtener todos los clientes
 export const getClientes = async () => {

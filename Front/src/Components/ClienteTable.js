@@ -85,7 +85,7 @@ const ClienteTable = ({
               />
             </TableCell>
             <TableCell>
-            <Link to={`/perfil/${cliente.ID_CLIENTE}`}>
+            <Link to={`/${cliente.ID_CLIENTE}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
