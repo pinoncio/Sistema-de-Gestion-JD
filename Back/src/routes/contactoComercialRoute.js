@@ -18,9 +18,9 @@ router.get("/:id_cliente", getContactoComercial);
 router.post("/", newContactoComercial);
 
 // Ruta para actualizar un contacto comercial por su id_contacto_comercial
-router.put("/:id_contacto_comercial", updateContactoComercial);
+router.put("/:id_cliente", updateContactoComercial);
 
 // Ruta para eliminar un contacto comercial por su id_contacto_comercial
-router.delete("/:id_contacto_comercial", deleteContactoComercial);
+router.delete("/:id_cliente", deleteContactoComercial);
 
 module.exports = router;

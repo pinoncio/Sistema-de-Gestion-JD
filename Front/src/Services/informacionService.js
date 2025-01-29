@@ -34,9 +34,9 @@ export const addInformacionDePago = async (informacionData) => {
 };
 
 // Actualizar una información de pago
-export const updateInformacionDePago = async (id_informacion, informacionData) => {
+export const updateInformacionDePago = async (id_cliente, informacionData) => {
   try {
-    const response = await api.put(`/informacion/${id_informacion}`, informacionData);
+    const response = await api.put(`/informacion/${id_cliente}`, informacionData);
     return response.data;
   } catch (error) {
     console.error("Error al actualizar la información de pago:", error);
@@ -45,9 +45,9 @@ export const updateInformacionDePago = async (id_informacion, informacionData) =
 };
 
 // Eliminar una información de pago
-export const deleteInformacionDePago = async (id_informacion) => {
+export const deleteInformacionDePago = async (id_cliente) => {
   try {
-    const response = await api.delete(`/informacion/${id_informacion}`);
+    const response = await api.delete(`/informacion/${id_cliente}`);
     return response.data;
   } catch (error) {
     console.error("Error al eliminar la información de pago:", error);

@@ -27,7 +27,7 @@ const getContactosComerciales = async (req, res) => {
 
 // Obtener un contacto comercial por id
 const getContactoComercial = async (req, res) => {
-  const { id_cliente } = req.params; // Usamos id_cliente en lugar de id_contacto_comercial
+  const { id_cliente } = req.params;
   try {
     const contacto = await ContactoComercial.findOne({
       where: { ID_CLIENTE: id_cliente }, 
@@ -97,7 +97,7 @@ const newContactoComercial = async (req, res) => {
 
 // Actualizar un contacto comercial
 const updateContactoComercial = async (req, res) => {
-  const { id_contacto_comercial } = req.params;
+  const { id_cliente } = req.params;
   const {
     CONTACTO_COMERCIAL,
     CORREO_ELECTRONICO_COMERCIAL,
@@ -106,12 +106,12 @@ const updateContactoComercial = async (req, res) => {
   } = req.body;
 
   const contacto = await ContactoComercial.findOne({
-    where: { ID_CONTACTO_COMERCIAL: id_contacto_comercial },
+    where: { ID_CLIENTE: id_cliente},
   });
 
   if (!contacto) {
     return res.status(404).json({
-      msg: "No existe un contacto comercial con id: " + id_contacto_comercial,
+      msg: "No existe un contacto comercial con id: " + id_cliente,
     });
   }
 
@@ -124,7 +124,7 @@ const updateContactoComercial = async (req, res) => {
         TELEFONO_FIJO,
         TELEFONO_CELULAR,
       },
-      { where: { ID_CONTACTO_COMERCIAL: id_contacto_comercial } }
+      { where: { ID_CLIENTE: id_cliente } }
     );
 
     return res.json({
@@ -141,21 +141,21 @@ const updateContactoComercial = async (req, res) => {
 
 // Eliminar un contacto comercial
 const deleteContactoComercial = async (req, res) => {
-  const { id_contacto_comercial } = req.params;
+  const { id_contacto } = req.params;
 
   try {
     const result = await ContactoComercial.destroy({
-      where: { ID_CONTACTO_COMERCIAL: id_contacto_comercial },
+      where: { ID_CONTACTO: id_contacto },
     });
 
     if (result === 1) {
       console.log(
-        `Contacto comercial con ID ${id_contacto_comercial} eliminado correctamente.`
+        `Contacto comercial con ID ${id_contacto} eliminado correctamente.`
       );
       return res.json({ msg: "Contacto comercial eliminado correctamente" });
     } else {
       console.log(
-        `No se encontró ningún contacto comercial con ID ${id_contacto_comercial} para eliminar.`
+        `No se encontró ningún contacto comercial con ID ${id_contacto} para eliminar.`
       );
       return res
         .status(404)
@@ -165,7 +165,7 @@ const deleteContactoComercial = async (req, res) => {
     }
   } catch (error) {
     console.error(
-      `Error al eliminar el contacto comercial con ID ${id_contacto_comercial}:`,
+      `Error al eliminar el contacto comercial con ID ${id_contacto}:`,
       error
     );
     return res.status(500).json({

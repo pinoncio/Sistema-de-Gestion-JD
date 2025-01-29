@@ -35,12 +35,12 @@ export const addContactoComercial = async (contactoData) => {
 
 // Actualizar un contacto comercial
 export const updateContactoComercial = async (
-  id_contacto_comercial,
+  id_cliente,
   contactoData
 ) => {
   try {
     const response = await api.put(
-      `/contacto/${id_contacto_comercial}`,
+      `/contacto/${id_cliente}`,
       contactoData
     );
     return response.data;
@@ -51,9 +51,9 @@ export const updateContactoComercial = async (
 };
 
 // Eliminar un contacto comercial
-export const deleteContactoComercial = async (id_contacto_comercial) => {
+export const deleteContactoComercial = async (id_cliente) => {
   try {
-    const response = await api.delete(`/contacto/${id_contacto_comercial}`);
+    const response = await api.delete(`/contacto/${id_cliente}`);
     return response.data;
   } catch (error) {
     console.error("Error al eliminar el contacto comercial:", error);

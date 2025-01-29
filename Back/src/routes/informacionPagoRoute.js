@@ -18,7 +18,7 @@ router.get("/:id_cliente", getInformacionDePago);
 router.post("/", newInformacionDePago);
 
 // Ruta para actualizar una información de pago por el id_cliente
-router.put("/:id_informacion", updateInformacionDePago);
+router.put("/:id_cliente", updateInformacionDePago);
 
 // Ruta para eliminar una información de pago por el id_cliente
 router.delete("/:id_informacion", deleteInformacionDePago);

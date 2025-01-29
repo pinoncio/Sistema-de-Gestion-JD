@@ -31,13 +31,6 @@ const getInformacionDePago = async (req, res) => {
   try {
     const informacion = await InformacionDePago.findOne({
       where: { ID_CLIENTE: id_cliente },
-      include: [
-        {
-          model: Cliente,
-          as: "cliente", // Alias de la relación ContactoComercial -> Cliente
-          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"], // Columnas específicas de Cliente
-        },
-      ],
     });
 
     if (!informacion) {
@@ -102,16 +95,16 @@ const newInformacionDePago = async (req, res) => {
 
 // Actualizar una informacion de pago
 const updateInformacionDePago = async (req, res) => {
-  const { id_informacion } = req.params;
+  const { id_cliente } = req.params;
   const { NOMBRE_RESPONSABLE, CORREO_ELECTRONICO, TELEFONO_RESPONSABLE } =
     req.body;
 
   const informacion = await InformacionDePago.findOne({
-    where: { ID_INFORMACION: id_informacion },
+    where: { ID_CLIENTE: id_cliente },
   });
   if (!informacion) {
     return res.status(404).json({
-      msg: "No existe una información de pago con id: " + id_informacion,
+      msg: "No existe una información de pago con id: " + id_cliente,
     });
   }
 
@@ -119,7 +112,7 @@ const updateInformacionDePago = async (req, res) => {
     // Actualizar la información de pago
     await InformacionDePago.update(
       { NOMBRE_RESPONSABLE, CORREO_ELECTRONICO, TELEFONO_RESPONSABLE },
-      { where: { ID_INFORMACION: id_informacion } }
+      { where: { ID_CLIENTE: id_cliente } }
     );
 
     return res.json({

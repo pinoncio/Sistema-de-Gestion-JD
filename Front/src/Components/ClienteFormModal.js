@@ -246,9 +246,6 @@ const ClienteFormModal = ({
 
     let hasError = false;
 
-    // Validar teléfono fijo solo al enviar el formulario
-
-
     // Verificar si los campos obligatorios están llenos
     if (
       !lowerCaseFormData.codigo_cliente ||
