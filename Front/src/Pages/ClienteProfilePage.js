@@ -295,7 +295,7 @@ const ClientProfilePage = () => {
               sx={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: 2,
+                gap: 3,
                 marginBottom: 4,
               }}
             >

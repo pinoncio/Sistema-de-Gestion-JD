@@ -24,7 +24,7 @@ const ClienteFormModal = ({
     COMUNA: "",
     CONTACTO_COMERCIAL: {
       CONTACTO_COMERCIAL: "",
-      CORREO_ELECTRONICO: "",
+      CORREO_ELECTRONICO_COMERCIAL: "",
       TELEFONO_FIJO: "",
       TELEFONO_CELULAR: "",
     },
@@ -54,7 +54,7 @@ const ClienteFormModal = ({
         COMUNA: clienteData.COMUNA || "",
         CONTACTO_COMERCIAL: clienteData.CONTACTO_COMERCIAL || {
           CONTACTO_COMERCIAL: "",
-          CORREO_ELECTRONICO: "",
+          CORREO_ELECTRONICO_COMERCIAL: "",
           TELEFONO_FIJO: "",
           TELEFONO_CELULAR: "",
         },
@@ -149,6 +149,11 @@ const ClienteFormModal = ({
   const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value); // Letras, números, puntos, # y espacios
   const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
   const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+  const validateContactoComercial = (value) =>
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateCorreo = (value) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+  const validateTelefono = (value) => /^[0-9]{9}$/.test(value);
 
   const handleCodigoClienteChange = (e) => {
     const { value } = e.target;
@@ -230,6 +235,105 @@ const ClienteFormModal = ({
     } else {
       setErrors({ ...errors, COMUNA: "Solo se permiten letras y espacios." });
     }
+  };
+
+  const handleContactoChange = (e) => {
+    const { value } = e.target;
+    if (validateContactoComercial(value) || value === "") {
+      setFormData({
+        ...formData,
+        CONTACTO_COMERCIAL: {
+          ...formData.CONTACTO_COMERCIAL,
+          CONTACTO_COMERCIAL: value,
+        },
+      });
+      setErrors({ ...errors, CONTACTO_COMERCIAL: "" });
+    } else {
+      setErrors({
+        ...errors,
+        CONTACTO_COMERCIAL: "Solo se permiten letras y espacios.",
+      });
+    }
+  };
+
+  const handleCorreoChange = (e) => {
+    const { value } = e.target;
+    const isValid = validateCorreo(value) || value === "";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      CONTACTO_COMERCIAL: {
+        ...prevData.CONTACTO_COMERCIAL,
+        CORREO_ELECTRONICO_COMERCIAL: value,
+      },
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      CORREO_ELECTRONICO_COMERCIAL: isValid
+        ? ""
+        : "Por favor ingresa un correo electrónico válido.",
+    }));
+  };
+
+  const formatTelefono = (value) => {
+    // Permitir solo números y limitar a 9 caracteres
+    let numericValue = value.replace(/\D/g, "").slice(0, 9);
+
+    // Aplicar el formato "X XXXXXXXX" si tiene al menos un dígito
+    if (numericValue.length > 1) {
+      return `${numericValue[0]} ${numericValue.slice(1)}`;
+    }
+
+    return numericValue;
+  };
+
+  const handleTelefonoFijoChange = (e) => {
+    let formattedValue = formatTelefono(e.target.value);
+
+    // Validar si el teléfono fijo empieza con "2" y tiene 9 dígitos
+    const isValid =
+      formattedValue.replace(/\s/g, "").length === 9 &&
+      formattedValue[0] === "2";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      CONTACTO_COMERCIAL: {
+        ...prevData.CONTACTO_COMERCIAL,
+        TELEFONO_FIJO: formattedValue,
+      },
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      TELEFONO_FIJO: isValid
+        ? ""
+        : "El teléfono fijo debe empezar con '2' y contener exactamente 9 dígitos numéricos.",
+    }));
+  };
+
+  const handleTelefonoCelularChange = (e) => {
+    let formattedValue = formatTelefono(e.target.value);
+
+    // Validar si el teléfono celular empieza con "9" y tiene 9 dígitos
+    const isValid =
+      formattedValue.replace(/\s/g, "").length === 9 &&
+      formattedValue[0] === "9";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      CONTACTO_COMERCIAL: {
+        ...prevData.CONTACTO_COMERCIAL,
+        TELEFONO_CELULAR: formattedValue,
+      },
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      TELEFONO_CELULAR: isValid
+        ? ""
+        : "El celular debe empezar con '9' y contener exactamente 9 dígitos numéricos.",
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -324,216 +428,213 @@ const ClienteFormModal = ({
         </h2>
         <form onSubmit={handleSubmit}>
           {/* Contenedor principal para las secciones */}
-          <Grid container spacing={3}>
+          <Grid container spacing={0}>
             {/* Datos del Cliente */}
-            <Grid item xs={12} sm={4}>
-              <h3>Datos del Cliente</h3>
-              <TextField
-                label="Código Cliente"
-                name="CODIGO_CLIENTE"
-                value={formData.CODIGO_CLIENTE}
-                onChange={handleCodigoClienteChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.CODIGO_CLIENTE || "El Código cliente es obligatorio."
-                }
-                error={!!errors.CODIGO_CLIENTE}
-              />
-
-              <TextField
-                label="Razón Social"
-                name="NOMBRE_RAZON_SOCIAL"
-                value={formData.NOMBRE_RAZON_SOCIAL}
-                onChange={handleNombreRazonSocialChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.NOMBRE_RAZON_SOCIAL ||
-                  "La Razón Social es obligatoria."
-                }
-                error={!!errors.NOMBRE_RAZON_SOCIAL}
-              />
-
-              <TextField
-                label="Nombre Fantasía"
-                name="NOMBRE_FANTASIA"
-                value={formData.NOMBRE_FANTASIA}
-                onChange={handleNombreChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.NOMBRE_FANTASIA || "El Nombre Fantasía es obligatorio."
-                }
-                error={!!errors.NOMBRE_FANTASIA}
-              />
-              <TextField
-                label="RUT"
-                name="RUT"
-                value={formData.RUT}
-                onChange={handleRUTChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.RUT ||
-                  "Por favor ingrese su RUT sin punto(.) y guión(-)"
-                }
-                error={!!errors.RUT}
-              />
-              <TextField
-                label="Giro"
-                name="GIRO"
-                value={formData.GIRO}
-                onChange={handleGiroChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={errors.GIRO || "El Giro es obligatorio."}
-                error={!!errors.GIRO}
-              />
-
-              <TextField
-                label="Dirección"
-                name="DIRECCION"
-                value={formData.DIRECCION}
-                onChange={handleDireccionChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={errors.DIRECCION || "La Dirección es obligatoria."}
-                error={!!errors.DIRECCION}
-              />
-
-              <TextField
-                label="Ciudad"
-                name="CIUDAD"
-                value={formData.CIUDAD}
-                onChange={handleCiudadChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={errors.CIUDAD || "La Ciudad es obligatoria."}
-                error={!!errors.CIUDAD}
-              />
-
-              <TextField
-                label="Comuna"
-                name="COMUNA"
-                value={formData.COMUNA}
-                onChange={handleComunaChange}
-                fullWidth
-                margin="normal"
-                required
-                helperText={errors.COMUNA || "La Comuna es obligatoria."}
-                error={!!errors.COMUNA}
-              />
+            <Grid container item xs={12} spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Código Cliente"
+                  name="CODIGO_CLIENTE"
+                  value={formData.CODIGO_CLIENTE}
+                  onChange={handleCodigoClienteChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={
+                    errors.CODIGO_CLIENTE || "El Código cliente es obligatorio."
+                  }
+                  error={!!errors.CODIGO_CLIENTE}
+                />
+                <TextField
+                  label="Razón Social"
+                  name="NOMBRE_RAZON_SOCIAL"
+                  value={formData.NOMBRE_RAZON_SOCIAL}
+                  onChange={handleNombreRazonSocialChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={
+                    errors.NOMBRE_RAZON_SOCIAL ||
+                    "La Razón Social es obligatoria."
+                  }
+                  error={!!errors.NOMBRE_RAZON_SOCIAL}
+                />
+                <TextField
+                  label="Nombre Fantasía"
+                  name="NOMBRE_FANTASIA"
+                  value={formData.NOMBRE_FANTASIA}
+                  onChange={handleNombreChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={
+                    errors.NOMBRE_FANTASIA ||
+                    "El Nombre Fantasía es obligatorio."
+                  }
+                  error={!!errors.NOMBRE_FANTASIA}
+                />
+                <TextField
+                  label="RUT"
+                  name="RUT"
+                  value={formData.RUT}
+                  onChange={handleRUTChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={
+                    errors.RUT ||
+                    "Por favor ingrese su RUT sin punto(.) y guión(-)"
+                  }
+                  error={!!errors.RUT}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Giro"
+                  name="GIRO"
+                  value={formData.GIRO}
+                  onChange={handleGiroChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={errors.GIRO || "El Giro es obligatorio."}
+                  error={!!errors.GIRO}
+                />
+                <TextField
+                  label="Dirección"
+                  name="DIRECCION"
+                  value={formData.DIRECCION}
+                  onChange={handleDireccionChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={
+                    errors.DIRECCION || "La Dirección es obligatoria."
+                  }
+                  error={!!errors.DIRECCION}
+                />
+                <TextField
+                  label="Ciudad"
+                  name="CIUDAD"
+                  value={formData.CIUDAD}
+                  onChange={handleCiudadChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={errors.CIUDAD || "La Ciudad es obligatoria."}
+                  error={!!errors.CIUDAD}
+                />
+                <TextField
+                  label="Comuna"
+                  name="COMUNA"
+                  value={formData.COMUNA}
+                  onChange={handleComunaChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                  helperText={errors.COMUNA || "La Comuna es obligatoria."}
+                  error={!!errors.COMUNA}
+                />
+              </Grid>
             </Grid>
 
-            {/* Contacto Comercial */}
-            <Grid item xs={12} sm={4}>
-              <h3>Contacto Comercial</h3>
-              <TextField
-                label="Contacto Comercial"
-                name="CONTACTO_COMERCIAL"
-                value={formData.CONTACTO_COMERCIAL.CONTACTO_COMERCIAL}
-                onChange={(e) =>
-                  handleInputChange(
-                    e,
-                    "CONTACTO_COMERCIAL",
-                    "CONTACTO_COMERCIAL"
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Correo Electrónico"
-                name="CORREO_ELECTRONICO_COMERCIAL"
-                value={
-                  formData.CONTACTO_COMERCIAL?.CORREO_ELECTRONICO_COMERCIAL ||
-                  ""
-                }
-                onChange={(e) =>
-                  handleInputChange(
-                    e,
-                    "CORREO_ELECTRONICO_COMERCIAL",
-                    "CONTACTO_COMERCIAL"
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Teléfono Fijo"
-                name="TELEFONO_FIJO"
-                value={formData.CONTACTO_COMERCIAL.TELEFONO_FIJO}
-                onChange={(e) =>
-                  handleInputChange(e, "TELEFONO_FIJO", "CONTACTO_COMERCIAL")
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Teléfono Celular"
-                name="TELEFONO_CELULAR"
-                value={formData.CONTACTO_COMERCIAL.TELEFONO_CELULAR}
-                onChange={(e) =>
-                  handleInputChange(e, "TELEFONO_CELULAR", "CONTACTO_COMERCIAL")
-                }
-                fullWidth
-                margin="normal"
-              />
-            </Grid>
+            {/* Información de Pago y Contacto Comercial */}
+            <Grid container item xs={12} spacing={3}>
+              {/* Contacto Comercial */}
+              <Grid item xs={12} sm={6}>
+                <h3>Contacto Comercial</h3>
+                <TextField
+                  label="Contacto Comercial"
+                  name="CONTACTO_COMERCIAL"
+                  value={formData.CONTACTO_COMERCIAL.CONTACTO_COMERCIAL} // Asumiendo que CONTACTO_COMERCIAL es una cadena de texto
+                  onChange={handleContactoChange}
+                  fullWidth
+                  margin="normal"
+                  helperText={errors.CONTACTO_COMERCIAL} // Asegúrate de que errors tenga la clave CONTACTO_COMERCIAL
+                  error={!!errors.CONTACTO_COMERCIAL} // Compara con errors.CONTACTO_COMERCIAL
+                />
 
-            {/* Información de Pago */}
-            <Grid item xs={12} sm={4}>
-              <h3>Información de Pago</h3>
-              <TextField
-                label="Nombre Responsable"
-                name="NOMBRE_RESPONSABLE"
-                value={formData.INFORMACION_DE_PAGO.NOMBRE_RESPONSABLE}
-                onChange={(e) =>
-                  handleInputChange(
-                    e,
-                    "NOMBRE_RESPONSABLE",
-                    "INFORMACION_DE_PAGO"
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Correo Electrónico"
-                name="CORREO_ELECTRONICO"
-                value={formData.INFORMACION_DE_PAGO.CORREO_ELECTRONICO}
-                onChange={(e) =>
-                  handleInputChange(
-                    e,
-                    "CORREO_ELECTRONICO",
-                    "INFORMACION_DE_PAGO"
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Teléfono Responsable"
-                name="TELEFONO_RESPONSABLE"
-                value={formData.INFORMACION_DE_PAGO.TELEFONO_RESPONSABLE}
-                onChange={(e) =>
-                  handleInputChange(
-                    e,
-                    "TELEFONO_RESPONSABLE",
-                    "INFORMACION_DE_PAGO"
-                  )
-                }
-                fullWidth
-                margin="normal"
-              />
+                <TextField
+                  label="Correo Electrónico"
+                  name="CORREO_ELECTRONICO_COMERCIAL"
+                  value={
+                    formData.CONTACTO_COMERCIAL.CORREO_ELECTRONICO_COMERCIAL
+                  }
+                  onChange={handleCorreoChange}
+                  fullWidth
+                  margin="normal"
+                  helperText={errors.CORREO_ELECTRONICO_COMERCIAL}
+                  error={!!errors.CORREO_ELECTRONICO_COMERCIAL}
+                />
+
+                <TextField
+                  label="Teléfono Fijo"
+                  name="TELEFONO_FIJO"
+                  value={formData.CONTACTO_COMERCIAL.TELEFONO_FIJO}
+                  onChange={handleTelefonoFijoChange}
+                  fullWidth
+                  margin="normal"
+                  helperText={errors.TELEFONO_FIJO}
+                  error={!!errors.TELEFONO_FIJO}
+                />
+                <TextField
+                  label="Teléfono Celular"
+                  name="TELEFONO_CELULAR"
+                  value={formData.CONTACTO_COMERCIAL.TELEFONO_CELULAR}
+                  onChange={handleTelefonoCelularChange}
+                  fullWidth
+                  margin="normal"
+                  helperText={errors.TELEFONO_CELULAR}
+                  error={!!errors.TELEFONO_CELULAR}
+                />
+              </Grid>
+
+              {/* Información de Pago */}
+              <Grid item xs={12} sm={6}>
+                <h3>Información de Pago</h3>
+                <TextField
+                  label="Nombre Responsable"
+                  name="NOMBRE_RESPONSABLE"
+                  value={formData.INFORMACION_DE_PAGO.NOMBRE_RESPONSABLE}
+                  onChange={(e) =>
+                    handleInputChange(
+                      e,
+                      "NOMBRE_RESPONSABLE",
+                      "INFORMACION_DE_PAGO"
+                    )
+                  }
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Correo Electrónico"
+                  name="CORREO_ELECTRONICO"
+                  value={formData.INFORMACION_DE_PAGO.CORREO_ELECTRONICO}
+                  onChange={(e) =>
+                    handleInputChange(
+                      e,
+                      "CORREO_ELECTRONICO",
+                      "INFORMACION_DE_PAGO"
+                    )
+                  }
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Teléfono Responsable"
+                  name="TELEFONO_RESPONSABLE"
+                  value={formData.INFORMACION_DE_PAGO.TELEFONO_RESPONSABLE}
+                  onChange={(e) =>
+                    handleInputChange(
+                      e,
+                      "TELEFONO_RESPONSABLE",
+                      "INFORMACION_DE_PAGO"
+                    )
+                  }
+                  fullWidth
+                  margin="normal"
+                />
+              </Grid>
             </Grid>
           </Grid>
 
