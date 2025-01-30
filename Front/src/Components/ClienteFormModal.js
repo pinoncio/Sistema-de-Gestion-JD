@@ -68,12 +68,8 @@ const ClienteFormModal = ({
       // Llamar a las API para obtener información adicional
       const fetchAdditionalData = async () => {
         try {
-          const contacto = await getContactoComercial(
-            clienteData.ID_CLIENTE
-          );
-          const infoPago = await getInformacionDePago(
-            clienteData.ID_CLIENTE
-          );
+          const contacto = await getContactoComercial(clienteData.ID_CLIENTE);
+          const infoPago = await getInformacionDePago(clienteData.ID_CLIENTE);
 
           setFormData((prevData) => ({
             ...prevData,
@@ -457,7 +453,10 @@ const ClienteFormModal = ({
               <TextField
                 label="Correo Electrónico"
                 name="CORREO_ELECTRONICO_COMERCIAL"
-                value={formData.CONTACTO_COMERCIAL?.CORREO_ELECTRONICO_COMERCIAL || ""}
+                value={
+                  formData.CONTACTO_COMERCIAL?.CORREO_ELECTRONICO_COMERCIAL ||
+                  ""
+                }
                 onChange={(e) =>
                   handleInputChange(
                     e,
