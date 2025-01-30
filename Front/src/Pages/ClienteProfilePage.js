@@ -2,7 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCliente } from "../Services/clienteService";
 import { getMetodosPago } from "../Services/metodoPagoService";
-import { addMetodoPagoCliente } from "../Services/ClientePagoService";
+import {
+  addMetodoPagoCliente,
+  deleteMetodoPagoCliente,
+} from "../Services/ClientePagoService";
 import { getContactoComercial } from "../Services/contactoService";
 import { getInformacionDePago } from "../Services/informacionService";
 import {
@@ -19,7 +22,9 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/UserProfilePage.css";
 
@@ -147,6 +152,24 @@ const ClientProfilePage = () => {
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+  };
+
+  // Función para eliminar un método de pago
+  const handleDeleteMetodoPago = async (id_cliente, id_metodo_pago) => {
+    try {
+      // Llamar al servicio para eliminar el método de pago
+      await deleteMetodoPagoCliente(id_cliente, id_metodo_pago);
+
+      // Actualizar el cliente para reflejar el cambio
+      fetchClient();
+
+      setSuccessMessage("Método de pago eliminado correctamente.");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.log(error);
+      setError("Error al eliminar el método de pago.");
+      setOpenSnackbar(true);
+    }
   };
 
   if (loading) {
@@ -372,15 +395,15 @@ const ClientProfilePage = () => {
               )}
             </Box>
 
-            <Typography variant="h6" sx={{ marginTop: 2 }}>
-              Formas de Pago
+            <Typography variant="h6" sx={{ marginTop: 3 }}>
+              Métodos de Pago Registrados
             </Typography>
-            <Divider sx={{ marginBottom: 3 }} />
+            <Divider sx={{ marginBottom: 2 }} />
             <Box
               sx={{
                 display: "flex",
-                flexWrap: "wrap", // Permite que los elementos se ajusten a nuevas filas si es necesario
-                gap: 3, // Espacio entre los elementos
+                flexWrap: "wrap",
+                gap: 3,
               }}
             >
               {client.clienteMetodosPago &&
@@ -391,30 +414,41 @@ const ClientProfilePage = () => {
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      marginRight: 3, // Espacio entre los métodos de pago
+                      marginRight: 3,
                     }}
                   >
                     <TextField
-                      label="Formas de Pago"
+                      label="Método de Pago"
                       value={metodo.metodoPago.NOMBRE_METODO}
-                      variant="outlined"
                       fullWidth
-                      readOnly
-                      sx={{ marginBottom: 2, width: "100%" }}
+                      sx={{ marginBottom: 2 }}
                     />
                     <TextField
                       label="Referencia"
                       value={metodo.REFERENCIA}
-                      variant="outlined"
                       fullWidth
-                      readOnly
-                      sx={{ width: "250px" }}
+                      sx={{ marginBottom: 2 }}
                     />
+                    {/* Botones para editar y eliminar */}
+                    <Box sx={{ display: "flex", gap: 2 }}>
+                      <IconButton
+                        variant="outlined"
+                        color="error"
+                        onClick={() =>
+                          handleDeleteMetodoPago(
+                            client.ID_CLIENTE, // Pasando el id_cliente
+                            metodo.ID_METODO_PAGO // Pasando el id_metodo_pago
+                          )
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
                 ))
               ) : (
                 <Typography variant="body1">
-                  No hay Formas de pago registrados.
+                  No hay métodos de pago registrados.
                 </Typography>
               )}
             </Box>

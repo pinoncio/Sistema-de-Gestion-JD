@@ -13,17 +13,17 @@ router.get("/:id_cliente", obtenerMetodosPagoCliente);
 
 // Ruta para obtener un método de pago específico de un cliente por su id_metodo_pago
 router.get(
-  "/:id_cliente/metodospago/:id_metodo_pago",
+  "/:id_cliente/:id_metodo_pago",
   obtenerMetodoPagoClientePorId
 );
 
 // Ruta para agregar un nuevo método de pago a un cliente
-router.post("/metodospago", agregarMetodoPagoCliente);
+router.post("/", agregarMetodoPagoCliente);
 
 // Ruta para actualizar un método de pago de un cliente
-router.put("/:id_cliente/metodospago/:id_metodo_pago", actualizarMetodoPagoCliente);
+router.put("/:id_cliente/:id_metodo_pago", actualizarMetodoPagoCliente);
 
 // Ruta para eliminar un método de pago de un cliente
-router.delete("/:id_cliente/metodospago/:id_metodo_pago", eliminarMetodoPagoCliente);
+router.delete("/:id_cliente/:id_metodo_pago", eliminarMetodoPagoCliente);
 
 module.exports = router;

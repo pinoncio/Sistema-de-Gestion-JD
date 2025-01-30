@@ -3,7 +3,7 @@ import api from "./apiService";
 // Obtener todos los métodos de pago de un cliente
 export const getMetodosPagoCliente = async (id_cliente) => {
   try {
-    const response = await api.get(`/Pago/${id_cliente}`);
+    const response = await api.get(`/pago/${id_cliente}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener los métodos de pago del cliente:", error);
@@ -27,7 +27,7 @@ export const getMetodoPagoCliente = async (id_cliente, id_metodo_pago) => {
 // Agregar un nuevo método de pago a un cliente
 export const addMetodoPagoCliente = async (metodoPagoData) => {
   try {
-    const response = await api.post("/Pago/metodospago", metodoPagoData);
+    const response = await api.post("/pago/", metodoPagoData);
     return response.data;
   } catch (error) {
     console.error("Error al agregar el método de pago al cliente:", error);
@@ -39,12 +39,12 @@ export const addMetodoPagoCliente = async (metodoPagoData) => {
 export const updateMetodoPagoCliente = async (
   id_cliente,
   id_metodo_pago,
-  metodoPagoData
+  referencia
 ) => {
   try {
     const response = await api.put(
-      `/clienteMetodoPago/${id_cliente}/pago/${id_metodo_pago}`,
-      metodoPagoData
+      `/pago/${id_cliente}/${id_metodo_pago}`,
+      referencia
     );
     return response.data;
   } catch (error) {
@@ -56,13 +56,10 @@ export const updateMetodoPagoCliente = async (
 // Eliminar un método de pago de un cliente
 export const deleteMetodoPagoCliente = async (id_cliente, id_metodo_pago) => {
   try {
-    const response = await api.delete(
-      `/clienteMetodoPago/${id_cliente}/pago/${id_metodo_pago}`
-    );
+    const response = await api.delete(`/pago/${id_cliente}/${id_metodo_pago}`);
     return response.data;
   } catch (error) {
     console.error("Error al eliminar el método de pago del cliente:", error);
     throw error;
   }
 };
-
