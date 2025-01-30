@@ -40,7 +40,9 @@ const ClientePage = () => {
   const fetchClientes = async () => {
     try {
       const data = await getClientes();
-      const clientesOrdenados = data.sort((a, b) => a.ID_CLIENTE - b.ID_CLIENTE);
+      const clientesOrdenados = data.sort(
+        (a, b) => a.ID_CLIENTE - b.ID_CLIENTE
+      );
       setClientes(clientesOrdenados);
     } catch (error) {
       console.error("Error al obtener los clientes", error);
@@ -49,18 +51,21 @@ const ClientePage = () => {
 
   const filteredClientes = clientes.filter(
     (cliente) =>
-      cliente.NOMBRE_RAZON_SOCIAL.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cliente.NOMBRE_FANTASIA.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cliente.NOMBRE_RAZON_SOCIAL.toLowerCase().includes(
+        searchQuery.toLowerCase()
+      ) ||
+      cliente.NOMBRE_FANTASIA.toLowerCase().includes(
+        searchQuery.toLowerCase()
+      ) ||
       cliente.RUT.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCreateCliente = async (formData) => {
     try {
-      const response = await createCliente(formData);
+      const response = await createCliente(formData); // Aquí pasas formData
       console.log("Cliente creado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();
-
       setSnackbarMessage("Cliente creado exitosamente!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -75,7 +80,7 @@ const ClientePage = () => {
   const handleUpdateCliente = async (id, formData) => {
     try {
       const response = await updateCliente(id, formData);
-      console.log("Cliente actualizado exitosamente:", response.data );
+      console.log("Cliente actualizado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();
 
@@ -144,7 +149,9 @@ const ClientePage = () => {
       );
 
       setSnackbarMessage(
-        `El cliente ha sido ${nuevoEstado ? "activado" : "desactivado"} exitosamente.`
+        `El cliente ha sido ${
+          nuevoEstado ? "activado" : "desactivado"
+        } exitosamente.`
       );
       setSnackbarSeverity("success");
       setSnackbarOpen(true);

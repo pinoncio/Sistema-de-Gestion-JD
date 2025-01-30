@@ -3,7 +3,7 @@ const { MetodoPago } = require("../models/metodoPagoModel");
 const { ClienteMetodoPago } = require("../models/clienteMetodoPagoModel");
 const { ContactoComercial } = require("../models/contactoComercialModel");
 const { InformacionDePago } = require("../models/informacionPagoModel");
-const  sequelize  = require('../config/db');
+const sequelize = require("../config/db");
 
 // Obtener todos los clientes
 const getClientes = async (req, res) => {
@@ -25,7 +25,6 @@ const getClientes = async (req, res) => {
       ],
     });
 
-    console.log("Clientes obtenidos:", clientes);
     res.json(clientes);
   } catch (error) {
     console.error("Error al obtener la lista de clientes:", error);
@@ -75,6 +74,7 @@ const getCliente = async (req, res) => {
 };
 
 const newCliente = async (req, res) => {
+  console.log("Datos recibidos:", req.body); // Imprimir antes de extraer los datos
   const {
     codigo_cliente,
     nombre_razon_social,
@@ -84,8 +84,8 @@ const newCliente = async (req, res) => {
     direccion,
     ciudad,
     comuna,
-    contacto_comercial, // Datos de contacto comercial
-    informacion_de_pago, // Datos de información de pago
+    contacto_comercial,
+    informacion_de_pago,
   } = req.body;
 
   const transaction = await sequelize.transaction(); // Use sequelize to start the transaction
@@ -218,12 +218,8 @@ const deleteCliente = async (req, res) => {
     const result = await Cliente.destroy({ where: { ID_CLIENTE: id_cliente } });
 
     if (result === 1) {
-      console.log(`Cliente con ID ${id_cliente} eliminado correctamente.`);
       return res.json({ msg: "Cliente eliminado correctamente" });
     } else {
-      console.log(
-        `No se encontró ningún cliente con ID ${id_cliente} para eliminar.`
-      );
       return res
         .status(404)
         .json({ msg: "No se encontró ningún cliente para eliminar." });

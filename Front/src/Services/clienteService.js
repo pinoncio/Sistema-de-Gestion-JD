@@ -23,21 +23,9 @@ export const getCliente = async (id_cliente) => {
 };
 
 // Crear un nuevo cliente
-export const createCliente = async (clienteData) => {
+export const createCliente = async (formData) => {
   try {
-    const response = await api.post("/clientes/", {
-      CODIGO_CLIENTE: clienteData.CODIGO_CLIENTE,
-      NOMBRE_RAZON_SOCIAL: clienteData.NOMBRE_RAZON_SOCIAL,
-      NOMBRE_FANTASIA: clienteData.NOMBRE_FANTASIA,
-      RUT: clienteData.RUT,
-      GIRO: clienteData.GIRO,
-      DIRECCION: clienteData.DIRECCION,
-      CIUDAD: clienteData.CIUDAD,
-      COMUNA: clienteData.COMUNA,
-      CONTACTO_COMERCIAL: clienteData.CONTACTO_COMERCIAL || null, // Verifica si hay contacto comercial
-      INFORMACION_DE_PAGO: clienteData.INFORMACION_DE_PAGO || null, // Verifica si hay info de pago
-    });
-
+    const response = await api.post("/clientes/", formData); 
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -53,6 +41,7 @@ export const createCliente = async (clienteData) => {
     throw error;
   }
 };
+
 
 // Actualizar un cliente
 export const updateCliente = async (id_cliente, clienteData) => {

@@ -104,26 +104,34 @@ const ClienteFormModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Primero, inicializa la variable lowerCaseFormData
-    const lowerCaseFormData = {
-      ...formData,
-      CODIGO_CLIENTE: formData.CODIGO_CLIENTE.toLowerCase(),
-      NOMBRE_RAZON_SOCIAL: formData.NOMBRE_RAZON_SOCIAL.toLowerCase(),
-      NOMBRE_FANTASIA: formData.NOMBRE_FANTASIA.toLowerCase(),
-      RUT: formData.RUT.toLowerCase(),
-      GIRO: formData.GIRO.toLowerCase(),
-      DIRECCION: formData.DIRECCION.toLowerCase(),
-      CIUDAD: formData.CIUDAD.toLowerCase(),
-      COMUNA: formData.COMUNA.toLowerCase(),
+    // Convertir los datos a minúsculas
+    const lowerCaseData = { ...formData };
+
+    // Función para convertir las claves a minúsculas
+    const toLowerCase = (obj) => {
+      const newObj = {};
+      Object.keys(obj).forEach((key) => {
+        const newKey = key.toLowerCase();
+        if (typeof obj[key] === "object" && obj[key] !== null) {
+          newObj[newKey] = toLowerCase(obj[key]); // Aplicar recursivamente
+        } else {
+          newObj[newKey] = obj[key];
+        }
+      });
+      return newObj;
     };
 
-    // Imprimir los datos en la consola
-    console.log("Datos del formulario enviados:", lowerCaseFormData);
+    const finalData = toLowerCase(lowerCaseData); // Llamada a la función para convertir
+
+    console.log(
+      "Datos del formulario enviados:",
+      JSON.stringify(finalData, null, 2)
+    );
 
     let hasError = false;
 
     // Verificar si los campos obligatorios están llenos
-    if (!lowerCaseFormData.RUT) {
+    if (!finalData.rut) {
       setErrors({
         ...errors,
         RUT: "El RUT es obligatorio",
@@ -132,13 +140,13 @@ const ClienteFormModal = ({
     }
 
     if (
-      !lowerCaseFormData.CODIGO_CLIENTE ||
-      !lowerCaseFormData.NOMBRE_RAZON_SOCIAL ||
-      !lowerCaseFormData.RUT ||
-      !lowerCaseFormData.GIRO ||
-      !lowerCaseFormData.DIRECCION ||
-      !lowerCaseFormData.CIUDAD ||
-      !lowerCaseFormData.COMUNA
+      !finalData.codigo_cliente ||
+      !finalData.nombre_razon_social ||
+      !finalData.rut ||
+      !finalData.giro ||
+      !finalData.direccion ||
+      !finalData.ciudad ||
+      !finalData.comuna
     ) {
       setErrors({
         ...errors,
@@ -150,8 +158,11 @@ const ClienteFormModal = ({
     if (hasError) return;
 
     try {
-      await onSubmit(lowerCaseFormData);
+      // Enviar los datos al backend
+      await onSubmit(finalData); // Enviar los datos con claves en minúsculas
       onClose();
+      setEditing(false);
+      setEditId(null);
     } catch (error) {
       console.error("Error al crear/actualizar cliente:", error);
       if (error.response && error.response.data) {
@@ -176,19 +187,16 @@ const ClienteFormModal = ({
     <Modal open={open} onClose={onClose}>
       <div className="modal-content">
         <h2>
-          {" "}
           {editing
             ? "Formulario para editar Cliente"
-            : "Formulario para crear Cliente"}{" "}
-        </h2>{" "}
+            : "Formulario para crear Cliente"}
+        </h2>
         <form onSubmit={handleSubmit}>
-          {" "}
-          {/* Contenedor principal para las secciones */}{" "}
+          {/* Contenedor principal para las secciones */}
           <Grid container spacing={4}>
-            {" "}
-            {/* Datos del Cliente */}{" "}
+            {/* Datos del Cliente */}
             <Grid item xs={12} sm={4}>
-              <h3> Datos del Cliente </h3>{" "}
+              <h3>Datos del Cliente</h3>
               <TextField
                 label="Código Cliente"
                 name="CODIGO_CLIENTE"
@@ -201,7 +209,7 @@ const ClienteFormModal = ({
                   errors.CODIGO_CLIENTE || "El Código cliente es obligatorio."
                 }
                 error={!!errors.CODIGO_CLIENTE}
-              />{" "}
+              />
               <TextField
                 label="Razón Social"
                 name="NOMBRE_RAZON_SOCIAL"
@@ -215,7 +223,7 @@ const ClienteFormModal = ({
                   "La Razón Social es obligatoria."
                 }
                 error={!!errors.NOMBRE_RAZON_SOCIAL}
-              />{" "}
+              />
               <TextField
                 label="Nombre Fantasía"
                 name="NOMBRE_FANTASIA"
@@ -228,7 +236,7 @@ const ClienteFormModal = ({
                   errors.NOMBRE_FANTASIA || "El Nombre Fantasía es obligatorio."
                 }
                 error={!!errors.NOMBRE_FANTASIA}
-              />{" "}
+              />
               <TextField
                 label="RUT"
                 name="RUT"
@@ -239,7 +247,7 @@ const ClienteFormModal = ({
                 required
                 helperText={errors.RUT || "Por favor ingrese su RUT"}
                 error={!!errors.RUT}
-              />{" "}
+              />
               <TextField
                 label="Giro"
                 name="GIRO"
@@ -276,10 +284,11 @@ const ClienteFormModal = ({
                 margin="normal"
                 required
               />
-            </Grid>{" "}
-            {/ * Contacto Comercial * /}{" "}
+            </Grid>
+
+            {/* Contacto Comercial */}
             <Grid item xs={12} sm={4}>
-              <h3> Contacto Comercial </h3>{" "}
+              <h3>Contacto Comercial</h3>
               <TextField
                 label="Contacto Comercial"
                 name="CONTACTO_COMERCIAL"
@@ -332,10 +341,11 @@ const ClienteFormModal = ({
                 margin="normal"
                 required
               />
-            </Grid>{" "}
-            {/ * Información de Pago * /}{" "}
+            </Grid>
+
+            {/* Información de Pago */}
             <Grid item xs={12} sm={4}>
-              <h3> Información de Pago </h3>{" "}
+              <h3>Información de Pago</h3>
               <TextField
                 label="Nombre Responsable"
                 name="NOMBRE_RESPONSABLE"
@@ -381,14 +391,15 @@ const ClienteFormModal = ({
                 margin="normal"
                 required
               />
-            </Grid>{" "}
-          </Grid>{" "}
-          {/* Botón de Envío */}{" "}
+            </Grid>
+          </Grid>
+
+          {/* Botón de Envío */}
           <Button type="submit" variant="contained" color="primary">
-            {" "}
-            {editing ? "Editar Cliente" : "Crear Cliente"}{" "}
-          </Button>{" "}
-        </form>{" "}
+            {editing ? "Editar Cliente" : "Crear Cliente"}
+          </Button>
+        </form>
+
         {errors.GENERALES && (
           <Snackbar
             open={openSnackbar}
@@ -396,12 +407,11 @@ const ClienteFormModal = ({
             onClose={handleSnackbarClose}
           >
             <Alert onClose={handleSnackbarClose} severity="error">
-              {" "}
-              {errors.GENERALES}{" "}
-            </Alert>{" "}
+              {errors.GENERALES}
+            </Alert>
           </Snackbar>
-        )}{" "}
-      </div>{" "}
+        )}
+      </div>
     </Modal>
   );
 };
