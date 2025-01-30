@@ -77,9 +77,9 @@ const ClientePage = () => {
     }
   };
 
-  const handleUpdateCliente = async (id, formData) => {
+  const handleUpdateCliente = async (id_cliente, formData) => {
     try {
-      const response = await updateCliente(id, formData);
+      const response = await updateCliente(id_cliente, formData);
       console.log("Cliente actualizado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();

@@ -69,10 +69,10 @@ const ClienteFormModal = ({
       const fetchAdditionalData = async () => {
         try {
           const contacto = await getContactoComercial(
-            clienteData.CODIGO_CLIENTE
+            clienteData.ID_CLIENTE
           );
           const infoPago = await getInformacionDePago(
-            clienteData.CODIGO_CLIENTE
+            clienteData.ID_CLIENTE
           );
 
           setFormData((prevData) => ({
@@ -98,6 +98,141 @@ const ClienteFormModal = ({
       });
     } else {
       setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  const formatRUT = (rut) => {
+    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); // Permite números y "k" o "K" al final
+
+    if (cleanedRUT.length <= 8) {
+      cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
+    } else if (cleanedRUT.length === 9) {
+      cleanedRUT = cleanedRUT.replace(
+        /(\d{2})(\d{3})(\d{3})(\d{1}|k|K)/,
+        "$1.$2.$3-$4"
+      );
+    } else {
+      cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
+    }
+
+    return cleanedRUT;
+  };
+
+  const handleRUTChange = (e) => {
+    let value = e.target.value;
+    let onlyValidChars = value.replace(/[^0-9kK.-]/g, ""); // Permite números, ".", "-", "k", "K"
+    const onlyNumbersAndK = onlyValidChars.replace(/[^0-9kK]/g, ""); // Limpia todo menos números y "k/K"
+
+    if (onlyValidChars.length !== value.length) {
+      setErrors({
+        ...errors,
+        RUT: "Solo se permiten números, puntos, guiones y la letra 'k'.",
+      });
+    } else {
+      setErrors({ ...errors, RUT: "" });
+    }
+
+    let formattedRUT = formatRUT(onlyNumbersAndK);
+
+    if (
+      formattedRUT.endsWith("-") &&
+      e.target.value.length < formData.RUT.length
+    ) {
+      formattedRUT = formattedRUT.slice(0, -1);
+    }
+
+    setFormData({ ...formData, RUT: formattedRUT });
+  };
+
+  const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value); // Solo letras y números
+  const validateNombreRazonSocial = (value) =>
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+  const validateNombreFantasia = (value) =>
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value); // Letras, números, puntos, # y espacios
+  const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+  const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+
+  const handleCodigoClienteChange = (e) => {
+    const { value } = e.target;
+    if (validateCodigoCliente(value) || value === "") {
+      setFormData({ ...formData, CODIGO_CLIENTE: value });
+      setErrors({ ...errors, CODIGO_CLIENTE: "" });
+    } else {
+      setErrors({
+        ...errors,
+        CODIGO_CLIENTE: "Solo se permiten letras y números.",
+      });
+    }
+  };
+
+  const handleNombreRazonSocialChange = (e) => {
+    const { value } = e.target;
+    if (validateNombreRazonSocial(value) || value === "") {
+      setFormData({ ...formData, NOMBRE_RAZON_SOCIAL: value });
+      setErrors({ ...errors, NOMBRE_RAZON_SOCIAL: "" });
+    } else {
+      setErrors({
+        ...errors,
+        NOMBRE_RAZON_SOCIAL: "Solo se permiten letras y espacios.",
+      });
+    }
+  };
+
+  const handleNombreChange = (e) => {
+    const { value } = e.target;
+    if (validateNombreFantasia(value) || value === "") {
+      setFormData({ ...formData, NOMBRE_FANTASIA: value });
+      setErrors({ ...errors, NOMBRE_FANTASIA: "" });
+    } else {
+      setErrors({
+        ...errors,
+        NOMBRE_FANTASIA: "Solo se permiten letras y espacios.",
+      });
+    }
+  };
+
+  const handleGiroChange = (e) => {
+    const { value } = e.target;
+    if (validateGiro(value) || value === "") {
+      setFormData({ ...formData, GIRO: value });
+      setErrors({ ...errors, GIRO: "" });
+    } else {
+      setErrors({ ...errors, GIRO: "Solo se permiten letras y espacios." });
+    }
+  };
+
+  const handleDireccionChange = (e) => {
+    const { value } = e.target;
+    if (validateDireccion(value) || value === "") {
+      setFormData({ ...formData, DIRECCION: value });
+      setErrors({ ...errors, DIRECCION: "" });
+    } else {
+      setErrors({
+        ...errors,
+        DIRECCION: "Solo se permiten letras, números, puntos, # y espacios.",
+      });
+    }
+  };
+
+  const handleCiudadChange = (e) => {
+    const { value } = e.target;
+    if (validateCiudad(value) || value === "") {
+      setFormData({ ...formData, CIUDAD: value });
+      setErrors({ ...errors, CIUDAD: "" });
+    } else {
+      setErrors({ ...errors, CIUDAD: "Solo se permiten letras y espacios." });
+    }
+  };
+
+  const handleComunaChange = (e) => {
+    const { value } = e.target;
+    if (validateComuna(value) || value === "") {
+      setFormData({ ...formData, COMUNA: value });
+      setErrors({ ...errors, COMUNA: "" });
+    } else {
+      setErrors({ ...errors, COMUNA: "Solo se permiten letras y espacios." });
     }
   };
 
@@ -193,7 +328,7 @@ const ClienteFormModal = ({
         </h2>
         <form onSubmit={handleSubmit}>
           {/* Contenedor principal para las secciones */}
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {/* Datos del Cliente */}
             <Grid item xs={12} sm={4}>
               <h3>Datos del Cliente</h3>
@@ -201,7 +336,7 @@ const ClienteFormModal = ({
                 label="Código Cliente"
                 name="CODIGO_CLIENTE"
                 value={formData.CODIGO_CLIENTE}
-                onChange={(e) => handleInputChange(e, "CODIGO_CLIENTE")}
+                onChange={handleCodigoClienteChange}
                 fullWidth
                 margin="normal"
                 required
@@ -210,11 +345,12 @@ const ClienteFormModal = ({
                 }
                 error={!!errors.CODIGO_CLIENTE}
               />
+
               <TextField
                 label="Razón Social"
                 name="NOMBRE_RAZON_SOCIAL"
                 value={formData.NOMBRE_RAZON_SOCIAL}
-                onChange={(e) => handleInputChange(e, "NOMBRE_RAZON_SOCIAL")}
+                onChange={handleNombreRazonSocialChange}
                 fullWidth
                 margin="normal"
                 required
@@ -224,11 +360,12 @@ const ClienteFormModal = ({
                 }
                 error={!!errors.NOMBRE_RAZON_SOCIAL}
               />
+
               <TextField
                 label="Nombre Fantasía"
                 name="NOMBRE_FANTASIA"
                 value={formData.NOMBRE_FANTASIA}
-                onChange={(e) => handleInputChange(e, "NOMBRE_FANTASIA")}
+                onChange={handleNombreChange}
                 fullWidth
                 margin="normal"
                 required
@@ -241,48 +378,62 @@ const ClienteFormModal = ({
                 label="RUT"
                 name="RUT"
                 value={formData.RUT}
-                onChange={(e) => handleInputChange(e, "RUT")}
+                onChange={handleRUTChange}
                 fullWidth
                 margin="normal"
                 required
-                helperText={errors.RUT || "Por favor ingrese su RUT"}
+                helperText={
+                  errors.RUT ||
+                  "Por favor ingrese su RUT sin punto(.) y guión(-)"
+                }
                 error={!!errors.RUT}
               />
               <TextField
                 label="Giro"
                 name="GIRO"
                 value={formData.GIRO}
-                onChange={(e) => handleInputChange(e, "GIRO")}
+                onChange={handleGiroChange}
                 fullWidth
                 margin="normal"
                 required
+                helperText={errors.GIRO || "El Giro es obligatorio."}
+                error={!!errors.GIRO}
               />
+
               <TextField
                 label="Dirección"
                 name="DIRECCION"
                 value={formData.DIRECCION}
-                onChange={(e) => handleInputChange(e, "DIRECCION")}
+                onChange={handleDireccionChange}
                 fullWidth
                 margin="normal"
                 required
+                helperText={errors.DIRECCION || "La Dirección es obligatoria."}
+                error={!!errors.DIRECCION}
               />
+
               <TextField
                 label="Ciudad"
                 name="CIUDAD"
                 value={formData.CIUDAD}
-                onChange={(e) => handleInputChange(e, "CIUDAD")}
+                onChange={handleCiudadChange}
                 fullWidth
                 margin="normal"
                 required
+                helperText={errors.CIUDAD || "La Ciudad es obligatoria."}
+                error={!!errors.CIUDAD}
               />
+
               <TextField
                 label="Comuna"
                 name="COMUNA"
                 value={formData.COMUNA}
-                onChange={(e) => handleInputChange(e, "COMUNA")}
+                onChange={handleComunaChange}
                 fullWidth
                 margin="normal"
                 required
+                helperText={errors.COMUNA || "La Comuna es obligatoria."}
+                error={!!errors.COMUNA}
               />
             </Grid>
 
@@ -302,22 +453,20 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
               <TextField
                 label="Correo Electrónico"
-                name="CORREO_ELECTRONICO"
-                value={formData.CONTACTO_COMERCIAL.CORREO_ELECTRONICO}
+                name="CORREO_ELECTRONICO_COMERCIAL"
+                value={formData.CONTACTO_COMERCIAL?.CORREO_ELECTRONICO_COMERCIAL || ""}
                 onChange={(e) =>
                   handleInputChange(
                     e,
-                    "CORREO_ELECTRONICO",
+                    "CORREO_ELECTRONICO_COMERCIAL",
                     "CONTACTO_COMERCIAL"
                   )
                 }
                 fullWidth
                 margin="normal"
-                required
               />
               <TextField
                 label="Teléfono Fijo"
@@ -328,7 +477,6 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
               <TextField
                 label="Teléfono Celular"
@@ -339,7 +487,6 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
             </Grid>
 
@@ -359,7 +506,6 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
               <TextField
                 label="Correo Electrónico"
@@ -374,7 +520,6 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
               <TextField
                 label="Teléfono Responsable"
@@ -389,7 +534,6 @@ const ClienteFormModal = ({
                 }
                 fullWidth
                 margin="normal"
-                required
               />
             </Grid>
           </Grid>

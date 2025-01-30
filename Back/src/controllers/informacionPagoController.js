@@ -5,11 +5,12 @@ const { Cliente } = require("../models/clienteModel");
 const getInformacionesDePago = async (req, res) => {
   try {
     const informaciones = await InformacionDePago.findAll({
+      attributes: { exclude: [] }, // Permite que todos los atributos puedan ser nulos
       include: [
         {
           model: Cliente,
-          as: "cliente", // Alias de la relación ContactoComercial -> Cliente
-          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"], // Columnas específicas de Cliente
+          as: "cliente",
+          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"],
         },
       ],
     });
@@ -25,12 +26,14 @@ const getInformacionesDePago = async (req, res) => {
   }
 };
 
+
 // Obtener una informacion de pago por id
 const getInformacionDePago = async (req, res) => {
-  const { id_cliente } = req.params; // Aquí se toma el parámetro id_cliente
+  const { id_cliente } = req.params;
   try {
     const informacion = await InformacionDePago.findOne({
       where: { ID_CLIENTE: id_cliente },
+      attributes: { exclude: [] }, // Permite atributos con valores nulos
     });
 
     if (!informacion) {
@@ -42,15 +45,16 @@ const getInformacionDePago = async (req, res) => {
     res.json(informacion);
   } catch (error) {
     console.error(
-      `Error al obtener la informacion de pago para el cliente con id ${id_cliente}:`,
+      `Error al obtener la información de pago para el cliente con id ${id_cliente}:`,
       error
     );
     res.status(500).json({
-      msg: `Error al obtener la informacion de pago para el cliente con id ${id_cliente}`,
+      msg: `Error al obtener la información de pago para el cliente con id ${id_cliente}`,
       error: error.message || error,
     });
   }
 };
+
 
 // Crear una nueva informacion de pago
 const newInformacionDePago = async (req, res) => {

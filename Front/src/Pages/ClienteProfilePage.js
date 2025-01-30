@@ -39,29 +39,55 @@ const ClientProfilePage = () => {
 
   const fetchClient = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
+
+      // Obtener cliente
       const data = await getCliente(id_cliente);
       setClient(data);
 
-      // Llamar a los métodos de pago después de obtener el cliente
-      const metodosData = await getMetodosPago();
-      setMetodosPago(metodosData);
+      // Obtener métodos de pago
+      try {
+        const metodosData = await getMetodosPago();
+        setMetodosPago(metodosData);
+      } catch (error) {
+        console.warn("No se pudieron obtener los métodos de pago.", error);
+        setMetodosPago([]); // Asignar lista vacía si falla
+      }
 
-      // Obtener la información de pago
-      const informacionPagoData = await getInformacionDePago(id_cliente);
-      setInformacionPago(informacionPagoData); // Usar un nuevo estado para la información de pago
+      // Obtener información de pago
+      try {
+        const informacionPagoData = await getInformacionDePago(id_cliente);
+        setInformacionPago(informacionPagoData || {}); // Asegurar que no sea undefined
+      } catch (error) {
+        console.warn("No se pudo obtener la información de pago.", error);
+        setInformacionPago(null); // Permitir que sea null si falla
+      }
 
-      // Obtener el contacto comercial
-      const contactoData = await getContactoComercial(data.ID_CLIENTE); // Suponiendo que 'ID_CONTACTO_COMERCIAL' es la propiedad del cliente
-      setContactoComercial(contactoData); // Usar un nuevo estado para el contacto comercial
+      // Obtener contacto comercial
+      try {
+        const contactoData = await getContactoComercial(data.ID_CLIENTE);
+        setContactoComercial(contactoData || null);
+      } catch (error) {
+        console.warn("No se pudo obtener el contacto comercial.", error);
+        setContactoComercial(null);
+      }
     } catch (error) {
-      setError(
-        "Error al obtener el cliente, los métodos de pago, la información de pago o el contacto comercial."
-      );
+      setError("Error al obtener la información del cliente.");
       console.error("Error al obtener datos", error);
     } finally {
       setLoading(false);
     }
   }, [id_cliente]);
+
+  useEffect(() => {
+    if (id_cliente) {
+      fetchClient();
+    } else {
+      setError("ID de cliente no válido");
+      setLoading(false);
+    }
+  }, [id_cliente, fetchClient]);
 
   useEffect(() => {
     if (id_cliente) {

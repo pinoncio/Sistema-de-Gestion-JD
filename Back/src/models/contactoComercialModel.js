@@ -16,12 +16,24 @@ const ContactoComercial = db.define(
         model: Cliente, // Hace referencia al modelo Cliente
         key: "ID_CLIENTE",
       },
-      allowNull: false,
+      allowNull: false, // La relación con el cliente no debe ser nula
     },
-    CONTACTO_COMERCIAL: { type: DataTypes.STRING },
-    CORREO_ELECTRONICO_COMERCIAL: { type: DataTypes.STRING },
-    TELEFONO_FIJO: { type: DataTypes.STRING },
-    TELEFONO_CELULAR: { type: DataTypes.STRING },
+    CONTACTO_COMERCIAL: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
+    CORREO_ELECTRONICO_COMERCIAL: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
+    TELEFONO_FIJO: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
+    TELEFONO_CELULAR: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
   },
   {
     freezeTableName: true,
@@ -30,7 +42,7 @@ const ContactoComercial = db.define(
 );
 
 // Relación entre Cliente y ContactoComercial
-Cliente.hasMany(ContactoComercial, { foreignKey: "ID_CLIENTE", as: 'contactosComerciales' });
-ContactoComercial.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: 'cliente' });
+Cliente.hasMany(ContactoComercial, { foreignKey: "ID_CLIENTE", as: "contactosComerciales" });
+ContactoComercial.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: "cliente" });
 
 module.exports = { ContactoComercial };

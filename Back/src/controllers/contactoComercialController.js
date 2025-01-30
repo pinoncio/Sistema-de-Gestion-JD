@@ -8,13 +8,18 @@ const getContactosComerciales = async (req, res) => {
       include: [
         {
           model: Cliente,
-          as: "cliente", // Alias de la relación ContactoComercial -> Cliente
-          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"], // Columnas específicas de Cliente
+          as: "cliente",
+          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"],
         },
       ],
     });
 
-    console.log("Contactos comerciales obtenidos:", contactos);
+    if (!contactos || contactos.length === 0) {
+      return res
+        .status(404)
+        .json({ msg: "No hay contactos comerciales registrados." });
+    }
+
     res.json(contactos);
   } catch (error) {
     console.error("Error al obtener la lista de contactos comerciales:", error);
@@ -25,28 +30,35 @@ const getContactosComerciales = async (req, res) => {
   }
 };
 
-// Obtener un contacto comercial por id
+// Obtener un contacto comercial por ID de cliente
 const getContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   try {
     const contacto = await ContactoComercial.findOne({
-      where: { ID_CLIENTE: id_cliente }, 
+      where: { ID_CLIENTE: id_cliente },
+      include: [
+        {
+          model: Cliente,
+          as: "cliente",
+          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"],
+        },
+      ],
     });
 
     if (!contacto) {
       return res.status(404).json({
-        msg: `No se encontró el contacto comercial para el cliente con id ${id_cliente}`,
+        msg: `No se encontró un contacto comercial para el cliente con ID ${id_cliente}.`,
       });
     }
 
     res.json(contacto);
   } catch (error) {
     console.error(
-      `Error al obtener el contacto comercial para el cliente con id ${id_cliente}:`,
+      `Error al obtener el contacto comercial para el cliente con ID ${id_cliente}:`,
       error
     );
     res.status(500).json({
-      msg: `Error al obtener el contacto comercial para el cliente con id ${id_cliente}`,
+      msg: `Error al obtener el contacto comercial para el cliente con ID ${id_cliente}.`,
       error: error.message || error,
     });
   }
@@ -106,7 +118,7 @@ const updateContactoComercial = async (req, res) => {
   } = req.body;
 
   const contacto = await ContactoComercial.findOne({
-    where: { ID_CLIENTE: id_cliente},
+    where: { ID_CLIENTE: id_cliente },
   });
 
   if (!contacto) {
@@ -157,11 +169,9 @@ const deleteContactoComercial = async (req, res) => {
       console.log(
         `No se encontró ningún contacto comercial con ID ${id_contacto} para eliminar.`
       );
-      return res
-        .status(404)
-        .json({
-          msg: "No se encontró ningún contacto comercial para eliminar.",
-        });
+      return res.status(404).json({
+        msg: "No se encontró ningún contacto comercial para eliminar.",
+      });
     }
   } catch (error) {
     console.error(

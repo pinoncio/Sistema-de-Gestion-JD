@@ -122,7 +122,7 @@ const newCliente = async (req, res) => {
         {
           ID_CLIENTE: cliente.ID_CLIENTE,
           CONTACTO_COMERCIAL: contacto_comercial.contacto_comercial,
-          CORREO_ELECTRONICO_COMERCIAL: contacto_comercial.correo_electronico,
+          CORREO_ELECTRONICO_COMERCIAL: contacto_comercial.correo_electronico_comercial,
           TELEFONO_FIJO: contacto_comercial.telefono_fijo,
           TELEFONO_CELULAR: contacto_comercial.telefono_celular,
         },
@@ -174,17 +174,24 @@ const updateCliente = async (req, res) => {
     direccion,
     ciudad,
     comuna,
+    contacto_comercial,
+    informacion_de_pago,
   } = req.body;
 
-  const cliente = await Cliente.findOne({ where: { ID_CLIENTE: id_cliente } });
-  if (!cliente) {
-    return res.status(404).json({
-      msg: "No existe un cliente con id: " + id_cliente,
-    });
-  }
+  const transaction = await sequelize.transaction(); // Iniciar transacción
 
   try {
-    // Actualizar el cliente sin modificar el RUT
+    // Buscar cliente
+    const cliente = await Cliente.findOne({
+      where: { ID_CLIENTE: id_cliente },
+    });
+    if (!cliente) {
+      return res
+        .status(404)
+        .json({ msg: `No existe un cliente con id: ${id_cliente}` });
+    }
+
+    // Actualizar datos del cliente
     await Cliente.update(
       {
         CODIGO_CLIENTE: codigo_cliente,
@@ -195,18 +202,77 @@ const updateCliente = async (req, res) => {
         CIUDAD: ciudad,
         COMUNA: comuna,
       },
-      { where: { ID_CLIENTE: id_cliente } }
+      { where: { ID_CLIENTE: id_cliente }, transaction }
     );
 
-    return res.json({
-      msg: "Cliente actualizado correctamente",
-    });
+    // Actualizar Contacto Comercial si se proporciona
+    if (contacto_comercial) {
+      const existingContacto = await ContactoComercial.findOne({
+        where: { ID_CLIENTE: id_cliente },
+      });
+
+      if (existingContacto) {
+        await ContactoComercial.update(
+          {
+            CONTACTO_COMERCIAL: contacto_comercial.contacto_comercial,
+            CORREO_ELECTRONICO_COMERCIAL: contacto_comercial.correo_electronico_comercial,
+            TELEFONO_FIJO: contacto_comercial.telefono_fijo,
+            TELEFONO_CELULAR: contacto_comercial.telefono_celular,
+          },
+          { where: { ID_CLIENTE: id_cliente }, transaction }
+        );
+      } else {
+        await ContactoComercial.create(
+          {
+            ID_CLIENTE: id_cliente,
+            CONTACTO_COMERCIAL: contacto_comercial.contacto_comercial,
+            CORREO_ELECTRONICO_COMERCIAL: contacto_comercial.correo_electronico,
+            TELEFONO_FIJO: contacto_comercial.telefono_fijo,
+            TELEFONO_CELULAR: contacto_comercial.telefono_celular,
+          },
+          { transaction }
+        );
+      }
+    }
+
+    // Actualizar Información de Pago si se proporciona
+    if (informacion_de_pago) {
+      const existingPago = await InformacionDePago.findOne({
+        where: { ID_CLIENTE: id_cliente },
+      });
+
+      if (existingPago) {
+        await InformacionDePago.update(
+          {
+            NOMBRE_RESPONSABLE: informacion_de_pago.nombre_responsable,
+            CORREO_ELECTRONICO: informacion_de_pago.correo_electronico,
+            TELEFONO_RESPONSABLE: informacion_de_pago.telefono_responsable,
+          },
+          { where: { ID_CLIENTE: id_cliente }, transaction }
+        );
+      } else {
+        await InformacionDePago.create(
+          {
+            ID_CLIENTE: id_cliente,
+            NOMBRE_RESPONSABLE: informacion_de_pago.nombre_responsable,
+            CORREO_ELECTRONICO: informacion_de_pago.correo_electronico,
+            TELEFONO_RESPONSABLE: informacion_de_pago.telefono_responsable,
+          },
+          { transaction }
+        );
+      }
+    }
+
+    // Confirmar cambios
+    await transaction.commit();
+
+    return res.json({ msg: "Cliente actualizado correctamente" });
   } catch (error) {
+    await transaction.rollback(); // Revertir cambios en caso de error
     console.error("Error al actualizar el cliente:", error);
-    return res.status(400).json({
-      msg: "Ha ocurrido un error al actualizar el cliente",
-      error: error.message || error,
-    });
+    return res
+      .status(400)
+      .json({ msg: "Error al actualizar el cliente", error: error.message });
   }
 };
 

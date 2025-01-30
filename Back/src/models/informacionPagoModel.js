@@ -16,11 +16,20 @@ const InformacionDePago = db.define(
         model: Cliente, // Hace referencia al modelo Cliente
         key: "ID_CLIENTE",
       },
-      allowNull: false,
+      allowNull: false, // La relación con el cliente no debe ser nula
     },
-    NOMBRE_RESPONSABLE: { type: DataTypes.STRING },
-    CORREO_ELECTRONICO: { type: DataTypes.STRING },
-    TELEFONO_RESPONSABLE: { type: DataTypes.STRING },
+    NOMBRE_RESPONSABLE: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
+    CORREO_ELECTRONICO: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
+    TELEFONO_RESPONSABLE: { 
+      type: DataTypes.STRING,
+      allowNull: true, // Permite valores nulos
+    },
   },
   {
     freezeTableName: true,
@@ -28,8 +37,8 @@ const InformacionDePago = db.define(
   }
 );
 
-// Relación entre Cliente y InformacionDePago
-Cliente.hasMany(InformacionDePago, { foreignKey: "ID_CLIENTE", as: 'informacionesDePago' });
-InformacionDePago.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: 'cliente' });
+// Relación entre Cliente e InformacionDePago
+Cliente.hasMany(InformacionDePago, { foreignKey: "ID_CLIENTE", as: "informacionesDePago" });
+InformacionDePago.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: "cliente" });
 
 module.exports = { InformacionDePago };
