@@ -153,7 +153,8 @@ const ClienteFormModal = ({
     /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateCorreo = (value) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-  const validateTelefono = (value) => /^[0-9]{9}$/.test(value);
+  const validateNombreResponsable = (value) =>
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
 
   const handleCodigoClienteChange = (e) => {
     const { value } = e.target;
@@ -331,6 +332,69 @@ const ClienteFormModal = ({
     setErrors((prevErrors) => ({
       ...prevErrors,
       TELEFONO_CELULAR: isValid
+        ? ""
+        : "El celular debe empezar con '9' y contener exactamente 9 dígitos numéricos.",
+    }));
+  };
+
+  const handleNombreResponsableChange = (e) => {
+    const { value } = e.target;
+    if (validateNombreResponsable(value) || value === "") {
+      setFormData({
+        ...formData,
+        INFORMACION_DE_PAGO: {
+          ...formData.INFORMACION_DE_PAGO,
+          NOMBRE_RESPONSABLE: value,
+        },
+      });
+      setErrors({ ...errors, NOMBRE_RESPONSABLE: "" });
+    } else {
+      setErrors({
+        ...errors,
+        NOMBRE_RESPONSABLE: "Solo se permiten letras y espacios.",
+      });
+    }
+  };
+
+  const handleCorreoResponsableChange = (e) => {
+    const { value } = e.target;
+    const isValid = validateCorreo(value) || value === "";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      INFORMACION_DE_PAGO: {
+        ...prevData.INFORMACION_DE_PAGO,
+        CORREO_ELECTRONICO: value,
+      },
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      CORREO_ELECTRONICO: isValid
+        ? ""
+        : "Por favor ingresa un correo electrónico válido.",
+    }));
+  };
+
+  const handleTelefonoChange = (e) => {
+    let formattedValue = formatTelefono(e.target.value);
+
+    // Validar si el teléfono celular empieza con "9" y tiene 9 dígitos
+    const isValid =
+      formattedValue.replace(/\s/g, "").length === 9 &&
+      formattedValue[0] === "9";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      INFORMACION_DE_PAGO: {
+        ...prevData.INFORMACION_DE_PAGO,
+        TELEFONO_RESPONSABLE: formattedValue,
+      },
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      TELEFONO_RESPONSABLE: isValid
         ? ""
         : "El celular debe empezar con '9' y contener exactamente 9 dígitos numéricos.",
     }));
@@ -596,43 +660,31 @@ const ClienteFormModal = ({
                   label="Nombre Responsable"
                   name="NOMBRE_RESPONSABLE"
                   value={formData.INFORMACION_DE_PAGO.NOMBRE_RESPONSABLE}
-                  onChange={(e) =>
-                    handleInputChange(
-                      e,
-                      "NOMBRE_RESPONSABLE",
-                      "INFORMACION_DE_PAGO"
-                    )
-                  }
+                  onChange={handleNombreResponsableChange}
                   fullWidth
                   margin="normal"
+                  helperText={errors.NOMBRE_RESPONSABLE}
+                  error={!!errors.NOMBRE_RESPONSABLE}
                 />
                 <TextField
                   label="Correo Electrónico"
                   name="CORREO_ELECTRONICO"
                   value={formData.INFORMACION_DE_PAGO.CORREO_ELECTRONICO}
-                  onChange={(e) =>
-                    handleInputChange(
-                      e,
-                      "CORREO_ELECTRONICO",
-                      "INFORMACION_DE_PAGO"
-                    )
-                  }
+                  onChange={handleCorreoResponsableChange}
                   fullWidth
                   margin="normal"
+                  helperText={errors.CORREO_ELECTRONICO}
+                  error={!!errors.CORREO_ELECTRONICO}
                 />
                 <TextField
                   label="Teléfono Responsable"
                   name="TELEFONO_RESPONSABLE"
                   value={formData.INFORMACION_DE_PAGO.TELEFONO_RESPONSABLE}
-                  onChange={(e) =>
-                    handleInputChange(
-                      e,
-                      "TELEFONO_RESPONSABLE",
-                      "INFORMACION_DE_PAGO"
-                    )
-                  }
+                  onChange={handleTelefonoChange}
                   fullWidth
                   margin="normal"
+                  helperText={errors.TELEFONO_RESPONSABLE}
+                  error={!!errors.TELEFONO_RESPONSABLE}
                 />
               </Grid>
             </Grid>
