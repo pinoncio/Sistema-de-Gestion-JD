@@ -9,6 +9,8 @@ const clientePagoRoutes = require("./routes/clienteMetodoPagoRoute");
 const metodoPagoRoutes = require("./routes/metodoPagoRoute");
 const ContactoComercialRoutes = require("./routes/contactoComercialRoute");
 const InformacionDePagoRoutes = require("./routes/informacionPagoRoute");
+const CategoriaRoutes = require("./routes/categoriaRoute");
+const InsumoRoutes = require("./routes/insumoRoute");
 
 // Importar modelos
 const { Usuario } = require("./models/userModel");
@@ -18,6 +20,8 @@ const { Cliente } = require("./models/clienteModel");
 const { MetodoPago } = require("./models/metodoPagoModel");
 const { ContactoComercial } = require("./models/contactoComercialModel");
 const { InformacionDePago } = require("./models/informacionPagoModel");
+const { Categoria } = require("./models/categoriaModel")
+const { Insumo } = require("./models/insumoModel");
 
 class Server {
   constructor() {
@@ -42,6 +46,8 @@ class Server {
     this.app.use("/api/metodo", metodoPagoRoutes);
     this.app.use("/api/contacto", ContactoComercialRoutes);
     this.app.use("/api/informacion", InformacionDePagoRoutes);
+    this.app.use("/api/categoria", CategoriaRoutes);
+    this.app.use("/api/insumo", InsumoRoutes);
   }
 
   middlewares() {
@@ -58,6 +64,8 @@ class Server {
       await MetodoPago.sync({ alter: true });
       await ContactoComercial.sync({ alter: true });
       await InformacionDePago.sync({ alter: true });
+      await Categoria.sync({ alter: true });
+      await Insumo.sync({ alter: true });
       console.log("Base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(

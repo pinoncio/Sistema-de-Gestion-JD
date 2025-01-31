@@ -1,0 +1,21 @@
+/* Estilo del contenedor del modal */
+.categoria-form-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 50px auto;
+  }
+  
+  /* Estilo de los grupos de campos */
+  .categoria-form-group {
+    margin-bottom: 20px;
+  }
+  
+  /* Estilo de los botones */
+  .categoria-form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  

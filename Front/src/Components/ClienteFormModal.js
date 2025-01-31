@@ -85,20 +85,8 @@ const ClienteFormModal = ({
     }
   }, [clienteData]);
 
-  const handleInputChange = (e, field, section) => {
-    const { name, value } = e.target;
-    if (section) {
-      setFormData({
-        ...formData,
-        [section]: { ...formData[section], [name]: value },
-      });
-    } else {
-      setFormData({ ...formData, [field]: value });
-    }
-  };
-
   const formatRUT = (rut) => {
-    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); // Permite números y "k" o "K" al final
+    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); 
 
     if (cleanedRUT.length <= 8) {
       cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
@@ -108,7 +96,7 @@ const ClienteFormModal = ({
         "$1.$2.$3-$4"
       );
     } else {
-      cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
+      cleanedRUT = cleanedRUT.substring(0, 9); 
     }
 
     return cleanedRUT;
@@ -116,8 +104,8 @@ const ClienteFormModal = ({
 
   const handleRUTChange = (e) => {
     let value = e.target.value;
-    let onlyValidChars = value.replace(/[^0-9kK.-]/g, ""); // Permite números, ".", "-", "k", "K"
-    const onlyNumbersAndK = onlyValidChars.replace(/[^0-9kK]/g, ""); // Limpia todo menos números y "k/K"
+    let onlyValidChars = value.replace(/[^0-9kK.-]/g, "");
+    const onlyNumbersAndK = onlyValidChars.replace(/[^0-9kK]/g, "");
 
     if (onlyValidChars.length !== value.length) {
       setErrors({
@@ -140,15 +128,15 @@ const ClienteFormModal = ({
     setFormData({ ...formData, RUT: formattedRUT });
   };
 
-  const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value); // Solo letras y números
+  const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value); 
   const validateNombreRazonSocial = (value) =>
-    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
   const validateNombreFantasia = (value) =>
     /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
-  const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
-  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value); // Letras, números, puntos, # y espacios
-  const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
-  const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); // Solo letras y espacios
+  const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
+  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value); 
+  const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
+  const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
   const validateContactoComercial = (value) =>
     /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateCorreo = (value) =>
@@ -260,7 +248,6 @@ const ClienteFormModal = ({
   const handleCorreoChange = (e) => {
     const { value } = e.target;
     const isValid = validateCorreo(value) || value === "";
-
     setFormData((prevData) => ({
       ...prevData,
       CONTACTO_COMERCIAL: {
@@ -268,7 +255,6 @@ const ClienteFormModal = ({
         CORREO_ELECTRONICO_COMERCIAL: value,
       },
     }));
-
     setErrors((prevErrors) => ({
       ...prevErrors,
       CORREO_ELECTRONICO_COMERCIAL: isValid
@@ -278,21 +264,15 @@ const ClienteFormModal = ({
   };
 
   const formatTelefono = (value) => {
-    // Permitir solo números y limitar a 9 caracteres
     let numericValue = value.replace(/\D/g, "").slice(0, 9);
-
-    // Aplicar el formato "X XXXXXXXX" si tiene al menos un dígito
     if (numericValue.length > 1) {
       return `${numericValue[0]} ${numericValue.slice(1)}`;
     }
-
     return numericValue;
   };
 
   const handleTelefonoFijoChange = (e) => {
     let formattedValue = formatTelefono(e.target.value);
-
-    // Validar si el teléfono fijo empieza con "2" y tiene 9 dígitos
     const isValid =
       formattedValue.replace(/\s/g, "").length === 9 &&
       formattedValue[0] === "2";
