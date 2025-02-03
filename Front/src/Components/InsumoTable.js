@@ -92,7 +92,7 @@ const InsumoTable = ({
             <TableCell>{insumo.TOTAL.toLocaleString()}</TableCell>
             <TableCell>{insumo.PRECIO_NETO.toLocaleString()}</TableCell>
             <TableCell>
-              <Link to={`/${insumo.ID_INSUMO}`}>
+              <Link to={`/verInsumo/${insumo.ID_INSUMO}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>

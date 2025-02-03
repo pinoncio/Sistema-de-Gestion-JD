@@ -10,8 +10,9 @@ import CategoriaFormModal from "../Components/CategoriaFormModal";
 import { Button, Card, CardContent, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
-import AdminLayout from "../Components/Layout/AdminLayout";
+import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/Categoria.css";
+
 
 const CategoriaPage = () => {
   const [categorias, setCategorias] = useState([]);
@@ -117,7 +118,7 @@ const CategoriaPage = () => {
   };
 
   return (
-    <AdminLayout>
+    <UserLayout>
       <h1>Lista completa de categorías</h1>
 
       <div className="categoria-actions">
@@ -180,7 +181,7 @@ const CategoriaPage = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </AdminLayout>
+    </UserLayout>
   );
 };
 

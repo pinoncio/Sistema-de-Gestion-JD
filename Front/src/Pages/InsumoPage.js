@@ -21,7 +21,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
-import AdminLayout from "../Components/Layout/AdminLayout";
+import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/User.css";
 
 const InsumoPage = () => {
@@ -197,7 +197,7 @@ const InsumoPage = () => {
   };
 
   return (
-    <AdminLayout>
+    <UserLayout>
       <h1>Lista completa de insumos</h1>
 
       <div className="search-bar">
@@ -272,7 +272,7 @@ const InsumoPage = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </AdminLayout>
+    </UserLayout>
   );
 };
 

@@ -103,9 +103,7 @@ const updateInsumo = async (req, res) => {
   try {
     // Calcular los valores automáticos
     const stock_disponible = cantidad;
-    const costo_promedio = (
-      (cantidad * costo_unidad) /(cantidad)
-    ).toFixed(2); // Solo redondear a 2 decimales
+    const costo_promedio = ((cantidad * costo_unidad) / cantidad).toFixed(2); // Solo redondear a 2 decimales
     const total = sub_total;
     const precio_neto = (total + total * 0.19).toFixed(2); // Solo redondear a 2 decimales
 
