@@ -11,6 +11,7 @@ const ContactoComercialRoutes = require("./routes/contactoComercialRoute");
 const InformacionDePagoRoutes = require("./routes/informacionPagoRoute");
 const CategoriaRoutes = require("./routes/categoriaRoute");
 const InsumoRoutes = require("./routes/insumoRoute");
+//const EmailRoutes = require("./routes/emailRoute");
 
 // Importar modelos
 const { Usuario } = require("./models/userModel");
@@ -48,6 +49,7 @@ class Server {
     this.app.use("/api/informacion", InformacionDePagoRoutes);
     this.app.use("/api/categoria", CategoriaRoutes);
     this.app.use("/api/insumo", InsumoRoutes);
+    //this.app.use("/api/email", EmailRoutes);
   }
 
   middlewares() {

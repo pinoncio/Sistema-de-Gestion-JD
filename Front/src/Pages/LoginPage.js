@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import loginUser from "../Services/authService";
 import { AccountCircle, Lock } from "@mui/icons-material";
+import { useLocation } from "react-router-dom";
 import "../Styles/login.css";
 
 // Función para formatear el RUT
@@ -52,9 +53,10 @@ const validateRut = (rut) => {
 const LoginPage = () => {
   const [rut, setRut] = useState("");
   const [contrasenia, setContrasenia] = useState("");
-  const [error, setError] = useState(null);
+  const location = useLocation(); // Obtiene el estado de navegación
+  const [openSnackbar, setOpenSnackbar] = useState(!!location.state?.error);
+  const [error, setError] = useState(location.state?.error || null);
   const [loading, setLoading] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
 
   const handleRUTChange = (e) => {
@@ -104,7 +106,7 @@ const LoginPage = () => {
       if (data.rol === 1) {
         navigate("/admin");
       } else if (data.rol === 2) {
-        navigate("/cliente");
+        navigate("/user");
       } else {
         throw new Error("Rol no permitido");
       }

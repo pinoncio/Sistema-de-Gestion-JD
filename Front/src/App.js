@@ -21,12 +21,19 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
 
-          {/* Usamos PrivateRoute para proteger estas rutas */}
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <AdminHome rolPermitido={1}/>
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/users"
             element={
               <PrivateRoute>
-                <UserPage />
+                <UserPage rolPermitido={1}/>
               </PrivateRoute>
             }
           />
@@ -34,7 +41,7 @@ const App = () => {
             path="/role"
             element={
               <PrivateRoute>
-                <RolePage />
+                <RolePage rolPermitido={1}/>
               </PrivateRoute>
             }
           />
@@ -42,19 +49,63 @@ const App = () => {
             path="/perfil/:id_usuario"
             element={
               <PrivateRoute>
-                <UserProfilePage />
+                <UserProfilePage rolPermitido={1}/>
               </PrivateRoute>
             }
           />
 
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/cliente" element={<ClientePage />} />
-          <Route path="/:id_cliente" element={<ClientProfilePage />} />
-          <Route path="/admin" element={<AdminHome />} />
-          <Route path="/categoria" element={<CategoriaPage />} />
-          <Route path="/insumo" element={<InsumoPage />} />
-          <Route path="/user" element={<UserHome />} />
-          <Route path="/verInsumo/:id_insumo" element={<InsumoProfilePage />} />
+          {/* Rutas protegidas para rol 2 (Usuarios normales) */}
+          <Route
+            path="/user"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <UserHome />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Otras rutas protegidas */}
+          <Route
+            path="/cliente"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <ClientePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/clienteProfile"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <ClientProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/categoria"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <CategoriaPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/insumo"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <InsumoPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/insumoProfile"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <InsumoProfilePage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>

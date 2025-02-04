@@ -3,7 +3,7 @@ import { Typography, Box, Card, CardContent } from "@mui/material";
 import { motion } from "framer-motion";
 import Header from "../Components/Layout/Header";
 import { styled } from "@mui/system";
-import ContactForm from "../Components/Layout/ContactForm";
+import ContactForm from "../Components/ContactForm";
 
 // Estilo para el contenedor cuadrado de la imagen
 const ImageContainer = styled(Box)({
@@ -31,7 +31,7 @@ const Home = () => {
       <Header />
 
       {/* Hero Section */}
-      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#f4f4f4" }}>
+      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -79,7 +79,7 @@ const Home = () => {
         }}
       />
       {/* Sección "Sobre Nosotros" */}
-      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#f0f0f0" }}>
+      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -96,7 +96,7 @@ const Home = () => {
             }}
           >
             <CardContent>
-              <Typography variant="h4" gutterBottom sx={{ color: "#fff" }}>
+              <Typography variant="h4" gutterBottom sx={{ color: "#ffffff" }}>
                 Sobre Nosotros
               </Typography>
             </CardContent>
@@ -139,7 +139,7 @@ const Home = () => {
           }}
         >
           <CardContent>
-            <Typography variant="h4" gutterBottom sx={{ color: "#fff" }}>
+            <Typography variant="h4" gutterBottom sx={{ color: "#ffffff" }}>
               Contáctanos
             </Typography>
           </CardContent>
