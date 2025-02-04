@@ -155,7 +155,7 @@ const InsumoProfilePage = () => {
               />
               <TextField
                 label="Ajuste Actual"
-                value={insumo.AJUSTE_ACTUAL || ""}
+                value={insumo.AJUSTE_ACTUAL ? `$${insumo.AJUSTE_ACTUAL.toLocaleString()}` : ""}
                 variant="outlined"
                 fullWidth
                 readOnly
@@ -168,26 +168,20 @@ const InsumoProfilePage = () => {
                 readOnly
               />
               <TextField
-                label="Costo Promedio"
-                value={insumo.COSTO_PROMEDIO ? `$${insumo.COSTO_PROMEDIO.toLocaleString()}` : ""}
-                variant="outlined"
-                fullWidth
-                readOnly
-              />
-              <TextField
-                label="Total"
-                value={insumo.TOTAL ? `$${insumo.TOTAL.toLocaleString()}` : ""}
-                variant="outlined"
-                fullWidth
-                readOnly
-              />
-              <TextField
                 label="Precio Neto"
                 value={insumo.PRECIO_NETO ? `$${insumo.PRECIO_NETO.toLocaleString()}` : ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
+              <TextField
+                label="Total"
+                value={insumo.PRECIO_VENTA ? `$${insumo.PRECIO_VENTA.toLocaleString()}` : ""}
+                variant="outlined"
+                fullWidth
+                readOnly
+              />
+              
             </Box>
           </CardContent>
         </Card>
