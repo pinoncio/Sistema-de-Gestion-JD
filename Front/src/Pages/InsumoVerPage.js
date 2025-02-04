@@ -141,21 +141,33 @@ const InsumoProfilePage = () => {
               />
               <TextField
                 label="Costo Unidad"
-                value={insumo.COSTO_UNIDAD ? `$${insumo.COSTO_UNIDAD.toLocaleString()}` : ""}
+                value={
+                  insumo.COSTO_UNIDAD
+                    ? `$${insumo.COSTO_UNIDAD.toLocaleString()}`
+                    : ""
+                }
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Sub Total"
-                value={insumo.SUB_TOTAL ? `$${insumo.SUB_TOTAL.toLocaleString()}` : ""}
+                value={
+                  insumo.SUB_TOTAL
+                    ? `$${insumo.SUB_TOTAL.toLocaleString()}`
+                    : ""
+                }
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Ajuste Actual"
-                value={insumo.AJUSTE_ACTUAL ? `$${insumo.AJUSTE_ACTUAL.toLocaleString()}` : ""}
+                value={
+                  insumo.AJUSTE_ACTUAL
+                    ? `$${insumo.AJUSTE_ACTUAL.toLocaleString()}`
+                    : ""
+                }
                 variant="outlined"
                 fullWidth
                 readOnly
@@ -169,19 +181,26 @@ const InsumoProfilePage = () => {
               />
               <TextField
                 label="Precio Neto"
-                value={insumo.PRECIO_NETO ? `$${insumo.PRECIO_NETO.toLocaleString()}` : ""}
+                value={
+                  insumo.PRECIO_NETO
+                    ? `$${insumo.PRECIO_NETO.toLocaleString()}`
+                    : ""
+                }
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Total"
-                value={insumo.PRECIO_VENTA ? `$${insumo.PRECIO_VENTA.toLocaleString()}` : ""}
+                value={
+                  insumo.PRECIO_VENTA
+                    ? `$${insumo.PRECIO_VENTA.toLocaleString()}`
+                    : ""
+                }
                 variant="outlined"
                 fullWidth
                 readOnly
               />
-              
             </Box>
           </CardContent>
         </Card>

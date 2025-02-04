@@ -60,11 +60,7 @@ const AdminHome = () => {
         }}
       >
         <Container>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{ fontSize: "2.5rem"}}
-          >
+          <Typography variant="h4" gutterBottom sx={{ fontSize: "2.5rem" }}>
             Bienvenido, Administrador
           </Typography>
 

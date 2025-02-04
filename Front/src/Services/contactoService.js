@@ -34,15 +34,9 @@ export const addContactoComercial = async (contactoData) => {
 };
 
 // Actualizar un contacto comercial
-export const updateContactoComercial = async (
-  id_cliente,
-  contactoData
-) => {
+export const updateContactoComercial = async (id_cliente, contactoData) => {
   try {
-    const response = await api.put(
-      `/contacto/${id_cliente}`,
-      contactoData
-    );
+    const response = await api.put(`/contacto/${id_cliente}`, contactoData);
     return response.data;
   } catch (error) {
     console.error("Error al actualizar el contacto comercial:", error);

@@ -1,9 +1,9 @@
-import api from './apiService'; 
+import api from "./apiService";
 
 // Obtener todos los roles
 export const getRoles = async () => {
   try {
-    const response = await api.get('/roles/list');
+    const response = await api.get("/roles/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener roles", error);
@@ -14,7 +14,7 @@ export const getRoles = async () => {
 // Crear un nuevo rol
 export const createRole = async (nombre_rol) => {
   try {
-    const response = await api.post('/roles/',  nombre_rol );
+    const response = await api.post("/roles/", nombre_rol);
     return response.data;
   } catch (error) {
     console.error("Error al crear rol", error);
@@ -25,7 +25,7 @@ export const createRole = async (nombre_rol) => {
 // Actualizar un rol
 export const updateRole = async (id_rol, nombre_rol) => {
   try {
-    const response = await api.put(`/roles/${id_rol}`,  nombre_rol );
+    const response = await api.put(`/roles/${id_rol}`, nombre_rol);
     return response.data;
   } catch (error) {
     console.error("Error al actualizar rol", error);

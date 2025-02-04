@@ -20,7 +20,10 @@ const ContactForm = () => {
   const validateForm = () => {
     const { name, phone, email, message } = formData;
     if (!name || !phone || !email || !message) {
-      setFeedback({ type: "error", message: "Todos los campos son obligatorios" });
+      setFeedback({
+        type: "error",
+        message: "Todos los campos son obligatorios",
+      });
       return false;
     }
     return true;
@@ -35,10 +38,16 @@ const ContactForm = () => {
 
     try {
       await api.post("/email/send-email", formData);
-      setFeedback({ type: "success", message: "Formulario enviado correctamente" });
+      setFeedback({
+        type: "success",
+        message: "Formulario enviado correctamente",
+      });
       setFormData({ name: "", phone: "", email: "", message: "" });
     } catch (error) {
-      setFeedback({ type: "error", message: error.response?.data?.error || "Error al enviar el formulario" });
+      setFeedback({
+        type: "error",
+        message: error.response?.data?.error || "Error al enviar el formulario",
+      });
     } finally {
       setLoading(false);
     }
@@ -49,7 +58,7 @@ const ContactForm = () => {
       <Typography variant="h6" gutterBottom>
         Formulario de Contacto
       </Typography>
-      
+
       {feedback.message && (
         <Alert severity={feedback.type} sx={{ marginBottom: 2 }}>
           {feedback.message}
@@ -92,7 +101,12 @@ const ContactForm = () => {
           rows={4}
           sx={{ marginBottom: 2 }}
         />
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+        >
           {loading ? "Enviando..." : "Enviar"}
         </Button>
       </form>

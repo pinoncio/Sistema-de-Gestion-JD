@@ -1,10 +1,6 @@
 import React from "react";
 import { Box, Grid2, Paper, Typography, Container } from "@mui/material";
-import {
-  People,
-  Category,
-  Inventory,
-} from "@mui/icons-material"; // Añadimos más iconos
+import { People, Category, Inventory } from "@mui/icons-material"; // Añadimos más iconos
 import { useNavigate } from "react-router-dom";
 import UserLayout from "../Components/Layout/UserLayout";
 
@@ -33,8 +29,11 @@ const UserHome = () => {
       title: "Proximamente",
       route: "",
     },
-    { //icon: <Help sx={{ fontSize: "6rem" }} />, 
-    title: "Proximamente", route: "" },
+    {
+      //icon: <Help sx={{ fontSize: "6rem" }} />,
+      title: "Proximamente",
+      route: "",
+    },
     {
       //icon: <InsertChart sx={{ fontSize: "6rem" }} />,
       title: "Proximamente",

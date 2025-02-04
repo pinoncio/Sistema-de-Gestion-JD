@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom"; // Importa Link de react-router-dom
-import moment from 'moment';
+import moment from "moment";
 
 const UserTable = ({
   usuarios,
@@ -92,7 +92,9 @@ const UserTable = ({
             <TableCell>{usuario.APELLIDO_USUARIO}</TableCell>
             <TableCell>{usuario.RUT_USUARIO}</TableCell>
             <TableCell>{usuario.EMAIL_USUARIO}</TableCell>
-            <TableCell>{moment(usuario.FECHA_NACIMIENTO_USUARIO).format('DD/MM/YYYY')}</TableCell>
+            <TableCell>
+              {moment(usuario.FECHA_NACIMIENTO_USUARIO).format("DD/MM/YYYY")}
+            </TableCell>
             <TableCell>{getRoleName(usuario.ROL_USUARIO)}</TableCell>
             <TableCell>
               <Switch

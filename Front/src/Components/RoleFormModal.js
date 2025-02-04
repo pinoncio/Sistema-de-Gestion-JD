@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  TextField,
-  Button,
-  Snackbar,
-  Alert
-} from "@mui/material";
+import { Modal, TextField, Button, Snackbar, Alert } from "@mui/material";
 import "../Styles/FormRole.css";
 
 const RoleFormModal = ({
@@ -31,7 +25,7 @@ const RoleFormModal = ({
 
   // Validar que el nombre del rol no contenga caracteres no permitidos (solo letras y espacios)
   const validateNombreRol = (nombre) => {
-    const regex = /^[a-zA-Z\s]*$/;  // Cambié el regex para permitir borrar completamente el campo (vacío)
+    const regex = /^[a-zA-Z\s]*$/; // Cambié el regex para permitir borrar completamente el campo (vacío)
     return regex.test(nombre);
   };
 
@@ -40,13 +34,15 @@ const RoleFormModal = ({
 
     // Solo actualizar el estado si el valor es válido
     if (validateNombreRol(value)) {
-      setNombreRol(value);  
+      setNombreRol(value);
     } else if (value === "") {
       // Permitir borrar el contenido sin mostrar el mensaje de error
       setNombreRol(value);
     } else {
       // Mostrar mensaje de error en el Snackbar solo si no es válido
-      setSnackbarMessage("El nombre del rol solo puede contener letras y espacios.");
+      setSnackbarMessage(
+        "El nombre del rol solo puede contener letras y espacios."
+      );
       setSnackbarOpen(true);
     }
   };
@@ -55,13 +51,13 @@ const RoleFormModal = ({
     e.preventDefault();
 
     if (!nombreRol.trim()) {
-      return;  // No hacer nada si el nombre del rol está vacío
+      return; // No hacer nada si el nombre del rol está vacío
     }
 
     try {
       await onSubmit(nombreRol);
       // Limpiar el formulario y cerrar el modal
-      setNombreRol("");  // Reinicia el valor del input
+      setNombreRol(""); // Reinicia el valor del input
       onClose();
       setEditing(false);
       setEditId(null);
@@ -88,7 +84,9 @@ const RoleFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-                helperText={!nombreRol.trim() && "El nombre del rol es obligatorio."}
+                helperText={
+                  !nombreRol.trim() && "El nombre del rol es obligatorio."
+                }
               />
             </div>
             <div className="role-form-actions">
@@ -104,7 +102,7 @@ const RoleFormModal = ({
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}  // Ubicación a la derecha superior
+        anchorOrigin={{ vertical: "top", horizontal: "right" }} // Ubicación a la derecha superior
       >
         <Alert
           onClose={handleCloseSnackbar}

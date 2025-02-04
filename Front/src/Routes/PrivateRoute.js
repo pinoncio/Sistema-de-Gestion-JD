@@ -6,7 +6,12 @@ const PrivateRoute = ({ children, rolPermitido }) => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   if (!token || !user || user.rol !== rolPermitido) {
-    return <Navigate to="/login" state={{ error: "Acceso denegado. No tienes permisos." }} />;
+    return (
+      <Navigate
+        to="/login"
+        state={{ error: "Acceso denegado. No tienes permisos." }}
+      />
+    );
   }
 
   return children;

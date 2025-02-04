@@ -86,7 +86,7 @@ const ClienteFormModal = ({
   }, [clienteData]);
 
   const formatRUT = (rut) => {
-    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9); 
+    let cleanedRUT = rut.replace(/[^0-9kK]/g, "").slice(0, 9);
 
     if (cleanedRUT.length <= 8) {
       cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
@@ -96,7 +96,7 @@ const ClienteFormModal = ({
         "$1.$2.$3-$4"
       );
     } else {
-      cleanedRUT = cleanedRUT.substring(0, 9); 
+      cleanedRUT = cleanedRUT.substring(0, 9);
     }
 
     return cleanedRUT;
@@ -128,15 +128,15 @@ const ClienteFormModal = ({
     setFormData({ ...formData, RUT: formattedRUT });
   };
 
-  const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value); 
+  const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value);
   const validateNombreRazonSocial = (value) =>
-    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateNombreFantasia = (value) =>
     /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
-  const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
-  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value); 
-  const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
-  const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value); 
+  const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value);
+  const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateContactoComercial = (value) =>
     /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateCorreo = (value) =>

@@ -11,11 +11,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const CategoriaTable = ({
-  categorias = [],
-  onDelete,
-  onEdit,
-}) => {
+const CategoriaTable = ({ categorias = [], onDelete, onEdit }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
 

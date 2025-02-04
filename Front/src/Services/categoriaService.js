@@ -1,9 +1,9 @@
-import api from './apiService'; 
+import api from "./apiService";
 
 // Obtener todas las categorías
 export const getCategorias = async () => {
   try {
-    const response = await api.get('/categoria/list');
+    const response = await api.get("/categoria/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener categorías", error);
@@ -14,7 +14,7 @@ export const getCategorias = async () => {
 // Crear una nueva categoría
 export const createCategoria = async (nombre_categoria) => {
   try {
-    const response = await api.post('/categoria/', nombre_categoria);
+    const response = await api.post("/categoria/", nombre_categoria);
     return response.data;
   } catch (error) {
     console.error("Error al crear categoría", error);
@@ -25,7 +25,10 @@ export const createCategoria = async (nombre_categoria) => {
 // Actualizar una categoría
 export const updateCategoria = async (id_categoria, nombre_categoria) => {
   try {
-    const response = await api.put(`/categoria/${id_categoria}`, nombre_categoria);
+    const response = await api.put(
+      `/categoria/${id_categoria}`,
+      nombre_categoria
+    );
     return response.data;
   } catch (error) {
     console.error("Error al actualizar categoría", error);

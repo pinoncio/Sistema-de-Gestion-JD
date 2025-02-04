@@ -83,7 +83,9 @@ const UserProfilePage = () => {
         <Typography variant="body1" color="error">
           {error}
         </Typography>
-        <Button onClick={() => navigate("/users")}>Volver a la lista de usuarios</Button>
+        <Button onClick={() => navigate("/users")}>
+          Volver a la lista de usuarios
+        </Button>
       </div>
     );
   }
@@ -94,7 +96,9 @@ const UserProfilePage = () => {
         <Typography variant="body1" color="error">
           Usuario no encontrado.
         </Typography>
-        <Button onClick={() => navigate("/users")}>Volver a la lista de usuarios</Button>
+        <Button onClick={() => navigate("/users")}>
+          Volver a la lista de usuarios
+        </Button>
       </div>
     );
   }
@@ -112,7 +116,8 @@ const UserProfilePage = () => {
             <Divider sx={{ marginBottom: 2 }} />
             <Box sx={{ marginTop: 2 }}>
               <Typography variant="body1" className="profile-details">
-                <strong>Nombre:</strong> {user.NOMBRE_USUARIO} {user.APELLIDO_USUARIO}
+                <strong>Nombre:</strong> {user.NOMBRE_USUARIO}{" "}
+                {user.APELLIDO_USUARIO}
               </Typography>
               <Typography variant="body1" className="profile-details">
                 <strong>RUT:</strong> {user.RUT_USUARIO}
@@ -126,21 +131,27 @@ const UserProfilePage = () => {
               </Typography>
               <Typography variant="body1" className="profile-details">
                 <strong>Estado:</strong>
-                <span className={`status ${user.ESTADO_USUARIO ? "active" : "inactive"}`}>
+                <span
+                  className={`status ${
+                    user.ESTADO_USUARIO ? "active" : "inactive"
+                  }`}
+                >
                   {user.ESTADO_USUARIO ? "Activo" : "Inactivo"}
                 </span>
               </Typography>
               <Typography variant="body1" className="profile-details">
                 <strong>Rol:</strong>
-                <span className={`role-tag ${roleName}`}>
-                  {roleName}
-                </span>
+                <span className={`role-tag ${roleName}`}>{roleName}</span>
               </Typography>
             </Box>
           </CardContent>
         </Card>
         <div className="profile-button">
-          <Button variant="contained" color="primary" onClick={() => navigate("/users")}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/users")}
+          >
             Volver a la lista de usuarios
           </Button>
         </div>
@@ -151,7 +162,7 @@ const UserProfilePage = () => {
         autoHideDuration={6000}
         message={error}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       />
     </AdminLayout>
   );

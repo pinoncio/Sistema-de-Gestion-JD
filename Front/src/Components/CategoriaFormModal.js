@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  TextField,
-  Button,
-  Snackbar,
-  Alert
-} from "@mui/material";
+import { Modal, TextField, Button, Snackbar, Alert } from "@mui/material";
 import "../Styles/FormCategoria.css";
 
 const CategoriaFormModal = ({
@@ -31,7 +25,7 @@ const CategoriaFormModal = ({
 
   // Validar que el nombre de la categoría no contenga caracteres no permitidos (solo letras y espacios)
   const validateNombreCategoria = (nombre) => {
-    const regex = /^[a-zA-Z\s]*$/;  // Cambié el regex para permitir borrar completamente el campo (vacío)
+    const regex = /^[a-zA-Z\s]*$/; // Cambié el regex para permitir borrar completamente el campo (vacío)
     return regex.test(nombre);
   };
 
@@ -40,13 +34,15 @@ const CategoriaFormModal = ({
 
     // Solo actualizar el estado si el valor es válido
     if (validateNombreCategoria(value)) {
-      setNombreCategoria(value);  
+      setNombreCategoria(value);
     } else if (value === "") {
       // Permitir borrar el contenido sin mostrar el mensaje de error
       setNombreCategoria(value);
     } else {
       // Mostrar mensaje de error en el Snackbar solo si no es válido
-      setSnackbarMessage("El nombre de la categoría solo puede contener letras y espacios.");
+      setSnackbarMessage(
+        "El nombre de la categoría solo puede contener letras y espacios."
+      );
       setSnackbarOpen(true);
     }
   };
@@ -55,13 +51,13 @@ const CategoriaFormModal = ({
     e.preventDefault();
 
     if (!nombreCategoria.trim()) {
-      return;  // No hacer nada si el nombre de la categoría está vacío
+      return; // No hacer nada si el nombre de la categoría está vacío
     }
 
     try {
       await onSubmit(nombreCategoria);
       // Limpiar el formulario y cerrar el modal
-      setNombreCategoria("");  // Reinicia el valor del input
+      setNombreCategoria(""); // Reinicia el valor del input
       onClose();
       setEditing(false);
       setEditId(null);
@@ -88,7 +84,10 @@ const CategoriaFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-                helperText={!nombreCategoria.trim() && "El nombre de la categoría es obligatorio."}
+                helperText={
+                  !nombreCategoria.trim() &&
+                  "El nombre de la categoría es obligatorio."
+                }
               />
             </div>
             <div className="categoria-form-actions">
@@ -104,7 +103,7 @@ const CategoriaFormModal = ({
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}  // Ubicación a la derecha superior
+        anchorOrigin={{ vertical: "top", horizontal: "right" }} // Ubicación a la derecha superior
       >
         <Alert
           onClose={handleCloseSnackbar}

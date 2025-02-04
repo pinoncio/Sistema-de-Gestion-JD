@@ -25,7 +25,7 @@ export const getCliente = async (id_cliente) => {
 // Crear un nuevo cliente
 export const createCliente = async (formData) => {
   try {
-    const response = await api.post("/clientes/", formData); 
+    const response = await api.post("/clientes/", formData);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -41,7 +41,6 @@ export const createCliente = async (formData) => {
     throw error;
   }
 };
-
 
 // Actualizar un cliente
 export const updateCliente = async (id_cliente, clienteData) => {

@@ -1,120 +1,120 @@
 /* src/Pages/UserProfilePage.css */
 .profile-container {
-    padding: 30px;
-    background-color: #f0f4f8;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(248, 187, 187, 0.1);
-    max-width: 1400px;
-    margin: 0 auto;
-    font-family: 'Roboto', sans-serif;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -ms-border-radius: 20px;
-    -o-border-radius: 20px;
+  padding: 30px;
+  background-color: #f0f4f8;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(248, 187, 187, 0.1);
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Roboto", sans-serif;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
 }
 
 .profile-container .profile-card {
-    padding: 15px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile-container .profile-title {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 50px;
-    font-weight: 400;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 50px;
+  font-weight: 400;
 }
 
 .profile-container .profile-details {
-    margin-bottom: 30px;
-    font-size: 18px;
-    line-height: 1.6;
-    color: #555;
+  margin-bottom: 30px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #555;
 }
 
-
 .profile-details strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .status {
-    font-weight: bold;
-    padding: 8px 12px;
-    border-radius: 5px;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 5px;
 }
 
 .status.active {
-    background-color: #4caf50;
-    color: white;
+  background-color: #4caf50;
+  color: white;
 }
 
 .status.inactive {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+  color: white;
 }
 
 /* role-tag con fondo negro y texto blanco */
 .profile-card .role-tag {
-    display: inline-block;
-    padding: 5px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    color: white;
-    background-color: #000; /* Fondo negro */
-    text-transform: uppercase; /* Mayúsculas para el rol */
+  display: inline-block;
+  padding: 5px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  background-color: #000; /* Fondo negro */
+  text-transform: uppercase; /* Mayúsculas para el rol */
 }
 
 .profile-button {
-    display: block;
-    margin-top: 40px;
-    text-align: center;
+  display: block;
+  margin-top: 40px;
+  text-align: center;
 }
 
 .profile-button button {
-    padding: 12px 25px;
-    font-size: 18px;
-    background-color: #000000;
-    color: white;
-    border-radius: 5px;
-    border: none;
-    text-transform: uppercase;
-    cursor: pointer; /* Cambia el cursor al pasar por encima */
+  padding: 12px 25px;
+  font-size: 18px;
+  background-color: #000000;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  text-transform: uppercase;
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
 }
 
 .profile-button button:hover {
-    background-color: #4b4b4b;
+  background-color: #4b4b4b;
 }
 
 /* Estilo para texto de error y de carga */
-.error-text, .loading-text {
-    color: #f44336;
-    font-size: 16px;
-    text-align: center;
+.error-text,
+.loading-text {
+  color: #f44336;
+  font-size: 16px;
+  text-align: center;
 }
 
 /* Responsividad para pantallas pequeñas */
 @media (max-width: 600px) {
-    .profile-container {
-        padding: 20px;
-    }
+  .profile-container {
+    padding: 20px;
+  }
 
-    .profile-card {
-        width: 100%;
-        padding: 20px;
-    }
+  .profile-card {
+    width: 100%;
+    padding: 20px;
+  }
 
-    .profile-title {
-        font-size: 22px;
-    }
+  .profile-title {
+    font-size: 22px;
+  }
 
-    .profile-details {
-        font-size: 16px;
-    }
+  .profile-details {
+    font-size: 16px;
+  }
 
-    .profile-button button {
-        font-size: 16px;
-    }
+  .profile-button button {
+    font-size: 16px;
+  }
 }

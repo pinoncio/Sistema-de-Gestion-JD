@@ -13,7 +13,6 @@ import Swal from "sweetalert2";
 import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/Categoria.css";
 
-
 const CategoriaPage = () => {
   const [categorias, setCategorias] = useState([]);
   const [open, setOpen] = useState(false);
@@ -29,7 +28,9 @@ const CategoriaPage = () => {
   const fetchCategorias = async () => {
     try {
       const data = await getCategorias();
-      const categoriasOrdenadas = data.sort((a, b) => a.ID_CATEGORIA - b.ID_CATEGORIA);
+      const categoriasOrdenadas = data.sort(
+        (a, b) => a.ID_CATEGORIA - b.ID_CATEGORIA
+      );
       setCategorias(categoriasOrdenadas);
     } catch (error) {
       console.error("Error al obtener las categorías", error);
@@ -151,7 +152,9 @@ const CategoriaPage = () => {
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        categoriaData={categorias.find((categoria) => categoria.ID_CATEGORIA === editId)}
+        categoriaData={categorias.find(
+          (categoria) => categoria.ID_CATEGORIA === editId
+        )}
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}

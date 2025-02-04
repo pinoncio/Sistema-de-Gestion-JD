@@ -1,9 +1,9 @@
-import api from './apiService';  // Importa la configuración de axios
+import api from "./apiService"; // Importa la configuración de axios
 
 // Obtener todos los insumos
 export const getInsumos = async () => {
   try {
-    const response = await api.get('/insumo/list');
+    const response = await api.get("/insumo/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener los insumos:", error);
@@ -25,7 +25,7 @@ export const getInsumo = async (id_insumo) => {
 // Crear un nuevo insumo
 export const createInsumo = async (insumoData) => {
   try {
-    const response = await api.post('/insumo/', insumoData);
+    const response = await api.post("/insumo/", insumoData);
     return response.data;
   } catch (error) {
     console.error("Error al crear el insumo:", error);

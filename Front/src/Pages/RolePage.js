@@ -170,9 +170,9 @@ const RolePage = () => {
           onClose={handleCloseSnackbar}
           severity="success"
           sx={{
-            width: "400px", 
-            fontSize: "1.2rem", 
-            padding: "16px", 
+            width: "400px",
+            fontSize: "1.2rem",
+            padding: "16px",
             backgroundColor: "#4caf50",
             color: "white",
           }}

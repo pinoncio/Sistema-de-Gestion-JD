@@ -1,9 +1,9 @@
-import api from './apiService';  
+import api from "./apiService";
 
 // Obtener todos los métodos de pago
 export const getMetodosPago = async () => {
   try {
-    const response = await api.get('/metodo/list');
+    const response = await api.get("/metodo/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener los métodos de pago:", error);
@@ -25,7 +25,7 @@ export const getMetodoPago = async (id_metodo_pago) => {
 // Crear un nuevo método de pago
 export const createMetodoPago = async (metodoPagoData) => {
   try {
-    const response = await api.post('/metodo/', metodoPagoData);
+    const response = await api.post("/metodo/", metodoPagoData);
     return response.data;
   } catch (error) {
     console.error("Error al crear el método de pago:", error);

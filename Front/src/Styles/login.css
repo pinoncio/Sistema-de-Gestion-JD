@@ -1,103 +1,98 @@
-
-
 /* Contenedor principal */
 .login-container {
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-  }
-  
-  /* Sección de la imagen */
-  .image-section {
-    flex: 1;
-    background: url("../assets/images/Tractores.jpg") no-repeat center center;
-    background-size: cover;
-    height: 100%;
-  }
-  
-  /* Sección del formulario */
-  .form-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-  }
-  
-  /* Contenedor del formulario */
-  .form-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    gap: 20px; /* Espacio entre los elementos */
-  }
-  
-  /* Caja de login */
-  .login-box {
-    padding: 100px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    max-width: 1000px;
-    width: 150%;
-    min-height: 500px;
-    transition: all 0.3s ease;
-  }
-  
-  /* Títulos */
-  .form-section .form-wrapper .login-title {
-    text-align: center;
-    color: #000000;
-    font-weight: bold;
-    font-size: 2.5rem !important;
-    margin-bottom: 30px !important;
-  }
-  
-  .form-section .form-wrapper .login-subtitle {
-    text-align: center;
-    color: #555;
-    margin-bottom: 30px !important;
-    font-size: 1.5rem !important;
-  }
-  
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 
-  /* Botón */
-  .form-section .form-wrapper .login-button {
-    background-color: #000000;
-    font-weight: bold;
-    text-transform: none;
-    font-size: 1.5rem !important;
-    padding: 20px 20px !important;
-    border-radius: 8px;
-    width: 100%;
-  }
-  
-  .form-section .form-wrapper .login-button:hover {
-    background-color: #000000;
-  }
-  
+/* Sección de la imagen */
+.image-section {
+  flex: 1;
+  background: url("../assets/images/Tractores.jpg") no-repeat center center;
+  background-size: cover;
+  height: 100%;
+}
+
+/* Sección del formulario */
+.form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Contenedor del formulario */
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px; /* Espacio entre los elementos */
+}
+
+/* Caja de login */
+.login-box {
+  padding: 100px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  max-width: 1000px;
+  width: 150%;
+  min-height: 500px;
+  transition: all 0.3s ease;
+}
+
+/* Títulos */
+.form-section .form-wrapper .login-title {
+  text-align: center;
+  color: #000000;
+  font-weight: bold;
+  font-size: 2.5rem !important;
+  margin-bottom: 30px !important;
+}
+
+.form-section .form-wrapper .login-subtitle {
+  text-align: center;
+  color: #555;
+  margin-bottom: 30px !important;
+  font-size: 1.5rem !important;
+}
+
+/* Botón */
+.form-section .form-wrapper .login-button {
+  background-color: #000000;
+  font-weight: bold;
+  text-transform: none;
+  font-size: 1.5rem !important;
+  padding: 20px 20px !important;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.form-section .form-wrapper .login-button:hover {
+  background-color: #000000;
+}
 
 /* Contenedor del input con el ícono */
 .input-with-icon {
-    display: flex;
-    flex-direction: column; /* Alinear ícono y campo en columna */
-    align-items: flex-start;
-    position: relative;
-    width: 100%;
-  }
-  
-  /* Estilo para los íconos */
-  .input-with-icon .icon {
-    font-size: 3rem; /* Tamaño del ícono */
-    color: #000000;
-    margin-bottom: 5px; /* Espaciado entre el ícono y el input */
-  }
-  
-  /* Ajustes para el TextField */
-  .input-with-icon .login-input {
-    width: 100%; /* Para que el campo ocupe todo el ancho del contenedor */
-  }
-  
+  display: flex;
+  flex-direction: column; /* Alinear ícono y campo en columna */
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+}
+
+/* Estilo para los íconos */
+.input-with-icon .icon {
+  font-size: 3rem; /* Tamaño del ícono */
+  color: #000000;
+  margin-bottom: 5px; /* Espaciado entre el ícono y el input */
+}
+
+/* Ajustes para el TextField */
+.input-with-icon .login-input {
+  width: 100%; /* Para que el campo ocupe todo el ancho del contenedor */
+}

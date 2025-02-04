@@ -166,7 +166,9 @@ const UserPage = () => {
       );
 
       setSnackbarMessage(
-        `El usuario ha sido ${nuevoEstado ? "activado" : "desactivado"} exitosamente.`
+        `El usuario ha sido ${
+          nuevoEstado ? "activado" : "desactivado"
+        } exitosamente.`
       );
       setSnackbarSeverity("success");
       setSnackbarOpen(true);

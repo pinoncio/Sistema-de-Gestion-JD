@@ -8,19 +8,13 @@ import {
   TableSortLabel,
   Switch,
   IconButton,
-
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 
-const ClienteTable = ({
-  clientes,
-  onDelete,
-  onToggleStatus,
-  onEdit,
-}) => {
+const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
 
@@ -54,7 +48,15 @@ const ClienteTable = ({
     <Table>
       <TableHead>
         <TableRow>
-          {["Código", "Razón Social", "Nombre Fantasía", "RUT", "Giro", "Estado Vigente", "Acciones"].map((header) => (
+          {[
+            "Código",
+            "Razón Social",
+            "Nombre Fantasía",
+            "RUT",
+            "Giro",
+            "Estado Vigente",
+            "Acciones",
+          ].map((header) => (
             <TableCell key={header}>
               <TableSortLabel
                 active={orderBy === header}
@@ -78,11 +80,13 @@ const ClienteTable = ({
             <TableCell>
               <Switch
                 checked={cliente.CLIENTE_VIGENTE}
-                onChange={() => onToggleStatus(cliente.ID_CLIENTE, !cliente.CLIENTE_VIGENTE)}
+                onChange={() =>
+                  onToggleStatus(cliente.ID_CLIENTE, !cliente.CLIENTE_VIGENTE)
+                }
               />
             </TableCell>
             <TableCell>
-            <Link to={`/${cliente.ID_CLIENTE}`}>
+              <Link to={`/${cliente.ID_CLIENTE}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>

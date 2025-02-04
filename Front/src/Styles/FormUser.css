@@ -1,66 +1,66 @@
 /* Estilo para el contenedor del modal */
 .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 1000px;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  
-  /* Título del modal */
-  .modal-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1px;
-    text-align: center;
-  }
-  
-  /* Espaciado entre los campos de texto */
-  .modal-content form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Botón de submit */
-  .modal-content button[type="submit"] {
-    padding: 10px;
-    background-color: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 1000px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
-  .modal-content button[type="submit"]:hover {
-    background-color: #1565c0;
-  }
+/* Título del modal */
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1px;
+  text-align: center;
+}
 
-  .form-actions button {
+/* Espaciado entre los campos de texto */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botón de submit */
+.modal-content button[type="submit"] {
+  padding: 10px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-content button[type="submit"]:hover {
+  background-color: #1565c0;
+}
+
+.form-actions button {
   margin-right: 10px;
 }
-  /* Estilo para los campos de texto */
-  .modal-content .MuiTextField-root {
-    margin-bottom: 10px;
-  }
-  
-  /* Estilo para el switch de estado */
-  .modal-content .MuiSwitch-root {
-    margin-top: 10px;
-  }
-  
-  /* Asegurar que el modal tiene un fondo translúcido */
-  .MuiModal-root {
-    backdrop-filter: blur(5px);
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-  
-  .form-row {
+/* Estilo para los campos de texto */
+.modal-content .MuiTextField-root {
+  margin-bottom: 10px;
+}
+
+/* Estilo para el switch de estado */
+.modal-content .MuiSwitch-root {
+  margin-top: 10px;
+}
+
+/* Asegurar que el modal tiene un fondo translúcido */
+.MuiModal-root {
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.form-row {
   display: flex;
   justify-content: space-between;
 }

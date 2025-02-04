@@ -36,7 +36,10 @@ export const addInformacionDePago = async (informacionData) => {
 // Actualizar una información de pago
 export const updateInformacionDePago = async (id_cliente, informacionData) => {
   try {
-    const response = await api.put(`/informacion/${id_cliente}`, informacionData);
+    const response = await api.put(
+      `/informacion/${id_cliente}`,
+      informacionData
+    );
     return response.data;
   } catch (error) {
     console.error("Error al actualizar la información de pago:", error);

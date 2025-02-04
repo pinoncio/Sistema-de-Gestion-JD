@@ -73,7 +73,7 @@ const InsumoFormModal = ({
       }));
     };
 
-    if (formData.CANTIDAD && formData.COSTO_UNIDAD ) {
+    if (formData.CANTIDAD && formData.COSTO_UNIDAD) {
       calculateSubtotal();
     }
   }, [formData.CANTIDAD, formData.COSTO_UNIDAD]);

@@ -1,9 +1,9 @@
-import api from './apiService';  // Importa la configuración de axios
+import api from "./apiService"; // Importa la configuración de axios
 
 // Obtener todos los usuarios
 export const getUsuarios = async () => {
   try {
-    const response = await api.get('/usuarios/list');
+    const response = await api.get("/usuarios/list");
     return response.data;
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);
@@ -25,7 +25,7 @@ export const getUsuario = async (id_usuario) => {
 // Crear un nuevo usuario
 export const createUsuario = async (usuarioData) => {
   try {
-    const response = await api.post('/usuarios/', usuarioData);
+    const response = await api.post("/usuarios/", usuarioData);
     return response.data;
   } catch (error) {
     console.error("Error al crear el usuario:", error);
@@ -58,7 +58,9 @@ export const deleteUsuario = async (id_usuario) => {
 // Activar o desactivar un usuario
 export const toggleUsuarioStatus = async (id_usuario, trigger) => {
   try {
-    const response = await api.put(`/usuarios/activar/${id_usuario}`, { trigger });
+    const response = await api.put(`/usuarios/activar/${id_usuario}`, {
+      trigger,
+    });
     return response.data;
   } catch (error) {
     console.error("Error al activar/desactivar el usuario:", error);
