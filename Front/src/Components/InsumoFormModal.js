@@ -37,30 +37,37 @@ const InsumoFormModal = ({
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
-    if (insumoData) {
-      setFormData({
-        TIPO_INSUMO: insumoData.TIPO_INSUMO || "",
-        NOMBRE_INSUMO: insumoData.NOMBRE_INSUMO || "",
-        UBICACION: insumoData.UBICACION || "",
-        CANTIDAD: insumoData.CANTIDAD || "",
-        COSTO_UNIDAD: insumoData.COSTO_UNIDAD || "",
-        SUB_TOTAL: insumoData.SUB_TOTAL || "",
-        AJUSTE_ACTUAL: insumoData.AJUSTE_ACTUAL || "",
-        ID_CATEGORIA: insumoData.ID_CATEGORIA || "",
-      });
-    } else {
-      setFormData({
-        TIPO_INSUMO: "",
-        NOMBRE_INSUMO: "",
-        UBICACION: "",
-        CANTIDAD: "",
-        COSTO_UNIDAD: "",
-        SUB_TOTAL: "",
-        AJUSTE_ACTUAL: "",
-        ID_CATEGORIA: "",
-      });
+    if (open) {
+      if (editing && insumoData) {
+        setFormData({
+          TIPO_INSUMO: insumoData.TIPO_INSUMO || "",
+          NOMBRE_INSUMO: insumoData.NOMBRE_INSUMO || "",
+          UBICACION: insumoData.UBICACION || "",
+          CANTIDAD: insumoData.CANTIDAD || "",
+          COSTO_UNIDAD: insumoData.COSTO_UNIDAD || "",
+          SUB_TOTAL: insumoData.SUB_TOTAL || "",
+          AJUSTE_ACTUAL: insumoData.AJUSTE_ACTUAL || "",
+          ID_CATEGORIA: insumoData.ID_CATEGORIA || "",
+        });
+      } else {
+        resetForm();
+      }
     }
-  }, [insumoData]);
+  }, [open, editing, insumoData]);
+
+  const resetForm = () => {
+    setFormData({
+      TIPO_INSUMO: "",
+      NOMBRE_INSUMO: "",
+      UBICACION: "",
+      CANTIDAD: "",
+      COSTO_UNIDAD: "",
+      SUB_TOTAL: "",
+      AJUSTE_ACTUAL: "",
+      ID_CATEGORIA: "",
+    });
+    setErrors({});
+  };
 
   useEffect(() => {
     const calculateSubtotal = () => {
@@ -137,9 +144,10 @@ const InsumoFormModal = ({
 
     try {
       await onSubmit(lowerCaseFormData);
-      onClose();
+      resetForm();
       setEditing(false);
       setEditId(null);
+      onClose();
     } catch (error) {
       console.error("Error al crear/actualizar insumo:", error);
       if (error.response && error.response.data) {

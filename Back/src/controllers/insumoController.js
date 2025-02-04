@@ -44,7 +44,15 @@ const newInsumo = async (req, res) => {
 
     // Calcular los valores automáticos
     const stock_disponible = cantidad; // Asumimos que 'cantidad' es el total disponible
-    const precio_venta = sub_total + ajuste_actual;
+    if (isNaN(sub_total) || isNaN(ajuste_actual)) {
+      return res
+        .status(400)
+        .json({ msg: "sub_total y ajuste_actual deben ser números válidos" });
+    }
+    const precio_venta = (
+      parseFloat(sub_total) + parseFloat(ajuste_actual)
+    ).toFixed(2);
+
     const precio_neto = sub_total;
     const estado_insumo = true; // El estado es siempre 'true' al crear
 
@@ -123,7 +131,7 @@ const updateInsumo = async (req, res) => {
         AJUSTE_ACTUAL: ajuste_actual,
         STOCK_DISPONIBLE: stock_disponible,
         PRECIO_VENTA: precio_venta,
-        PRECIO_NETO: precio_neto, 
+        PRECIO_NETO: precio_neto,
         ID_CATEGORIA: id_categoria,
       },
       { where: { ID_INSUMO: id_insumo } }
