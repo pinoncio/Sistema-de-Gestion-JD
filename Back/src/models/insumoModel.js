@@ -18,8 +18,7 @@ const Insumo = db.define(
     SUB_TOTAL: { type: DataTypes.FLOAT },
     AJUSTE_ACTUAL: { type: DataTypes.FLOAT },
     STOCK_DISPONIBLE: { type: DataTypes.INTEGER },
-    COSTO_PROMEDIO: { type: DataTypes.FLOAT },
-    TOTAL: { type: DataTypes.FLOAT },
+    PRECIO_VENTA: { type: DataTypes.FLOAT },
     PRECIO_NETO: { type: DataTypes.FLOAT },
     ESTADO_INSUMO: { type: DataTypes.BOOLEAN, defaultValue: true },
     ID_CATEGORIA: {

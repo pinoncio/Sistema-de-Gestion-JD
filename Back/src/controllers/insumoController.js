@@ -44,10 +44,8 @@ const newInsumo = async (req, res) => {
 
     // Calcular los valores automáticos
     const stock_disponible = cantidad; // Asumimos que 'cantidad' es el total disponible
-    const costo_promedio = ((cantidad * costo_unidad) / cantidad).toFixed(2); // Solo redondear a 2 decimales
-    const total = sub_total;
-    const precio_neto = (total + total * 0.19).toFixed(2); // Solo redondear a 2 decimales
-
+    const precio_venta = sub_total + ajuste_actual;
+    const precio_neto = sub_total;
     const estado_insumo = true; // El estado es siempre 'true' al crear
 
     // Crear el insumo
@@ -60,9 +58,8 @@ const newInsumo = async (req, res) => {
       SUB_TOTAL: sub_total,
       AJUSTE_ACTUAL: ajuste_actual,
       STOCK_DISPONIBLE: stock_disponible,
-      COSTO_PROMEDIO: parseFloat(costo_promedio), // Asegurarse que sea un número
-      TOTAL: total,
-      PRECIO_NETO: parseFloat(precio_neto), // Asegurarse que sea un número
+      PRECIO_VENTA: precio_venta,
+      PRECIO_NETO: precio_neto,
       ESTADO_INSUMO: estado_insumo,
       ID_CATEGORIA: id_categoria,
     });
@@ -102,10 +99,17 @@ const updateInsumo = async (req, res) => {
 
   try {
     // Calcular los valores automáticos
-    const stock_disponible = cantidad;
-    const costo_promedio = ((cantidad * costo_unidad) / cantidad).toFixed(2); // Solo redondear a 2 decimales
-    const total = sub_total;
-    const precio_neto = (total + total * 0.19).toFixed(2); // Solo redondear a 2 decimales
+    const stock_disponible = cantidad; // Asumimos que 'cantidad' es el total disponible
+    if (isNaN(sub_total) || isNaN(ajuste_actual)) {
+      return res
+        .status(400)
+        .json({ msg: "sub_total y ajuste_actual deben ser números válidos" });
+    }
+    const precio_venta = (
+      parseFloat(sub_total) + parseFloat(ajuste_actual)
+    ).toFixed(2);
+
+    const precio_neto = sub_total;
 
     // Actualizar el insumo
     await Insumo.update(
@@ -118,9 +122,8 @@ const updateInsumo = async (req, res) => {
         SUB_TOTAL: sub_total,
         AJUSTE_ACTUAL: ajuste_actual,
         STOCK_DISPONIBLE: stock_disponible,
-        COSTO_PROMEDIO: parseFloat(costo_promedio), // Asegurarse que sea un número
-        TOTAL: total,
-        PRECIO_NETO: parseFloat(precio_neto), // Asegurarse que sea un número
+        PRECIO_VENTA: precio_venta,
+        PRECIO_NETO: precio_neto, 
         ID_CATEGORIA: id_categoria,
       },
       { where: { ID_INSUMO: id_insumo } }

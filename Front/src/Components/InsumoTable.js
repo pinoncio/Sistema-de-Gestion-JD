@@ -65,9 +65,8 @@ const InsumoTable = ({
           <TableCell>Tipo</TableCell>
           <TableCell>Estado</TableCell>
           <TableCell>Stock Disponible</TableCell>
-          <TableCell>Costo Promedio</TableCell>
-          <TableCell>Total</TableCell>
           <TableCell>Precio Neto</TableCell>
+          <TableCell>Precio Venta</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
       </TableHead>
@@ -88,9 +87,19 @@ const InsumoTable = ({
               />
             </TableCell>
             <TableCell>{insumo.STOCK_DISPONIBLE}</TableCell>
-            <TableCell>{insumo.COSTO_PROMEDIO.toLocaleString()}</TableCell>
-            <TableCell>{insumo.TOTAL.toLocaleString()}</TableCell>
-            <TableCell>{insumo.PRECIO_NETO.toLocaleString()}</TableCell>
+            <TableCell>
+              {new Intl.NumberFormat("es-CL", {
+                style: "currency",
+                currency: "CLP",
+              }).format(insumo.PRECIO_NETO)}
+            </TableCell>
+            <TableCell>
+              {new Intl.NumberFormat("es-CL", {
+                style: "currency",
+                currency: "CLP",
+              }).format(insumo.PRECIO_VENTA)}
+            </TableCell>
+
             <TableCell>
               <Link to={`/verInsumo/${insumo.ID_INSUMO}`}>
                 <IconButton>

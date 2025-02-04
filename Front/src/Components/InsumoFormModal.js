@@ -66,18 +66,17 @@ const InsumoFormModal = ({
     const calculateSubtotal = () => {
       const cantidad = parseFloat(formData.CANTIDAD) || 0;
       const costoUnidad = parseFloat(formData.COSTO_UNIDAD) || 0;
-      const ajusteActual = parseFloat(formData.AJUSTE_ACTUAL) || 0;
-      const subtotal = cantidad * costoUnidad + ajusteActual; // Formula del subtotal
+      const subtotal = cantidad * costoUnidad;
       setFormData((prevData) => ({
         ...prevData,
         SUB_TOTAL: subtotal.toFixed(2), // Guardamos el subtotal con 2 decimales
       }));
     };
 
-    if (formData.CANTIDAD && formData.COSTO_UNIDAD && formData.AJUSTE_ACTUAL) {
+    if (formData.CANTIDAD && formData.COSTO_UNIDAD ) {
       calculateSubtotal();
     }
-  }, [formData.CANTIDAD, formData.COSTO_UNIDAD, formData.AJUSTE_ACTUAL]);
+  }, [formData.CANTIDAD, formData.COSTO_UNIDAD]);
 
   const validateName = (value) => {
     const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
