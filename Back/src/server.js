@@ -12,6 +12,7 @@ const InformacionDePagoRoutes = require("./routes/informacionPagoRoute");
 const CategoriaRoutes = require("./routes/categoriaRoute");
 const InsumoRoutes = require("./routes/insumoRoute");
 //const EmailRoutes = require("./routes/emailRoute");
+const otRoutes = require("./routes/otRoute");
 
 // Importar modelos
 const { Usuario } = require("./models/userModel");
@@ -23,6 +24,7 @@ const { ContactoComercial } = require("./models/contactoComercialModel");
 const { InformacionDePago } = require("./models/informacionPagoModel");
 const { Categoria } = require("./models/categoriaModel")
 const { Insumo } = require("./models/insumoModel");
+const { OT } = require("./models/otModel");
 
 class Server {
   constructor() {
@@ -50,6 +52,7 @@ class Server {
     this.app.use("/api/categoria", CategoriaRoutes);
     this.app.use("/api/insumo", InsumoRoutes);
     //this.app.use("/api/email", EmailRoutes);
+    this.app.use("/api/ots", otRoutes);
   }
 
   middlewares() {
@@ -68,6 +71,7 @@ class Server {
       await InformacionDePago.sync({ alter: true });
       await Categoria.sync({ alter: true });
       await Insumo.sync({ alter: true });
+      await OT.sync({ alter: true });
       console.log("Base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(

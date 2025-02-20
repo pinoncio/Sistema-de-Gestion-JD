@@ -26,8 +26,8 @@ const UserHome = () => {
     },
     {
       //icon: <Settings sx={{ fontSize: "6rem" }} />,
-      title: "Proximamente",
-      route: "",
+      title: "Ordenes de Trabajo",
+      route: "/ots",
     },
     {
       //icon: <Help sx={{ fontSize: "6rem" }} />,

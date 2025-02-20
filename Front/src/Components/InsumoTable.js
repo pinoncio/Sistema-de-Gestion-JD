@@ -101,7 +101,7 @@ const InsumoTable = ({
             </TableCell>
 
             <TableCell>
-              <Link to={`/verInsumo/${insumo.ID_INSUMO}`}>
+              <Link to={`/insumoProfile/${insumo.ID_INSUMO}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>

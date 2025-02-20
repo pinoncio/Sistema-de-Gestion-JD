@@ -13,6 +13,7 @@ import CategoriaPage from "./Pages/CategoriaPage";
 import InsumoPage from "./Pages/InsumoPage";
 import UserHome from "./Pages/UserHome";
 import InsumoProfilePage from "./Pages/InsumoVerPage";
+import OtPage from "./Pages/OtPage";
 
 const App = () => {
   return (
@@ -75,7 +76,7 @@ const App = () => {
             }
           />
           <Route
-            path="/clienteProfile"
+            path="/clienteProfile/:id_cliente"
             element={
               <PrivateRoute rolPermitido={2}>
                 <ClientProfilePage />
@@ -99,7 +100,23 @@ const App = () => {
             }
           />
           <Route
-            path="/insumoProfile"
+            path="/insumoProfile/:id_insumo"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <InsumoProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/ots"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                < OtPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/otProfile/:id_insumo"
             element={
               <PrivateRoute rolPermitido={2}>
                 <InsumoProfilePage />

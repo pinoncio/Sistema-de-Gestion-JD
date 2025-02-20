@@ -86,7 +86,7 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
               />
             </TableCell>
             <TableCell>
-              <Link to={`/${cliente.ID_CLIENTE}`}>
+              <Link to={`/clienteProfile/${cliente.ID_CLIENTE}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
