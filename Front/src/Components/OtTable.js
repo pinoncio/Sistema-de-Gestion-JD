@@ -11,6 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
+import moment from "moment";
 
 const OtTable = ({
   ordenes,
@@ -60,8 +61,8 @@ const OtTable = ({
           <TableRow key={orden.ID_OT || index}>
             <TableCell>{getClienteName(orden.ID_CLIENTE)}</TableCell>
             <TableCell>{orden.TIPO_DOCUMENTO}</TableCell>
-            <TableCell>{orden.FECHA_SOLICITUD}</TableCell>
-            <TableCell>{orden.FECHA_ENTREGA}</TableCell>
+            <TableCell>{moment(orden.FECHA_SOLICITUD).format("DD/MM/YYYY")}</TableCell>
+            <TableCell>{moment(orden.FECHA_ENTREGA).format("DD/MM/YYYY")}</TableCell>
             <TableCell>{orden.TIPO_OT}</TableCell>
             <TableCell>{orden.OBSERVACION_FINAL}</TableCell>
             <TableCell>{getInsumoName(orden.ID_INSUMO)}</TableCell>

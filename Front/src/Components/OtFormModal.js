@@ -6,6 +6,7 @@ import {
   Button,
   Snackbar,
   Grid,
+  InputAdornment,
 } from "@mui/material";
 
 import "../Styles/Ot.css";
@@ -53,7 +54,16 @@ const OtFormModal = ({
   useEffect(() => {
     if (open) {
       if (editing && otData) {
-        setFormData({ ...otData, SUB_TOTAL: otData.SUB_TOTAL || "0" });
+        setFormData({
+          ...otData,
+          FECHA_SOLICITUD: otData.FECHA_SOLICITUD
+            ? new Date(otData.FECHA_SOLICITUD).toISOString().split("T")[0]
+            : "",
+          FECHA_ENTREGA: otData.FECHA_ENTREGA
+            ? new Date(otData.FECHA_ENTREGA).toISOString().split("T")[0]
+            : "",
+          SUB_TOTAL: otData.SUB_TOTAL || "0",
+        });
       } else {
         resetForm();
       }
@@ -61,11 +71,12 @@ const OtFormModal = ({
   }, [open, editing, otData]);
 
   const resetForm = () => {
+    const today = new Date().toISOString().split("T")[0]; // Obtiene la fecha en formato YYYY-MM-DD
     setFormData({
       ID_CLIENTE: "",
       ID_INSUMO: "",
       TIPO_DOCUMENTO: "Orden de Trabajo",
-      FECHA_SOLICITUD: "",
+      FECHA_SOLICITUD: today,
       FECHA_ENTREGA: "",
       TIPO_OT: "",
       EQUIPO: "",
@@ -111,10 +122,10 @@ const OtFormModal = ({
     // Actualiza los valores en el estado
     setFormData((prevData) => ({
       ...prevData,
-      SUB_TOTAL: subtotal.toFixed(2),
-      MONTO_NETO: montoNeto.toFixed(2),
-      IVA: iva.toFixed(2),
-      TOTAL: total.toFixed(2),
+      SUB_TOTAL: subtotal.toFixed(0), // Sin decimales
+      MONTO_NETO: montoNeto.toFixed(0), // Sin decimales
+      IVA: iva.toFixed(0), // Sin decimales
+      TOTAL: total.toFixed(0), // Sin decimales
     }));
   }, [
     formData.CANTIDAD,
@@ -125,12 +136,20 @@ const OtFormModal = ({
     formData.MONTO_EXENTO,
   ]);
 
-  const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateName = (value) => {
+    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
+    return regex.test(value);
+  };
 
-  const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
+  const validateNumber = (value) => {
+    const regex = /^[0-9]+(\.[0-9]{1,2})?$/; // Permite solo números y hasta dos decimales
+    return regex.test(value);
+  };
 
   const handleChange = (e, field) => {
     const { value } = e.target;
+
+    // Validar si el valor es un número válido con formato decimal (hasta 2 decimales)
     if (validateNumber(value) || value === "") {
       setFormData({ ...formData, [field]: value });
       setErrors({ ...errors, [field]: "" });
@@ -142,7 +161,17 @@ const OtFormModal = ({
     }
   };
 
-  const validateAlphanumeric = (value) => /^[A-Za-z0-9\-]+$/.test(value);
+  const handleNameChange = (e, field) => {
+    const { value } = e.target;
+    if (validateName(value) || value === "") {
+      setFormData({ ...formData, [field]: value });
+      setErrors({ ...errors, [field]: "" });
+    } else {
+      setErrors({ ...errors, [field]: "Solo se permiten letras y espacios." });
+    }
+  };
+
+  const validateAlphanumeric = (value) => /^[A-Za-z0-9-]+$/.test(value);
 
   const handleAlphanumericChange = (e, field) => {
     const { value } = e.target;
@@ -154,16 +183,6 @@ const OtFormModal = ({
         ...errors,
         [field]: "Solo se permiten letras, números y guiones.",
       });
-    }
-  };
-
-  const handleNameChange = (e, field) => {
-    const { value } = e.target;
-    if (validateName(value) || value === "") {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else {
-      setErrors({ ...errors, [field]: "Solo se permiten letras y espacios." });
     }
   };
 
@@ -195,9 +214,23 @@ const OtFormModal = ({
       !lowerCaseFormData.fecha_solicitud ||
       !lowerCaseFormData.fecha_entrega ||
       !lowerCaseFormData.tipo_ot ||
+      !lowerCaseFormData.equipo ||
+      !lowerCaseFormData.numero_serie ||
+      !lowerCaseFormData.horas_trabajo ||
+      !lowerCaseFormData.observacion_final ||
+      !lowerCaseFormData.descripcion ||
       !lowerCaseFormData.cantidad ||
       !lowerCaseFormData.precio_neto ||
-      !lowerCaseFormData.sub_total
+      !lowerCaseFormData.descuento ||
+      !lowerCaseFormData.recargo ||
+      !lowerCaseFormData.comentario ||
+      !lowerCaseFormData.descuento_global ||
+      !lowerCaseFormData.af_ex ||
+      !lowerCaseFormData.sub_total ||
+      !lowerCaseFormData.monto_neto ||
+      !lowerCaseFormData.monto_exento ||
+      !lowerCaseFormData.iva ||
+      !lowerCaseFormData.total
     ) {
       setErrors({
         ...errors,
@@ -214,10 +247,17 @@ const OtFormModal = ({
       onClose();
     } catch (error) {
       console.error("Error al crear/actualizar OT:", error);
-      setErrors({
-        ...errors,
-        GENERALES: error.response?.data?.message || "Ha ocurrido un error.",
-      });
+      if (error.response && error.response.data) {
+        setErrors({
+          ...errors,
+          GENERALES: error.response.data.message || "Ha ocurrido un error.",
+        });
+      } else {
+        setErrors({
+          ...errors,
+          GENERALES: "Ha ocurrido un error. Intente nuevamente.",
+        });
+      }
     }
   };
 
@@ -239,6 +279,9 @@ const OtFormModal = ({
                 value={formData.ID_CLIENTE}
                 onChange={(e) => handleChange(e, "ID_CLIENTE")}
                 fullWidth
+                required
+                error={!!errors.ID_CLIENTE}
+                helperText={errors.ID_CLIENTE || "Campo obligatorio."}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
                 {clientes.map((c) => (
@@ -248,6 +291,7 @@ const OtFormModal = ({
                 ))}
               </TextField>
             </Grid>
+
             <Grid item xs={2.6}>
               <TextField
                 label="Tipo de Documento"
@@ -275,34 +319,56 @@ const OtFormModal = ({
                 onChange={(e) => handleDateChange(e, "FECHA_ENTREGA")}
                 fullWidth
                 InputLabelProps={{ shrink: true }}
+                required
+                error={!!errors.FECHA_ENTREGA}
+                helperText={errors.FECHA_ENTREGA || "Campó obligatorio"}
               />
             </Grid>
 
-            {/* Segunda Fila */}
             <Grid item xs={2.2}>
               <TextField
                 label="Tipo OT"
                 value={formData.TIPO_OT}
                 onChange={(e) => handleNameChange(e, "TIPO_OT")}
                 fullWidth
+                required
+                helperText={
+                  errors.TIPO_OT ||
+                  (!formData.TIPO_OT ? "Campó obligatorio" : "")
+                }
+                error={!!errors.TIPO_OT}
               />
             </Grid>
+
             <Grid item xs={2.2}>
               <TextField
                 label="Equipo"
                 value={formData.EQUIPO}
                 onChange={(e) => handleNameChange(e, "EQUIPO")}
                 fullWidth
+                required
+                helperText={
+                  errors.EQUIPO || (!formData.EQUIPO ? "Campó obligatorio" : "")
+                }
+                error={!!errors.EQUIPO}
               />
             </Grid>
+
             <Grid item xs={2.6}>
               <TextField
                 label="Número de Serie"
                 value={formData.NUMERO_SERIE}
                 onChange={(e) => handleAlphanumericChange(e, "NUMERO_SERIE")}
                 fullWidth
+                required
+                helperText={
+                  errors.NUMERO_SERIE ||
+                  (!formData.NUMERO_SERIE ? "Campó obligatorio" : "")
+                }
+                error={!!errors.NUMERO_SERIE}
               />
             </Grid>
+
             <Grid item xs={2.5}>
               <TextField
                 label="Horas de Trabajo"
@@ -310,6 +376,12 @@ const OtFormModal = ({
                 value={formData.HORAS_TRABAJO}
                 onChange={(e) => handleChange(e, "HORAS_TRABAJO")}
                 fullWidth
+                required
+                helperText={
+                  errors.HORAS_TRABAJO ||
+                  (!formData.HORAS_TRABAJO ? "Campó obligatorio" : "")
+                }
+                error={!!errors.HORAS_TRABAJO}
               />
             </Grid>
             <Grid item xs={2.5}>
@@ -318,6 +390,12 @@ const OtFormModal = ({
                 value={formData.OBSERVACION_FINAL}
                 onChange={(e) => handleNameChange(e, "OBSERVACION_FINAL")}
                 fullWidth
+                required
+                helperText={
+                  errors.OBSERVACION_FINAL ||
+                  (!formData.OBSERVACION_FINAL ? "Campó obligatorio" : "")
+                }
+                error={!!errors.OBSERVACION_FINAL}
               />
             </Grid>
 
@@ -327,10 +405,16 @@ const OtFormModal = ({
                 label="Descripción"
                 value={formData.DESCRIPCION}
                 onChange={(e) => handleNameChange(e, "DESCRIPCION")}
-                fullWidth
                 minRows={3}
                 maxRows={7}
                 multiline
+                fullWidth
+                required
+                helperText={
+                  errors.DESCRIPCION ||
+                  (!formData.DESCRIPCION ? "Campó obligatorio" : "")
+                }
+                error={!!errors.DESCRIPCION}
               />
             </Grid>
             <Grid item xs={2}>
@@ -340,6 +424,9 @@ const OtFormModal = ({
                 value={formData.ID_INSUMO}
                 onChange={(e) => handleChange(e, "ID_INSUMO")}
                 fullWidth
+                required
+                error={!!errors.ID_INSUMO}
+                helperText={errors.ID_INSUMO || "Campo obligatorio."}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
                 {insumos.map((i) => (
@@ -354,10 +441,14 @@ const OtFormModal = ({
                 label="Cantidad"
                 type="number"
                 value={formData.CANTIDAD}
-                onChange={(e) =>
-                  setFormData({ ...formData, CANTIDAD: e.target.value })
-                }
+                onChange={(e) => handleChange(e, "CANTIDAD")}
                 fullWidth
+                required
+                helperText={
+                  errors.CANTIDAD ||
+                  (!formData.CANTIDAD ? "Campó obligatorio" : "")
+                }
+                error={!!errors.CANTIDAD}
               />
             </Grid>
             <Grid item xs={2}>
@@ -365,10 +456,19 @@ const OtFormModal = ({
                 label="Precio Neto"
                 type="number"
                 value={formData.PRECIO_NETO}
-                onChange={(e) =>
-                  setFormData({ ...formData, PRECIO_NETO: e.target.value })
-                }
+                onChange={(e) => handleChange(e, "PRECIO_NETO")}
                 fullWidth
+                required
+                helperText={
+                  errors.PRECIO_NETO ||
+                  (!formData.PRECIO_NETO ? "Campo obligatorio" : "")
+                }
+                error={!!errors.PRECIO_NETO}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -376,10 +476,19 @@ const OtFormModal = ({
                 label="Descuento"
                 type="number"
                 value={formData.DESCUENTO}
-                onChange={(e) =>
-                  setFormData({ ...formData, DESCUENTO: e.target.value })
-                }
+                onChange={(e) => handleChange(e, "DESCUENTO")}
                 fullWidth
+                required
+                helperText={
+                  errors.DESCUENTO ||
+                  (!formData.DESCUENTO ? "Campo obligatorio" : "")
+                }
+                error={!!errors.DESCUENTO}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -389,6 +498,17 @@ const OtFormModal = ({
                 value={formData.RECARGO}
                 onChange={(e) => handleChange(e, "RECARGO")}
                 fullWidth
+                required
+                helperText={
+                  errors.RECARGO ||
+                  (!formData.RECARGO ? "Campo obligatorio" : "")
+                }
+                error={!!errors.RECARGO}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -405,10 +525,16 @@ const OtFormModal = ({
                 label="Comentario"
                 value={formData.COMENTARIO}
                 onChange={(e) => handleNameChange(e, "COMENTARIO")}
-                fullWidth
                 minRows={3}
                 maxRows={7}
                 multiline
+                fullWidth
+                required
+                helperText={
+                  errors.COMENTARIO ||
+                  (!formData.COMENTARIO ? "Campó obligatorio" : "")
+                }
+                error={!!errors.COMENTARIO}
               />
             </Grid>
 
@@ -418,7 +544,12 @@ const OtFormModal = ({
                 label="Sub Total"
                 value={formData.SUB_TOTAL}
                 fullWidth
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -427,6 +558,17 @@ const OtFormModal = ({
                 value={formData.DESCUENTO_GLOBAL}
                 onChange={(e) => handleChange(e, "DESCUENTO_GLOBAL")}
                 fullWidth
+                required
+                helperText={
+                  errors.DESCUENTO_GLOBAL ||
+                  (!formData.DESCUENTO_GLOBAL ? "Campó obligatorio" : "")
+                }
+                error={!!errors.DESCUENTO_GLOBAL}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -434,7 +576,12 @@ const OtFormModal = ({
                 label="Monto Neto"
                 value={formData.MONTO_NETO}
                 fullWidth
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -443,7 +590,12 @@ const OtFormModal = ({
                 type="number"
                 value={formData.MONTO_EXENTO}
                 fullWidth
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={2}>
@@ -451,7 +603,12 @@ const OtFormModal = ({
                 label="IVA (19%)"
                 value={formData.IVA}
                 fullWidth
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
@@ -460,7 +617,12 @@ const OtFormModal = ({
                 label="Total"
                 value={formData.TOTAL}
                 fullWidth
-                InputProps={{ readOnly: true }}
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
