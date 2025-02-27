@@ -24,19 +24,19 @@ const UserFormModal = ({
   roles,
 }) => {
   const [formData, setFormData] = useState({
-    NOMBRE_USUARIO: "",
-    APELLIDO_USUARIO: "",
-    RUT_USUARIO: "",
-    EMAIL_USUARIO: "",
-    CONTRASENIA_USUARIO: "",
-    FECHA_NACIMIENTO_USUARIO: "",
-    ROL_USUARIO: "",
+    nombre_usuario: "",
+    apellido_usuario: "",
+    rut_usuario: "",
+    email_usuario: "",
+    contrasenia_usuario: "",
+    fecha_nacimiento_usuario: "",
+    rol_usuario: "",
   });
 
   const [errors, setErrors] = useState({
-    NOMBRE_USUARIO: "",
-    APELLIDO_USUARIO: "",
-    RUT_USUARIO: "",
+    nombre_usuario: "",
+    apellido_usuario: "",
+    rut_usuario: "",
   });
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -44,23 +44,23 @@ const UserFormModal = ({
   useEffect(() => {
     if (userData) {
       setFormData({
-        NOMBRE_USUARIO: userData.NOMBRE_USUARIO || "",
-        APELLIDO_USUARIO: userData.APELLIDO_USUARIO || "",
-        RUT_USUARIO: userData.RUT_USUARIO || "",
-        EMAIL_USUARIO: userData.EMAIL_USUARIO || "",
-        CONTRASENIA_USUARIO: userData.CONTRASENIA_USUARIO || "",
-        FECHA_NACIMIENTO_USUARIO: userData.FECHA_NACIMIENTO_USUARIO || "",
-        ROL_USUARIO: userData.ROL_USUARIO || "",
+        nombre_usuario: userData.nombre_usuario || "",
+        apellido_usuario: userData.apellido_usuario || "",
+        rut_usuario: userData.rut_usuario || "",
+        email_usuario: userData.email_usuario || "",
+        contrasenia_usuario: userData.contrasenia_usuario || "",
+        fecha_nacimiento_usuario: userData.fecha_nacimiento_usuario || "",
+        rol_usuario: userData.rol_usuario || "",
       });
     } else {
       setFormData({
-        NOMBRE_USUARIO: "",
-        APELLIDO_USUARIO: "",
-        RUT_USUARIO: "",
-        EMAIL_USUARIO: "",
-        CONTRASENIA_USUARIO: "",
-        FECHA_NACIMIENTO_USUARIO: "",
-        ROL_USUARIO: "",
+        nombre_usuario: "",
+        apellido_usuario: "",
+        rut_usuario: "",
+        email_usuario: "",
+        contrasenia_usuario: "",
+        fecha_nacimiento_usuario: "",
+        rol_usuario: "",
       });
     }
   }, [userData]);
@@ -112,22 +112,22 @@ const UserFormModal = ({
     if (onlyValidChars.length !== value.length) {
       setErrors({
         ...errors,
-        RUT_USUARIO: "Solo se permiten números, puntos y guiones.",
+        rut_usuario: "Solo se permiten números, puntos y guiones.",
       });
     } else {
-      setErrors({ ...errors, RUT_USUARIO: "" });
+      setErrors({ ...errors, rut_usuario: "" });
     }
 
     let formattedRUT = formatRUT(onlyNumbers);
 
     if (
       formattedRUT.endsWith("-") &&
-      e.target.value.length < formData.RUT_USUARIO.length
+      e.target.value.length < formData.rut_usuario.length
     ) {
       formattedRUT = formattedRUT.slice(0, -1);
     }
 
-    setFormData({ ...formData, RUT_USUARIO: formattedRUT });
+    setFormData({ ...formData, rut_usuario: formattedRUT });
   };
 
   const handleSubmit = async (e) => {
@@ -139,7 +139,7 @@ const UserFormModal = ({
     if (!validateEmail(lowerCaseFormData.email_usuario)) {
       setErrors({
         ...errors,
-        EMAIL_USUARIO: "El correo electrónico no es válido.",
+        email_usuario: "El correo electrónico no es válido.",
       });
       return;
     }
@@ -160,7 +160,7 @@ const UserFormModal = ({
       setOpenSnackbar(true); // Mostrar Snackbar si la contraseña es corta
       setErrors({
         ...errors,
-        CONTRASENIA_USUARIO:
+        contrasenia_usuario:
           "La contraseña debe tener un mínimo de 8 caracteres.",
       });
       return;
@@ -210,58 +210,58 @@ const UserFormModal = ({
             <div className="form-group">
               <TextField
                 label="Nombre"
-                value={formData.NOMBRE_USUARIO}
-                onChange={(e) => handleNameChange(e, "NOMBRE_USUARIO")}
+                value={formData.nombre_usuario}
+                onChange={(e) => handleNameChange(e, "nombre_usuario")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.NOMBRE_USUARIO ||
-                  (!formData.NOMBRE_USUARIO ? "El nombre es obligatorio." : "")
+                  errors.nombre_usuario ||
+                  (!formData.nombre_usuario ? "El nombre es obligatorio." : "")
                 }
-                error={!!errors.NOMBRE_USUARIO}
+                error={!!errors.nombre_usuario}
               />
               <TextField
                 label="Apellido"
-                value={formData.APELLIDO_USUARIO}
-                onChange={(e) => handleNameChange(e, "APELLIDO_USUARIO")}
+                value={formData.apellido_usuario}
+                onChange={(e) => handleNameChange(e, "apellido_usuario")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.APELLIDO_USUARIO ||
-                  (!formData.APELLIDO_USUARIO
+                  errors.apellido_usuario ||
+                  (!formData.apellido_usuario
                     ? "El apellido es obligatorio."
                     : "")
                 }
-                error={!!errors.APELLIDO_USUARIO}
+                error={!!errors.apellido_usuario}
               />
               <TextField
                 label="Rut"
-                value={formData.RUT_USUARIO}
+                value={formData.rut_usuario}
                 onChange={handleRUTChange}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.RUT_USUARIO ||
+                  errors.rut_usuario ||
                   "Por favor ingrese su RUT sin punto(.) y guión(-)"
                 }
-                error={!!errors.RUT_USUARIO}
+                error={!!errors.rut_usuario}
               />
             </div>
             <div className="form-group">
               <TextField
                 label="Correo electrónico"
-                value={formData.EMAIL_USUARIO}
+                value={formData.email_usuario}
                 onChange={(e) =>
-                  setFormData({ ...formData, EMAIL_USUARIO: e.target.value })
+                  setFormData({ ...formData, email_usuario: e.target.value })
                 }
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  !formData.EMAIL_USUARIO
+                  !formData.email_usuario
                     ? "El correo electrónico es obligatorio."
                     : ""
                 }
@@ -269,26 +269,26 @@ const UserFormModal = ({
               <TextField
                 label="Contraseña"
                 type="password"
-                value={formData.CONTRASENIA_USUARIO}
+                value={formData.contrasenia_usuario}
                 onChange={(e) => {
                   const newPassword = e.target.value;
                   setFormData({
                     ...formData,
-                    CONTRASENIA_USUARIO: newPassword,
+                    contrasenia_usuario: newPassword,
                   });
 
                   // Verificar longitud de la contraseña
                   if (newPassword.length < 8) {
                     setErrors({
                       ...errors,
-                      CONTRASENIA_USUARIO:
+                      contrasenia_usuario:
                         "La contraseña debe tener un mínimo de 8 caracteres.",
                     });
                   } else {
                     // Si tiene más de 8 caracteres, eliminar el mensaje de error
                     setErrors({
                       ...errors,
-                      CONTRASENIA_USUARIO: "",
+                      contrasenia_usuario: "",
                     });
                   }
                 }}
@@ -296,35 +296,35 @@ const UserFormModal = ({
                 margin="normal"
                 required
                 helperText={
-                  errors.CONTRASENIA_USUARIO ||
-                  (!formData.CONTRASENIA_USUARIO
+                  errors.contrasenia_usuario ||
+                  (!formData.contrasenia_usuario
                     ? "La contraseña es obligatoria."
                     : "")
                 }
-                error={!!errors.CONTRASENIA_USUARIO}
+                error={!!errors.contrasenia_usuario}
               />
 
               <TextField
                 label="Fecha de Nacimiento"
                 type="date"
-                value={formData.FECHA_NACIMIENTO_USUARIO}
+                value={formData.fecha_nacimiento_usuario}
                 onChange={(e) => {
                   const inputDate = e.target.value;
                   const maxDate = getMaxDate();
                   if (inputDate > maxDate) {
                     setErrors({
                       ...errors,
-                      FECHA_NACIMIENTO_USUARIO:
+                      fecha_nacimiento_usuario:
                         "La fecha no puede ser mayor al 24 de diciembre de 2024.",
                     });
                   } else {
                     setErrors({
                       ...errors,
-                      FECHA_NACIMIENTO_USUARIO: "",
+                      fecha_nacimiento_usuario: "",
                     });
                     setFormData({
                       ...formData,
-                      FECHA_NACIMIENTO_USUARIO: inputDate,
+                      fecha_nacimiento_usuario: inputDate,
                     });
                   }
                 }}
@@ -332,14 +332,14 @@ const UserFormModal = ({
                 margin="normal"
                 required
                 max={getMaxDate()} // Aplica la fecha máxima
-                helperText={errors.FECHA_NACIMIENTO_USUARIO || ""}
-                error={!!errors.FECHA_NACIMIENTO_USUARIO}
+                helperText={errors.fecha_nacimiento_usuario || ""}
+                error={!!errors.fecha_nacimiento_usuario}
                 InputProps={{
                   // Estilos para mostrar el campo en gris y deshabilitado si hay error
                   inputProps: {
                     style: {
-                      color: errors.FECHA_NACIMIENTO_USUARIO ? "gray" : "black",
-                      pointerEvents: errors.FECHA_NACIMIENTO_USUARIO
+                      color: errors.fecha_nacimiento_usuario ? "gray" : "black",
+                      pointerEvents: errors.fecha_nacimiento_usuario
                         ? "none"
                         : "auto",
                     },
@@ -356,14 +356,14 @@ const UserFormModal = ({
               <InputLabel>Rol</InputLabel>
               <Select
                 label="Rol"
-                value={formData.ROL_USUARIO}
+                value={formData.rol_usuario}
                 onChange={(e) =>
-                  setFormData({ ...formData, ROL_USUARIO: e.target.value })
+                  setFormData({ ...formData, rol_usuario: e.target.value })
                 }
               >
                 {roles.map((role) => (
-                  <MenuItem key={role.ID_ROL} value={role.ID_ROL}>
-                    {role.NOMBRE_ROL}
+                  <MenuItem key={role.id_rol} value={role.id_rol}>
+                    {role.nombre_rol}
                   </MenuItem>
                 ))}
               </Select>

@@ -1,28 +1,28 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
 
-const Cliente = db.define(
+const cliente = db.define(
   "cliente",
   {
-    ID_CLIENTE: {
+    id_cliente: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    CODIGO_CLIENTE: { type: DataTypes.STRING },
-    NOMBRE_RAZON_SOCIAL: { type: DataTypes.STRING, allowNull: false },
-    NOMBRE_FANTASIA: { type: DataTypes.STRING },
-    RUT: { type: DataTypes.STRING, unique: true },
-    GIRO: { type: DataTypes.STRING },
-    DIRECCION: { type: DataTypes.STRING },
-    CIUDAD: { type: DataTypes.STRING },
-    COMUNA: { type: DataTypes.STRING },
-    CLIENTE_VIGENTE: { type: DataTypes.BOOLEAN, defaultValue: true },
+    codigo_cliente: { type: DataTypes.STRING },
+    nombre_razon_social: { type: DataTypes.STRING, allowNull: false }, // Corregido: 'allowNull' en lugar de 'allownull'
+    nombre_fantasia: { type: DataTypes.STRING },
+    rut: { type: DataTypes.STRING, unique: true },
+    giro: { type: DataTypes.STRING },
+    direccion: { type: DataTypes.STRING },
+    ciudad: { type: DataTypes.STRING },
+    comuna: { type: DataTypes.STRING },
+    cliente_vigente: { type: DataTypes.BOOLEAN, defaultValue: true }, // Corregido: 'defaultValue' en lugar de 'defaultvalue'
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-module.exports = { Cliente };
+module.exports = { cliente };

@@ -6,7 +6,7 @@ const {
   updateCategoria,
   deleteCategoria,
   getCategoria,
-} = require("../controllers/categoriaController");
+} = require("../controllers/categoriacontroller");
 const router = Router();
 
 router.post("/", newCategoria);

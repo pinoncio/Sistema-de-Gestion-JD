@@ -3,10 +3,10 @@ const router = express.Router();
 const {
   agregarMetodoPagoCliente,
   obtenerMetodosPagoCliente,
-  obtenerMetodoPagoClientePorId,
+  obtenerMetodoPagoClienteporId,
   actualizarMetodoPagoCliente,
   eliminarMetodoPagoCliente,
-} = require("../controllers/clienteMetodoPagoController");
+} = require("../controllers/clientemetodopagocontroller");
 
 // Ruta para obtener todos los métodos de pago de un cliente
 router.get("/:id_cliente", obtenerMetodosPagoCliente);
@@ -14,7 +14,7 @@ router.get("/:id_cliente", obtenerMetodosPagoCliente);
 // Ruta para obtener un método de pago específico de un cliente por su id_metodo_pago
 router.get(
   "/:id_cliente/:id_metodo_pago",
-  obtenerMetodoPagoClientePorId
+  obtenerMetodoPagoClienteporId
 );
 
 // Ruta para agregar un nuevo método de pago a un cliente

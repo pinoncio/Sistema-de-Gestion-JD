@@ -1,58 +1,62 @@
 const express = require("express");
 const cors = require("cors");
 
-// Importar rutas
-const usuarioRoutes = require("./routes/userRoutes");
-const roleRoutes = require("./routes/roleRoutes");
-const clienteRoutes = require("./routes/clienteRoutes");
-const clientePagoRoutes = require("./routes/clienteMetodoPagoRoute");
-const metodoPagoRoutes = require("./routes/metodoPagoRoute");
-const ContactoComercialRoutes = require("./routes/contactoComercialRoute");
-const InformacionDePagoRoutes = require("./routes/informacionPagoRoute");
-const CategoriaRoutes = require("./routes/categoriaRoute");
-const InsumoRoutes = require("./routes/insumoRoute");
-//const EmailRoutes = require("./routes/emailRoute");
-const otRoutes = require("./routes/otRoute");
+// importar rutas
+const usuarioroutes = require("./routes/userroutes");
+const roleroutes = require("./routes/roleroutes");
+const clienteroutes = require("./routes/clienteroutes");
+const clientepagoroutes = require("./routes/clientemetodopagoroute");
+const metodopagoroutes = require("./routes/metodopagoroute");
+const contactocomercialroutes = require("./routes/contactocomercialroute");
+const informaciondepagoroutes = require("./routes/informacionpagoroute");
+const categoriaroutes = require("./routes/categoriaroute");
+const insumoroutes = require("./routes/insumoroute");
+//const emailroutes = require("./routes/emailroute");
+const otroutes = require("./routes/otroute");
+const otinsumoroutes = require("./routes/otinsumoroute");
 
-// Importar modelos
-const { Usuario } = require("./models/userModel");
-const { Rol } = require("./models/roleModel");
-const { ClienteMetodoPago } = require("./models/clienteMetodoPagoModel");
-const { Cliente } = require("./models/clienteModel");
-const { MetodoPago } = require("./models/metodoPagoModel");
-const { ContactoComercial } = require("./models/contactoComercialModel");
-const { InformacionDePago } = require("./models/informacionPagoModel");
-const { Categoria } = require("./models/categoriaModel")
-const { Insumo } = require("./models/insumoModel");
-const { OT } = require("./models/otModel");
-
-class Server {
+// importar modelos
+const { usuario } = require("./models/usermodel");
+const { rol } = require("./models/rolemodel");
+const { clientemetodopago } = require("./models/clientemetodopagomodel");
+const { cliente } = require("./models/clientemodel");
+const { metodopago } = require("./models/metodopagomodel");
+const { contactocomercial } = require("./models/contactocomercialmodel");
+const { informaciondepago } = require("./models/informacionpagomodel");
+const { categoria } = require("./models/categoriamodel")
+const { insumo } = require("./models/insumomodel");
+const { ot } = require("./models/otmodel");
+const { otinsumo } = require("./models/otinsumomodel");
+const { producto } = require("./models/productomodel");
+   
+class server {
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || "3001";
+    this.port = process.env.port || "3001";
     this.middlewares();
     this.routes();
-    this.dbConnect();
+    this.dbconnect();
   }
 
   listen() {
     this.app.listen(this.port, () => {
-      console.log(`Servidor escuchando en el puerto ${this.port}`);
+      console.log(`servidor escuchando en el puerto ${this.port}`);
     });
   }
 
   routes() {
-    this.app.use("/api/usuarios", usuarioRoutes);
-    this.app.use("/api/roles", roleRoutes);
-    this.app.use("/api/clientes", clienteRoutes);
-    this.app.use("/api/pago", clientePagoRoutes);
-    this.app.use("/api/metodo", metodoPagoRoutes);
-    this.app.use("/api/contacto", ContactoComercialRoutes);
-    this.app.use("/api/informacion", InformacionDePagoRoutes);
-    this.app.use("/api/categoria", CategoriaRoutes);
-    this.app.use("/api/insumo", InsumoRoutes);
-    //this.app.use("/api/email", EmailRoutes);
-    this.app.use("/api/ots", otRoutes);
+    this.app.use("/api/usuarios", usuarioroutes);
+    this.app.use("/api/roles", roleroutes);
+    this.app.use("/api/clientes", clienteroutes);
+    this.app.use("/api/pago", clientepagoroutes);
+    this.app.use("/api/metodo", metodopagoroutes);
+    this.app.use("/api/contacto", contactocomercialroutes);
+    this.app.use("/api/informacion", informaciondepagoroutes);
+    this.app.use("/api/categoria", categoriaroutes);
+    this.app.use("/api/insumo", insumoroutes);
+    //this.app.use("/api/email", emailroutes);
+    this.app.use("/api/ots", otroutes);
+    this.app.use("/api/otinsumo", otinsumoroutes);
   }
 
   middlewares() {
@@ -60,22 +64,24 @@ class Server {
     this.app.use(cors());
   }
 
-  async dbConnect() {
+  async dbconnect() {
     try {
-      await Usuario.sync({ alter: true });
-      await Rol.sync({ alter: true });
-      await Cliente.sync({ alter: true });
-      await ClienteMetodoPago.sync({ alter: true });
-      await MetodoPago.sync({ alter: true });
-      await ContactoComercial.sync({ alter: true });
-      await InformacionDePago.sync({ alter: true });
-      await Categoria.sync({ alter: true });
-      await Insumo.sync({ alter: true });
-      await OT.sync({ alter: true });
-      console.log("Base de datos sincronizada correctamente.");
+      await usuario.sync({ alter: true });
+      await rol.sync({ alter: true });
+      await cliente.sync({ alter: true });
+      await clientemetodopago.sync({ alter: true });
+      await metodopago.sync({ alter: true });
+      await contactocomercial.sync({ alter: true });
+      await informaciondepago.sync({ alter: true });
+      await categoria.sync({ alter: true });
+      await insumo.sync({ alter: true });
+      await ot.sync({ alter: true });
+      await otinsumo.sync({ alter:true });
+      await producto.sync({ alter:true });
+      console.log("base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(
-        "No se ha podido establecer conexión a la base de datos",
+        "no se ha podido establecer conexión a la base de datos",
         error
       );
       throw error;
@@ -83,5 +89,5 @@ class Server {
   }
 }
 
-// Asegúrate de exportar la instancia del servidor
-module.exports = new Server();
+// asegúrate de exportar la instancia del servidor
+module.exports = new server();

@@ -6,7 +6,7 @@ const {
   getContactoComercial,
   getContactosComerciales,
   deleteContactoComercial,
-} = require("../controllers/contactoComercialController");
+} = require("../controllers/contactocomercialcontroller");
 
 // Ruta para obtener todos los contactos comerciales
 router.get("/list", getContactosComerciales);

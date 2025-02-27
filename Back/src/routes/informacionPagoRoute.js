@@ -6,7 +6,7 @@ const {
   getInformacionDePago,
   getInformacionesDePago,
   deleteInformacionDePago,
-} = require("../controllers/informacionPagoController");
+} = require("../controllers/informacionpagocontroller");
 
 // Ruta para obtener todas las informaciones de pago
 router.get("/list", getInformacionesDePago);

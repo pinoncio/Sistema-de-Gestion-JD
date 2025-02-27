@@ -7,7 +7,7 @@ const {
   getClientes,
   deleteCliente,
   activarCliente,
-} = require("../controllers/clienteController");
+} = require("../controllers/clientecontroller");
 
 // Ruta para obtener todos los clientes
 router.get("/list", getClientes);

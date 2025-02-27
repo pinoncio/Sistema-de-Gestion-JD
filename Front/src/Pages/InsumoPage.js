@@ -43,7 +43,7 @@ const InsumoPage = () => {
   const fetchInsumos = async () => {
     try {
       const data = await getInsumos();
-      const insumosOrdenados = data.sort((a, b) => a.ID_INSUMO - b.ID_INSUMO);
+      const insumosOrdenados = data.sort((a, b) => a.id_insumo - b.id_insumo);
       setInsumos(insumosOrdenados);
     } catch (error) {
       console.error("Error al obtener los insumos", error);
@@ -60,15 +60,15 @@ const InsumoPage = () => {
   };
 
   const getCategoriaName = (id_categoria) => {
-    const categoria = categorias.find((c) => c.ID_CATEGORIA === id_categoria);
-    return categoria ? categoria.NOMBRE_CATEGORIA : "Sin Categoria";
+    const categoria = categorias.find((c) => c.id_categoria === id_categoria);
+    return categoria ? categoria.nombre_categoria : "Sin Categoria";
   };
 
   const filteredInsumos = insumos.filter((insumo) =>
-    insumo.NOMBRE_INSUMO.toLowerCase().includes(searchQuery.toLowerCase())
+    insumo.nombre_insumo.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const HandleCreateInsumo = async (formData) => {
+  const handleCreateInsumo = async (formData) => {
     try {
       const response = await createInsumo(formData);
       console.log("Insumo creado exitosamente:", response.data);
@@ -109,7 +109,7 @@ const InsumoPage = () => {
       if (editing) {
         await handleUpdateInsumo(editId, formData);
       } else {
-        await HandleCreateInsumo(formData);
+        await handleCreateInsumo(formData);
       }
       setOpen(false);
       fetchInsumos();
@@ -157,16 +157,16 @@ const InsumoPage = () => {
 
       setInsumos((prevInsumos) =>
         prevInsumos.map((insumo) =>
-          insumo.ID_INSUMO === id_insumo
-            ? { ...insumo, ESTADO_INSUMO: nuevoEstado }
+          insumo.id_insumo === id_insumo
+            ? { ...insumo, estado_insumo: nuevoEstado }
             : insumo
         )
       );
 
       setSnackbarMessage(
-        `El insumo ha sido ${
+        `El insumo ha sido $(
           nuevoEstado ? "activado" : "desactivado"
-        } exitosamente.`
+        ) exitosamente.`
       );
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -178,7 +178,7 @@ const InsumoPage = () => {
   const handleOpenModal = (insumo = null) => {
     if (insumo) {
       setEditing(true);
-      setEditId(insumo.ID_INSUMO);
+      setEditId(insumo.id_insumo);
     } else {
       setEditing(false);
       setEditId(null);
@@ -247,7 +247,7 @@ const InsumoPage = () => {
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        insumoData={insumos.find((insumo) => insumo.ID_INSUMO === editId)}
+        insumoData={insumos.find((insumo) => insumo.id_insumo === editId)}
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}

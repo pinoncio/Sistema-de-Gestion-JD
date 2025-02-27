@@ -17,7 +17,7 @@ const CategoriaFormModal = ({
 
   useEffect(() => {
     if (categoriaData) {
-      setNombreCategoria(categoriaData.NOMBRE_CATEGORIA || "");
+      setNombreCategoria(categoriaData.nombre_categoria || ""); // Cambiado a minúsculas
     } else {
       setNombreCategoria("");
     }
@@ -55,7 +55,7 @@ const CategoriaFormModal = ({
     }
 
     try {
-      await onSubmit(nombreCategoria);
+      await onSubmit(nombreCategoria); // Aquí se mantuvo igual
       // Limpiar el formulario y cerrar el modal
       setNombreCategoria(""); // Reinicia el valor del input
       onClose();

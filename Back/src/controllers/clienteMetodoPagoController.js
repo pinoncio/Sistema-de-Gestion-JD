@@ -1,56 +1,56 @@
-const { ClienteMetodoPago } = require("../models/clienteMetodoPagoModel");
-const { Cliente } = require("../models/clienteModel");
-const { MetodoPago } = require("../models/metodoPagoModel");
+const { clientemetodopago } = require("../models/clientemetodopagomodel");
+const { cliente } = require("../models/clientemodel");
+const { metodopago } = require("../models/metodopagomodel");
 
-// Código en clienteMetodoPagoController.js
+// código en clientemetodopagocontroller.js
 const agregarMetodoPagoCliente = async (req, res) => {
   try {
     const { id_cliente, id_metodo_pago, referencia } = req.body;
 
-    // Buscar al cliente por su ID
-    const cliente = await Cliente.findByPk(id_cliente);
+    // buscar al cliente por su id
+    const cliente = await cliente.findOne({ where: { id_cliente } });
     if (!cliente) {
-      return res.status(404).json({ msg: "Cliente no encontrado" });
+      return res.status(404).json({ msg: "cliente no encontrado" });
     }
 
-    // Buscar el método de pago por su ID
-    const metodoPago = await MetodoPago.findByPk(id_metodo_pago);
-    if (!metodoPago) {
-      return res.status(404).json({ msg: "Método de pago no encontrado" });
+    // buscar el método de pago por su id
+    const metodopago = await metodopago.findOne({ where: { id_metodo_pago } });
+    if (!metodopago) {
+      return res.status(404).json({ msg: "método de pago no encontrado" });
     }
 
-    // Crear la relación en la tabla intermedia ClienteMetodoPago
-    await ClienteMetodoPago.create({
-      ID_CLIENTE: id_cliente,
-      ID_METODO_PAGO: id_metodo_pago,
-      REFERENCIA: referencia,
+    // crear la relación en la tabla intermedia clientemetodopago
+    await clientemetodopago.create({
+      id_cliente: id_cliente,
+      id_metodo_pago: id_metodo_pago,
+      referencia: referencia,
     });
 
     res
       .status(200)
-      .json({ msg: "Método de pago agregado correctamente al cliente" });
+      .json({ msg: "método de pago agregado correctamente al cliente" });
   } catch (error) {
-    console.error("Error al agregar el método de pago:", error);
-    res.status(500).json({ msg: "Error al agregar el método de pago", error });
+    console.error("error al agregar el método de pago:", error);
+    res.status(500).json({ msg: "error al agregar el método de pago", error });
   }
 };
 
-// Obtener todos los métodos de pago de un cliente por su ID
+// obtener todos los métodos de pago de un cliente por su id
 const obtenerMetodosPagoCliente = async (req, res) => {
   const { id_cliente } = req.params;
 
   try {
-    const cliente = await Cliente.findByPk(id_cliente, {
+    const cliente = await cliente.findbypk(id_cliente, {
       include: [
         {
-          model: ClienteMetodoPago,
-          as: "clienteMetodosPago", // Alias de la relación Cliente -> ClienteMetodoPago
-          attributes: ["ID_METODO_PAGO", "REFERENCIA"], // Columnas específicas de ClienteMetodoPago
+          model: clientemetodopago,
+          as: "clientemetodospago", // alias de la relación cliente -> clientemetodopago
+          attributes: ["id_metodo_pago", "referencia"], // columnas específicas de clientemetodopago
           include: [
             {
-              model: MetodoPago,
-              as: "metodoPago", // Alias de la relación ClienteMetodoPago -> MetodoPago
-              attributes: ["NOMBRE_METODO", "DESCRIPCION"], // Columnas específicas de MetodoPago
+              model: metodopago,
+              as: "metodopago", // alias de la relación clientemetodopago -> metodopago
+              attributes: ["nombre_metodo", "descripcion"], // columnas específicas de metodopago
             },
           ],
         },
@@ -59,140 +59,140 @@ const obtenerMetodosPagoCliente = async (req, res) => {
 
     if (!cliente) {
       return res.status(404).json({
-        msg: "Cliente no encontrado",
+        msg: "cliente no encontrado",
       });
     }
 
-    // Acceder a los métodos de pago del cliente
-    return res.status(200).json(cliente.clienteMetodosPago);
+    // acceder a los métodos de pago del cliente
+    return res.status(200).json(cliente.clientemetodospago);
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      msg: "Error al obtener los métodos de pago del cliente",
+      msg: "error al obtener los métodos de pago del cliente",
       error,
     });
   }
 };
 
-// Obtener un método de pago específico para un cliente
-const obtenerMetodoPagoClientePorId = async (req, res) => {
+// obtener un método de pago específico para un cliente
+const obtenerMetodoPagoClienteporId = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
 
   try {
-    const cliente = await Cliente.findByPk(id_cliente);
+    const cliente = await cliente.findbypk(id_cliente);
     if (!cliente) {
       return res.status(404).json({
-        msg: "Cliente no encontrado",
+        msg: "cliente no encontrado",
       });
     }
 
-    const metodoPago = await ClienteMetodoPago.findOne({
+    const metodopago = await clientemetodopago.findone({
       where: {
-        ID_CLIENTE: id_cliente,
-        ID_METODO_PAGO: id_metodo_pago,
+        id_cliente: id_cliente,
+        id_metodo_pago: id_metodo_pago,
       },
       include: [
         {
-          model: MetodoPago,
-          as: "metodoPago", // Alias de la relación ClienteMetodoPago -> MetodoPago
-          attributes: ["NOMBRE_METODO", "DESCRIPCION"], // Columnas específicas de MetodoPago
+          model: metodopago,
+          as: "metodopago", // alias de la relación clientemetodopago -> metodopago
+          attributes: ["nombre_metodo", "descripcion"], // columnas específicas de metodopago
         },
       ],
     });
 
-    if (!metodoPago) {
+    if (!metodopago) {
       return res.status(404).json({
-        msg: "Método de pago no encontrado para este cliente",
+        msg: "método de pago no encontrado para este cliente",
       });
     }
 
-    return res.status(200).json(metodoPago);
+    return res.status(200).json(metodopago);
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      msg: "Error al obtener el método de pago del cliente",
+      msg: "error al obtener el método de pago del cliente",
       error,
     });
   }
 };
 
 
-// Actualizar la referencia de un método de pago de un cliente
+// actualizar la referencia de un método de pago de un cliente
 const actualizarMetodoPagoCliente = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
   const { referencia } = req.body;
 
   try {
-    const cliente = await Cliente.findByPk(id_cliente);
+    const cliente = await cliente.findbypk(id_cliente);
     if (!cliente) {
       return res.status(404).json({
-        msg: "Cliente no encontrado",
+        msg: "cliente no encontrado",
       });
     }
 
-    const metodoPago = await ClienteMetodoPago.findOne({
+    const metodopago = await clientemetodopago.findone({
       where: {
-        ID_CLIENTE: id_cliente,
-        ID_METODO_PAGO: id_metodo_pago,
+        id_cliente: id_cliente,
+        id_metodo_pago: id_metodo_pago,
       },
     });
 
-    if (!metodoPago) {
+    if (!metodopago) {
       return res.status(404).json({
-        msg: "Método de pago no encontrado para este cliente",
+        msg: "método de pago no encontrado para este cliente",
       });
     }
 
-    metodoPago.REFERENCIA = referencia;
-    await metodoPago.save();
+    metodopago.referencia = referencia;
+    await metodopago.save();
 
     return res.status(200).json({
-      msg: "Método de pago actualizado correctamente",
-      metodoPago,
+      msg: "método de pago actualizado correctamente",
+      metodopago,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      msg: "Error al actualizar el método de pago del cliente",
+      msg: "error al actualizar el método de pago del cliente",
       error,
     });
   }
 };
 
-// Eliminar un método de pago de un cliente
+// eliminar un método de pago de un cliente
 const eliminarMetodoPagoCliente = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
 
   try {
-    const cliente = await Cliente.findByPk(id_cliente);
+    const cliente = await cliente.findbypk(id_cliente);
     if (!cliente) {
       return res.status(404).json({
-        msg: "Cliente no encontrado",
+        msg: "cliente no encontrado",
       });
     }
 
-    const metodoPago = await ClienteMetodoPago.findOne({
+    const metodopago = await clientemetodopago.findone({
       where: {
-        ID_CLIENTE: id_cliente,
-        ID_METODO_PAGO: id_metodo_pago,
+        id_cliente: id_cliente,
+        id_metodo_pago: id_metodo_pago,
       },
     });
 
-    if (!metodoPago) {
+    if (!metodopago) {
       return res.status(404).json({
-        msg: "Método de pago no encontrado para este cliente",
+        msg: "método de pago no encontrado para este cliente",
       });
     }
 
-    await metodoPago.destroy();
+    await metodopago.destroy();
 
     return res.status(200).json({
-      msg: "Método de pago eliminado correctamente",
+      msg: "método de pago eliminado correctamente",
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      msg: "Error al eliminar el método de pago del cliente",
+      msg: "error al eliminar el método de pago del cliente",
       error,
     });
   }
@@ -201,7 +201,7 @@ const eliminarMetodoPagoCliente = async (req, res) => {
 module.exports = {
   agregarMetodoPagoCliente,
   obtenerMetodosPagoCliente,
-  obtenerMetodoPagoClientePorId,
+  obtenerMetodoPagoClienteporId,
   actualizarMetodoPagoCliente,
   eliminarMetodoPagoCliente,
 };

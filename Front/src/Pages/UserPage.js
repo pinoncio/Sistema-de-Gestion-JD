@@ -44,7 +44,7 @@ const UserPage = () => {
     try {
       const data = await getUsuarios();
       const usuariosOrdenados = data.sort(
-        (a, b) => a.ID_USUARIO - b.ID_USUARIO
+        (a, b) => a.id_usuario - b.id_usuario // Changed ID_USUARIO to id_usuario
       );
       setUsuarios(usuariosOrdenados);
     } catch (error) {
@@ -62,16 +62,17 @@ const UserPage = () => {
   };
 
   const getRoleName = (id_rol) => {
-    const role = roles.find((r) => r.ID_ROL === id_rol);
-    return role ? role.NOMBRE_ROL : "Sin Rol";
+    const role = roles.find((r) => r.id_rol === id_rol); // Changed ID_ROL to id_rol
+    return role ? role.nombre_rol : "Sin Rol"; // Changed NOMBRE_ROL to nombre_rol
   };
 
   const filteredUsuarios = usuarios.filter(
     (user) =>
-      user.NOMBRE_USUARIO.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.APELLIDO_USUARIO.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.EMAIL_USUARIO.toLowerCase().includes(searchQuery.toLowerCase())
+      (user.nombre_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (user.apellido_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (user.email_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   );
+  
 
   const HandleCreateUsuario = async (formData) => {
     try {
@@ -159,8 +160,8 @@ const UserPage = () => {
 
       setUsuarios((prevUsuarios) =>
         prevUsuarios.map((usuario) =>
-          usuario.ID_USUARIO === id_usuario
-            ? { ...usuario, ESTADO_USUARIO: nuevoEstado }
+          usuario.id_usuario === id_usuario // Changed ID_USUARIO to id_usuario
+            ? { ...usuario, estado_usuario: nuevoEstado } // Changed ESTADO_USUARIO to estado_usuario
             : usuario
         )
       );
@@ -180,7 +181,7 @@ const UserPage = () => {
   const handleOpenModal = (user = null) => {
     if (user) {
       setEditing(true);
-      setEditId(user.ID_USUARIO);
+      setEditId(user.id_usuario); // Changed ID_USUARIO to id_usuario
     } else {
       setEditing(false);
       setEditId(null);
@@ -249,7 +250,7 @@ const UserPage = () => {
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        userData={usuarios.find((user) => user.ID_USUARIO === editId)}
+        userData={usuarios.find((user) => user.id_usuario === editId)} // Changed ID_USUARIO to id_usuario
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}

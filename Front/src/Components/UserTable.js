@@ -57,18 +57,18 @@ const UserTable = ({
         <TableRow>
           <TableCell>
             <TableSortLabel
-              active={orderBy === "nombre"}
-              direction={orderBy === "nombre" ? order : "asc"}
-              onClick={() => handleRequestSort("nombre")}
+              active={orderBy === "nombre_usuario"}
+              direction={orderBy === "nombre_usuario" ? order : "asc"}
+              onClick={() => handleRequestSort("nombre_usuario")}
             >
               Nombre
             </TableSortLabel>
           </TableCell>
           <TableCell>
             <TableSortLabel
-              active={orderBy === "apellido"}
-              direction={orderBy === "apellido" ? order : "asc"}
-              onClick={() => handleRequestSort("apellido")}
+              active={orderBy === "apellido_usuario"}
+              direction={orderBy === "apellido_usuario" ? order : "asc"}
+              onClick={() => handleRequestSort("apellido_usuario")}
             >
               Apellido
             </TableSortLabel>
@@ -79,35 +79,33 @@ const UserTable = ({
           <TableCell>Rol</TableCell>
           <TableCell>Estado</TableCell>
           <TableCell>
-            <IconButton onClick={() => {}}>
-              {/* Placeholder for sorting indicator */}
-            </IconButton>
+            <IconButton onClick={() => {}}>{/* Placeholder for sorting indicator */}</IconButton>
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {stableSort(usuarios, comparator).map((usuario) => (
-          <TableRow key={usuario.ID_USUARIO}>
-            <TableCell>{usuario.NOMBRE_USUARIO}</TableCell>
-            <TableCell>{usuario.APELLIDO_USUARIO}</TableCell>
-            <TableCell>{usuario.RUT_USUARIO}</TableCell>
-            <TableCell>{usuario.EMAIL_USUARIO}</TableCell>
+          <TableRow key={usuario.id_usuario}>
+            <TableCell>{usuario.nombre_usuario}</TableCell>
+            <TableCell>{usuario.apellido_usuario}</TableCell>
+            <TableCell>{usuario.rut_usuario}</TableCell>
+            <TableCell>{usuario.email_usuario}</TableCell>
             <TableCell>
-              {moment(usuario.FECHA_NACIMIENTO_USUARIO).format("DD/MM/YYYY")}
+              {moment(usuario.fecha_nacimiento_usuario).format("DD/MM/YYYY")}
             </TableCell>
-            <TableCell>{getRoleName(usuario.ROL_USUARIO)}</TableCell>
+            <TableCell>{getRoleName(usuario.rol_usuario)}</TableCell>
             <TableCell>
               <Switch
-                checked={usuario.ESTADO_USUARIO} // This value should reflect the state from the backend
+                checked={usuario.estado_usuario} // This value should reflect the state from the backend
                 onChange={() =>
-                  onToggleStatus(usuario.ID_USUARIO, !usuario.ESTADO_USUARIO)
+                  onToggleStatus(usuario.id_usuario, !usuario.estado_usuario)
                 }
                 name="estado"
                 inputProps={{ "aria-label": "controlled" }}
               />
             </TableCell>
             <TableCell>
-              <Link to={`/perfil/${usuario.ID_USUARIO}`}>
+              <Link to={`/perfil/${usuario.id_usuario}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -120,7 +118,7 @@ const UserTable = ({
               </IconButton>
               <IconButton
                 style={{ marginLeft: "10px" }}
-                onClick={() => onDelete(usuario.ID_USUARIO)}
+                onClick={() => onDelete(usuario.id_usuario)}
               >
                 <DeleteIcon />
               </IconButton>

@@ -1,15 +1,15 @@
-const { ContactoComercial } = require("../models/contactoComercialModel");
-const { Cliente } = require("../models/clienteModel");
+const { contactoComercial } = require("../models/contactocomercialmodel");
+const { cliente } = require("../models/clientemodel");
 
 // Obtener todos los contactos comerciales
 const getContactosComerciales = async (req, res) => {
   try {
-    const contactos = await ContactoComercial.findAll({
+    const contactos = await contactoComercial.findAll({
       include: [
         {
-          model: Cliente,
+          model: cliente,
           as: "cliente",
-          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"],
+          attributes: ["nombre_razon_social", "rut"],
         },
       ],
     });
@@ -30,35 +30,35 @@ const getContactosComerciales = async (req, res) => {
   }
 };
 
-// Obtener un contacto comercial por ID de cliente
+// Obtener un contacto comercial por id de cliente
 const getContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   try {
-    const contacto = await ContactoComercial.findOne({
-      where: { ID_CLIENTE: id_cliente },
+    const contacto = await contactoComercial.findOne({
+      where: { id_cliente: id_cliente },
       include: [
         {
-          model: Cliente,
+          model: cliente,
           as: "cliente",
-          attributes: ["NOMBRE_RAZON_SOCIAL", "RUT"],
+          attributes: ["nombre_razon_social", "rut"],
         },
       ],
     });
 
     if (!contacto) {
       return res.status(404).json({
-        msg: `No se encontró un contacto comercial para el cliente con ID ${id_cliente}.`,
+        msg: `No se encontró un contacto comercial para el cliente con id ${id_cliente}.`,
       });
     }
 
     res.json(contacto);
   } catch (error) {
     console.error(
-      `Error al obtener el contacto comercial para el cliente con ID ${id_cliente}:`,
+      `Error al obtener el contacto comercial para el cliente con id ${id_cliente}:`,
       error
     );
     res.status(500).json({
-      msg: `Error al obtener el contacto comercial para el cliente con ID ${id_cliente}.`,
+      msg: `Error al obtener el contacto comercial para el cliente con id ${id_cliente}.`,
       error: error.message || error,
     });
   }
@@ -67,41 +67,41 @@ const getContactoComercial = async (req, res) => {
 // Crear un nuevo contacto comercial
 const newContactoComercial = async (req, res) => {
   const {
-    ID_CLIENTE,
-    CONTACTO_COMERCIAL,
-    CORREO_ELECTRONICO_COMERCIAL,
-    TELEFONO_FIJO,
-    TELEFONO_CELULAR,
+    id_cliente,
+    contacto_comercial,
+    correo_electronico_comercial,
+    telefono_fijo,
+    telefono_celular,
   } = req.body;
 
   try {
     // Verificar si el cliente existe
-    const clienteExistente = await Cliente.findOne({ where: { ID_CLIENTE } });
+    const clienteExistente = await cliente.findOne({ where: { id_cliente } });
     if (!clienteExistente) {
       return res.status(400).json({
-        msg: "El cliente con el ID proporcionado no existe",
+        msg: "El cliente con el id proporcionado no existe.",
       });
     }
 
     // Crear el contacto comercial
-    const contacto = await ContactoComercial.create({
-      ID_CLIENTE,
-      CONTACTO_COMERCIAL,
-      CORREO_ELECTRONICO_COMERCIAL,
-      TELEFONO_FIJO,
-      TELEFONO_CELULAR,
+    const contacto = await contactoComercial.create({
+      id_cliente,
+      contacto_comercial,
+      correo_electronico_comercial,
+      telefono_fijo,
+      telefono_celular,
     });
 
     console.log("Contacto comercial creado exitosamente:", contacto);
 
     return res.status(201).json({
-      msg: "Contacto comercial creado correctamente",
+      msg: "Contacto comercial creado correctamente.",
       contacto,
     });
   } catch (error) {
     console.error("Error al crear el contacto comercial:", error);
     return res.status(400).json({
-      msg: "Ocurrió un error al crear el contacto comercial",
+      msg: "Ocurrió un error al crear el contacto comercial.",
       error,
     });
   }
@@ -111,14 +111,14 @@ const newContactoComercial = async (req, res) => {
 const updateContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   const {
-    CONTACTO_COMERCIAL,
-    CORREO_ELECTRONICO_COMERCIAL,
-    TELEFONO_FIJO,
-    TELEFONO_CELULAR,
+    contacto_comercial,
+    correo_electronico_comercial,
+    telefono_fijo,
+    telefono_celular,
   } = req.body;
 
-  const contacto = await ContactoComercial.findOne({
-    where: { ID_CLIENTE: id_cliente },
+  const contacto = await contactoComercial.findOne({
+    where: { id_cliente: id_cliente },
   });
 
   if (!contacto) {
@@ -129,23 +129,23 @@ const updateContactoComercial = async (req, res) => {
 
   try {
     // Actualizar el contacto comercial
-    await ContactoComercial.update(
+    await contactoComercial.update(
       {
-        CONTACTO_COMERCIAL,
-        CORREO_ELECTRONICO_COMERCIAL,
-        TELEFONO_FIJO,
-        TELEFONO_CELULAR,
+        contacto_comercial,
+        correo_electronico_comercial,
+        telefono_fijo,
+        telefono_celular,
       },
-      { where: { ID_CLIENTE: id_cliente } }
+      { where: { id_cliente: id_cliente } }
     );
 
     return res.json({
-      msg: "Contacto comercial actualizado correctamente",
+      msg: "Contacto comercial actualizado correctamente.",
     });
   } catch (error) {
     console.error("Error al actualizar el contacto comercial:", error);
     return res.status(400).json({
-      msg: "Ha ocurrido un error al actualizar el contacto comercial",
+      msg: "Ha ocurrido un error al actualizar el contacto comercial.",
       error: error.message || error,
     });
   }
@@ -156,18 +156,18 @@ const deleteContactoComercial = async (req, res) => {
   const { id_contacto } = req.params;
 
   try {
-    const result = await ContactoComercial.destroy({
-      where: { ID_CONTACTO: id_contacto },
+    const result = await contactoComercial.destroy({
+      where: { id_contacto: id_contacto },
     });
 
     if (result === 1) {
       console.log(
-        `Contacto comercial con ID ${id_contacto} eliminado correctamente.`
+        `Contacto comercial con id ${id_contacto} eliminado correctamente.`
       );
-      return res.json({ msg: "Contacto comercial eliminado correctamente" });
+      return res.status(200).json({ msg: "Contacto comercial eliminado correctamente." });
     } else {
       console.log(
-        `No se encontró ningún contacto comercial con ID ${id_contacto} para eliminar.`
+        `No se encontró ningún contacto comercial con id ${id_contacto} para eliminar.`
       );
       return res.status(404).json({
         msg: "No se encontró ningún contacto comercial para eliminar.",
@@ -175,7 +175,7 @@ const deleteContactoComercial = async (req, res) => {
     }
   } catch (error) {
     console.error(
-      `Error al eliminar el contacto comercial con ID ${id_contacto}:`,
+      `Error al eliminar el contacto comercial con id ${id_contacto}:`,
       error
     );
     return res.status(500).json({

@@ -1,29 +1,29 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { Rol } = require("./roleModel"); 
+const { rol } = require("./rolemodel");
 
-const Usuario = db.define(
+const usuario = db.define(
   "usuario",
   {
-    ID_USUARIO: {
+    id_usuario: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    NOMBRE_USUARIO: { type: DataTypes.STRING },
-    APELLIDO_USUARIO: { type: DataTypes.STRING },
-    RUT_USUARIO: { type: DataTypes.STRING, unique: true },
-    EMAIL_USUARIO: { type: DataTypes.STRING, unique: true },
-    CONTRASENIA_USUARIO: { type: DataTypes.STRING },
-    FECHA_NACIMIENTO_USUARIO: { type: DataTypes.DATE },
-    ROL_USUARIO: {
+    nombre_usuario: { type: DataTypes.STRING },
+    apellido_usuario: { type: DataTypes.STRING },
+    rut_usuario: { type: DataTypes.STRING, unique: true },
+    email_usuario: { type: DataTypes.STRING, unique: true },
+    contrasenia_usuario: { type: DataTypes.STRING },
+    fecha_nacimiento_usuario: { type: DataTypes.DATE },
+    rol_usuario: {
       type: DataTypes.INTEGER,
       references: {
-        model: Rol,
-        key: "ID_ROL", 
+        model: rol,
+        key: "id_rol", // Cambié 'ID_ROL' a 'id_rol' para seguir convención de nombres
       },
     },
-    ESTADO_USUARIO: { type: DataTypes.BOOLEAN, defaultValue: true },
+    estado_usuario: { type: DataTypes.BOOLEAN, defaultValue: true },
   },
   {
     freezeTableName: true,
@@ -32,7 +32,7 @@ const Usuario = db.define(
 );
 
 // Definimos la relación de clave foránea
-Usuario.belongsTo(Rol, { foreignKey: "ROL_USUARIO" });
-Rol.hasMany(Usuario, { foreignKey: "ROL_USUARIO" });
+usuario.belongsTo(rol, { foreignKey: "rol_usuario" }); 
+rol.hasMany(usuario, { foreignKey: "rol_usuario" }); 
 
-module.exports = { Usuario };
+module.exports = { usuario };

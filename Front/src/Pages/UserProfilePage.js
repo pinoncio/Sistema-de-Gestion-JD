@@ -59,8 +59,8 @@ const UserProfilePage = () => {
   }, [id_usuario, fetchRoles, fetchUser]);
 
   const getRoleName = (id_rol) => {
-    const role = roles.find((r) => r.ID_ROL === id_rol);
-    return role ? role.NOMBRE_ROL : "Sin Rol";
+    const role = roles.find((r) => r.id_rol === id_rol);
+    return role ? role.nombre_rol : "Sin Rol";
   };
 
   // Snackbar for error or success
@@ -103,7 +103,7 @@ const UserProfilePage = () => {
     );
   }
 
-  const roleName = getRoleName(user.ROL_USUARIO);
+  const roleName = getRoleName(user.rol_usuario);
 
   return (
     <AdminLayout>
@@ -116,27 +116,26 @@ const UserProfilePage = () => {
             <Divider sx={{ marginBottom: 2 }} />
             <Box sx={{ marginTop: 2 }}>
               <Typography variant="body1" className="profile-details">
-                <strong>Nombre:</strong> {user.NOMBRE_USUARIO}{" "}
-                {user.APELLIDO_USUARIO}
+                <strong>Nombre:</strong> {user.nombre_usuario} {user.apellido_usuario}
               </Typography>
               <Typography variant="body1" className="profile-details">
-                <strong>RUT:</strong> {user.RUT_USUARIO}
+                <strong>RUT:</strong> {user.rut_usuario}
               </Typography>
               <Typography variant="body1" className="profile-details">
-                <strong>Email:</strong> {user.EMAIL_USUARIO}
+                <strong>Email:</strong> {user.email_usuario}
               </Typography>
               <Typography variant="body1" className="profile-details">
                 <strong>Fecha de Nacimiento:</strong>{" "}
-                {moment(user.FECHA_NACIMIENTO_USUARIO).format("DD/MM/YYYY")}
+                {moment(user.fecha_nacimiento_usuario).format("DD/MM/YYYY")}
               </Typography>
               <Typography variant="body1" className="profile-details">
                 <strong>Estado:</strong>
                 <span
                   className={`status ${
-                    user.ESTADO_USUARIO ? "active" : "inactive"
+                    user.estado_usuario ? "active" : "inactive"
                   }`}
                 >
-                  {user.ESTADO_USUARIO ? "Activo" : "Inactivo"}
+                  {user.estado_usuario ? "Activo" : "Inactivo"}
                 </span>
               </Typography>
               <Typography variant="body1" className="profile-details">

@@ -17,7 +17,7 @@ const RoleFormModal = ({
 
   useEffect(() => {
     if (roleData) {
-      setNombreRol(roleData.NOMBRE_ROL || "");
+      setNombreRol(roleData.nombre_rol || "");
     } else {
       setNombreRol("");
     }

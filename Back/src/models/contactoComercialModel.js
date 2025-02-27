@@ -1,48 +1,48 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { Cliente } = require("./clienteModel");
+const { cliente } = require("./clientemodel");
 
-const ContactoComercial = db.define(
+const contactocomercial = db.define(
   "contacto_comercial",
   {
-    ID_CONTACTO_COMERCIAL: {
+    id_contacto_comercial: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    ID_CLIENTE: {
+    id_cliente: {
       type: DataTypes.INTEGER,
       references: {
-        model: Cliente, // Hace referencia al modelo Cliente
-        key: "ID_CLIENTE",
+        model: cliente, // hace referencia al modelo cliente
+        key: "id_cliente",
       },
-      allowNull: false, // La relación con el cliente no debe ser nula
+      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    CONTACTO_COMERCIAL: { 
+    contacto_comercial: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    CORREO_ELECTRONICO_COMERCIAL: { 
+    correo_electronico_comercial: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    TELEFONO_FIJO: { 
+    telefono_fijo: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    TELEFONO_CELULAR: { 
+    telefono_celular: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-// Relación entre Cliente y ContactoComercial
-Cliente.hasMany(ContactoComercial, { foreignKey: "ID_CLIENTE", as: "contactosComerciales" });
-ContactoComercial.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: "cliente" });
+// Relación entre cliente y contactocomercial
+cliente.hasMany(contactocomercial, { foreignKey: "id_cliente", as: "contactoscomerciales" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+contactocomercial.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 
-module.exports = { ContactoComercial };
+module.exports = { contactocomercial };

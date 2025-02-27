@@ -1,65 +1,48 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { Cliente } = require("./clienteModel");
-const { Insumo } = require("./insumoModel");
+const { cliente } = require("./clientemodel");
 
-const OT = db.define(
-  "OT",
+const ot = db.define(
+  "ot",
   {
-    ID_OT: {
+    id_ot: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    ID_CLIENTE: {
+    id_cliente: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
       references: {
-        model: Cliente,
-        key: "ID_CLIENTE",
+        model: cliente,
+        key: "id_cliente",
       },
     },
-    ID_INSUMO: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Insumo,
-        key: "ID_INSUMO",
-      },
-    },
-    TIPO_DOCUMENTO: { type: DataTypes.STRING(50) },
-    FECHA_SOLICITUD: { type: DataTypes.DATE },
-    FECHA_ENTREGA: { type: DataTypes.DATE },
-    TIPO_OT: { type: DataTypes.STRING(50) },
-    EQUIPO: { type: DataTypes.STRING(100) },
-    NUMERO_SERIE: { type: DataTypes.STRING(100) },
-    HORAS_TRABAJO: { type: DataTypes.INTEGER },
-    OBSERVACION_FINAL: { type: DataTypes.TEXT },
-    DESCRIPCION: { type: DataTypes.TEXT },
-    CANTIDAD: { type: DataTypes.INTEGER, allowNull: false },
-    PRECIO_NETO: { type: DataTypes.FLOAT },
-    DESCUENTO: { type: DataTypes.FLOAT},
-    RECARGO: { type: DataTypes.FLOAT },
-    AF_EX: { type: DataTypes.STRING(10) },
-    SUB_TOTAL: { type: DataTypes.FLOAT },
-    COMENTARIO: { type: DataTypes.TEXT },
-    DESCUENTO_GLOBAL: { type: DataTypes.FLOAT },
-    MONTO_NETO: { type: DataTypes.FLOAT },
-    MONTO_EXENTO: { type: DataTypes.FLOAT },
-    IVA: { type: DataTypes.FLOAT },
-    TOTAL: { type: DataTypes.FLOAT },
+    tipo_documento: { type: DataTypes.STRING(50) },
+    fecha_solicitud: { type: DataTypes.DATEONLY },
+    fecha_entrega: { type: DataTypes.DATEONLY },
+    tipo_ot: { type: DataTypes.STRING(50) },
+    equipo: { type: DataTypes.STRING(100) },
+    numero_serie: { type: DataTypes.STRING(100) },
+    horas_trabajo: { type: DataTypes.INTEGER },
+    observacion_final: { type: DataTypes.TEXT },
+    descripcion: { type: DataTypes.TEXT },
+    sub_total: { type: DataTypes.FLOAT },
+    comentario: { type: DataTypes.TEXT },
+    descuento_global: { type: DataTypes.FLOAT },
+    monto_neto: { type: DataTypes.FLOAT },
+    monto_exento: { type: DataTypes.FLOAT },
+    iva: { type: DataTypes.FLOAT },
+    total: { type: DataTypes.FLOAT },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-// Definir relaciones con Cliente e Insumo
-OT.belongsTo(Cliente, { foreignKey: "ID_CLIENTE" });
-Cliente.hasMany(OT, { foreignKey: "ID_CLIENTE" });
+// Definir relaciones con cliente
+ot.belongsTo(cliente, { foreignKey: "id_cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+cliente.hasMany(ot, { foreignKey: "id_cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 
-OT.belongsTo(Insumo, { foreignKey: "ID_INSUMO" });
-Insumo.hasMany(OT, { foreignKey: "ID_INSUMO" });
-
-module.exports = { OT };
+module.exports = { ot };

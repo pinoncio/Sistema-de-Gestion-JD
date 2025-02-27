@@ -1,44 +1,44 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { Cliente } = require("./clienteModel");
+const { cliente } = require("./clientemodel");
 
-const InformacionDePago = db.define(
+const informaciondepago = db.define(
   "informacion_de_pago",
   {
-    ID_INFORMACION: {
+    id_informacion: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    ID_CLIENTE: {
+    id_cliente: {
       type: DataTypes.INTEGER,
       references: {
-        model: Cliente, // Hace referencia al modelo Cliente
-        key: "ID_CLIENTE",
+        model: cliente, // hace referencia al modelo cliente
+        key: "id_cliente",
       },
-      allowNull: false, // La relación con el cliente no debe ser nula
+      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    NOMBRE_RESPONSABLE: { 
+    nombre_responsable: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    CORREO_ELECTRONICO: { 
+    correo_electronico: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
-    TELEFONO_RESPONSABLE: { 
+    telefono_responsable: { 
       type: DataTypes.STRING,
-      allowNull: true, // Permite valores nulos
+      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
     },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-// Relación entre Cliente e InformacionDePago
-Cliente.hasMany(InformacionDePago, { foreignKey: "ID_CLIENTE", as: "informacionesDePago" });
-InformacionDePago.belongsTo(Cliente, { foreignKey: "ID_CLIENTE", as: "cliente" });
+// Relación entre cliente e informaciondepago
+cliente.hasMany(informaciondepago, { foreignKey: "id_cliente", as: "informacionesdepago" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+informaciondepago.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 
-module.exports = { InformacionDePago };
+module.exports = { informaciondepago };

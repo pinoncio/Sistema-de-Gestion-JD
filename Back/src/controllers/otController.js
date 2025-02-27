@@ -1,61 +1,127 @@
-const { OT } = require("../models/otModel");
-const { Cliente } = require("../models/clienteModel");
-const { Insumo } = require("../models/insumoModel");
+const { ot } = require("../models/otmodel");
+const { cliente } = require("../models/clientemodel");
+const { otinsumo } = require("../models/otinsumomodel");
+const { insumo } = require("../models/insumomodel");
+const { producto } = require("../models/productomodel");
 
 // Obtener todas las órdenes de trabajo
-const getOTs = async (req, res) => {
+const getOts = async (req, res) => {
   try {
-    const ots = await OT.findAll({
+    const ots = await ot.findAll({
       include: [
-        { model: Cliente, attributes: ["NOMBRE_RAZON_SOCIAL"] },
-        { model: Insumo, attributes: ["NOMBRE_INSUMO"] },
+        { model: cliente, attributes: ["nombre_razon_social", "rut"] },
+        {
+          model: otinsumo,
+          as: "ot_insumo",
+          attributes: [
+            "cantidad_insumo",
+            "precio_unitario",
+            "descuento_insumo",
+            "recargo_insumo",
+            "af_ex_insumo",
+            "precio_total",
+          ],
+          include: [
+            {
+              model: insumo,
+              as: "insumo",
+              attributes: ["nombre_insumo"],
+            },
+          ],
+        },
+        {
+          model: producto, // Incluir los productos asociados a la OT
+          as: "productos",
+          attributes: [
+            "nombre_producto",
+            "cantidad_producto",
+            "precio_unitario",
+            "recargo_producto",
+            "af_ex",
+            "precio_total",
+          ],
+        },
       ],
     });
+
     res.json(ots);
   } catch (error) {
-    res
-      .status(500)
-      .json({ msg: "Error al obtener las órdenes de trabajo.", error });
+    console.error("Error al obtener las órdenes de trabajo:", error);
+    res.status(500).json({
+      msg: "Error al obtener las órdenes de trabajo.",
+      error: error.message || error,
+    });
   }
 };
 
-// Obtener una orden de trabajo por ID
-const getOT = async (req, res) => {
+// Obtener una orden de trabajo por id
+const getOt = async (req, res) => {
   const { id_ot } = req.params;
   try {
-    const ot = await OT.findOne({
-      where: { ID_OT: id_ot },
+    const otData = await ot.findOne({
+      where: { id_ot },
       include: [
         {
-          model: Cliente,
-          attributes: ["NOMBRE_RAZON_SOCIAL"],
+          model: cliente,
+          attributes: ["nombre_razon_social", "rut", "direccion", "giro"],
         },
         {
-          model: Insumo,
-          attributes: ["NOMBRE_INSUMO"],
+          model: otinsumo,
+          as: "ot_insumo",
+          attributes: [
+            "cantidad_insumo",
+            "precio_unitario",
+            "descuento_insumo",
+            "recargo_insumo",
+            "af_ex_insumo",
+            "precio_total",
+          ],
+          include: [
+            {
+              model: insumo,
+              as: "insumo",
+              attributes: ["nombre_insumo"],
+            },
+          ],
+        },
+        {
+          model: producto,
+          as: "productos", // Alias para la relación
+          attributes: [
+            "nombre_producto",
+            "cantidad_producto",
+            "precio_unitario",
+            "recargo_producto",
+            "af_ex",
+            "precio_total",
+          ],
         },
       ],
     });
 
-    if (!ot) {
+    if (!otData) {
       return res.status(404).json({
         msg: `La orden de trabajo con id: ${id_ot} no existe`,
       });
     }
-    res.json(ot);
+
+    res.json(otData);
   } catch (error) {
-    return res.status(400).json({
-      msg: `Ha ocurrido un error al buscar la orden de trabajo con id: ${id_ot}`,
-      error,
+    console.error(
+      `Error al obtener la orden de trabajo con id ${id_ot}:`,
+      error
+    );
+    res.status(500).json({
+      msg: `Error al obtener la orden de trabajo con id ${id_ot}`,
+      error: error.message || error,
     });
   }
 };
 
 // Crear una nueva orden de trabajo
-const newOT = async (req, res) => {
+const newOt = async (req, res) => {
   const {
     id_cliente,
-    id_insumo,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -65,78 +131,123 @@ const newOT = async (req, res) => {
     horas_trabajo,
     observacion_final,
     descripcion,
-    cantidad,
-    precio_neto,
-    descuento,
-    recargo,
-    comentario,
     descuento_global,
-    af_ex,
     sub_total,
     monto_neto,
     monto_exento,
     iva,
     total,
+    comentario,
+    productos,
+    insumos,
   } = req.body;
 
   try {
-    // Validar si los campos obligatorios están presentes
+    // Validar campos obligatorios
     if (
       !id_cliente ||
-      !id_insumo ||
       !tipo_documento ||
       !fecha_solicitud ||
-      !fecha_entrega
+      !fecha_entrega ||
+      !productos ||
+      productos.length === 0 ||
+      !insumos ||
+      insumos.length === 0
     ) {
       return res.status(400).json({ msg: "Faltan campos obligatorios" });
     }
 
-    // Crear la orden de trabajo sin cálculos en el backend
-    const nuevaOT = await OT.create({
-      ID_CLIENTE: id_cliente,
-      ID_INSUMO: id_insumo,
-      TIPO_DOCUMENTO: tipo_documento,
-      FECHA_SOLICITUD: fecha_solicitud,
-      FECHA_ENTREGA: fecha_entrega,
-      TIPO_OT: tipo_ot,
-      EQUIPO: equipo,
-      NUMERO_SERIE: numero_serie,
-      HORAS_TRABAJO: horas_trabajo,
-      OBSERVACION_FINAL: observacion_final,
-      DESCRIPCION: descripcion,
-      CANTIDAD: cantidad,
-      PRECIO_NETO: precio_neto,
-      DESCUENTO: descuento,
-      RECARGO: recargo,
-      AF_EX: af_ex,
-      SUB_TOTAL: sub_total,
-      MONTO_NETO: monto_neto,
-      MONTO_EXENTO: monto_exento,
-      IVA: iva,
-      TOTAL: total,
-      COMENTARIO: comentario,
-      DESCUENTO_GLOBAL: descuento_global,
+    // Crear la OT
+    const nuevaOt = await ot.create({
+      id_cliente,
+      tipo_documento,
+      fecha_solicitud,
+      fecha_entrega,
+      tipo_ot,
+      equipo,
+      numero_serie,
+      horas_trabajo,
+      observacion_final,
+      descripcion,
+      sub_total,
+      comentario,
+      descuento_global,
+      monto_neto,
+      monto_exento,
+      iva,
+      total,
     });
+
+    // Asociar los productos a la OT
+    const productosData = productos.map((producto) => ({
+      id_ot: nuevaOt.id_ot,
+      nombre_producto: producto.nombre_producto,
+      cantidad_producto: producto.cantidad_producto, // Cambio aquí
+      precio_unitario: producto.precio_unitario,
+      descuento_producto: producto.descuento_producto,
+      recargo_producto: producto.recargo_producto,
+      af_ex: producto.af_ex,
+      precio_total: producto.precio_total,
+    }));
+
+    await producto.bulkCreate(productosData);
+
+    // Asociar los insumos a la OT y actualizar la cantidad en la tabla de insumos
+    for (const insumoData of insumos) {
+      // Buscar el insumo por id_insumo
+      const insumoEncontrado = await insumo.findOne({
+        where: { id_insumo: insumoData.id_insumo },
+      });
+
+      // Verificar stock y restar cantidad
+      if (
+        !insumoEncontrado ||
+        insumoEncontrado.cantidad < insumoData.cantidad_insumo
+      ) {
+        return res.status(400).json({
+          msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}`,
+        });
+      }
+
+      // Restar cantidad del stock en la tabla insumo
+      await insumoEncontrado.update({
+        cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+      });
+
+      await otinsumo.create({
+        id_ot: nuevaOt.id_ot,
+        id_insumo: insumoData.id_insumo,
+        cantidad_insumo: insumoData.cantidad_insumo,
+        precio_unitario: insumoData.precio_unitario,
+        descuento_insumo: insumoData.descuento_insumo,
+        recargo_insumo: insumoData.recargo_insumo,
+        af_ex_insumo: insumoData.af_ex_insumo,
+        precio_total: insumoData.precio_total,
+      });
+    }
 
     res.status(201).json({
       msg: "Orden de trabajo creada correctamente",
-      id_ot: nuevaOT.id,
+      id_ot: nuevaOt.id_ot,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
+    console.error(
+      "Error al crear la orden de trabajo:",
+      error.response?.data || error.message
+    );
+    console.error("Error al crear la orden de trabajo:", error.message);
+    res.status(500).json({
       msg: "Error al crear la orden de trabajo",
-      error,
+      error: error.message,
     });
   }
 };
 
 // Actualizar una orden de trabajo
-const updateOT = async (req, res) => {
+const updateOt = async (req, res) => {
   const { id_ot } = req.params;
   const {
     id_cliente,
-    id_insumo,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -146,81 +257,141 @@ const updateOT = async (req, res) => {
     horas_trabajo,
     observacion_final,
     descripcion,
-    cantidad,
-    precio_neto,
-    descuento,
-    recargo,
-    comentario,
     descuento_global,
-    af_ex,
     sub_total,
     monto_neto,
     monto_exento,
     iva,
     total,
+    comentario,
+    productos,
+    insumos,
   } = req.body;
 
   try {
-    // Buscar la orden de trabajo
-    const ot = await OT.findByPk(id_ot);
-    if (!ot) {
-      return res
-        .status(404)
-        .json({ msg: "No existe una orden de trabajo con el ID: " + id_ot });
+    const otData = await ot.findByPk(id_ot);
+    if (!otData) {
+      return res.status(404).json({
+        msg: `No existe una orden de trabajo con el id: ${id_ot}`,
+      });
     }
 
-    // Actualizar la orden de trabajo sin cálculos en el backend
-    await ot.update({
-      ID_CLIENTE: id_cliente,
-      ID_INSUMO: id_insumo,
-      TIPO_DOCUMENTO: tipo_documento,
-      FECHA_SOLICITUD: fecha_solicitud,
-      FECHA_ENTREGA: fecha_entrega,
-      TIPO_OT: tipo_ot,
-      EQUIPO: equipo,
-      NUMERO_SERIE: numero_serie,
-      HORAS_TRABAJO: horas_trabajo,
-      OBSERVACION_FINAL: observacion_final,
-      DESCRIPCION: descripcion,
-      CANTIDAD: cantidad,
-      PRECIO_NETO: precio_neto,
-      DESCUENTO: descuento,
-      RECARGO: recargo,
-      AF_EX: af_ex,
-      SUB_TOTAL: sub_total,
-      MONTO_NETO: monto_neto,
-      MONTO_EXENTO: monto_exento,
-      IVA: iva,
-      TOTAL: total,
-      COMENTARIO: comentario,
-      DESCUENTO_GLOBAL: descuento_global,
+    // 1️⃣ **Devolver los insumos al stock antes de eliminarlos**
+    const insumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
+
+    for (const insumoAntiguo of insumosAntiguos) {
+      const insumoEncontrado = await insumo.findOne({
+        where: { id_insumo: insumoAntiguo.id_insumo },
+      });
+
+      if (insumoEncontrado) {
+        await insumoEncontrado.update({
+          cantidad: insumoEncontrado.cantidad + insumoAntiguo.cantidad_insumo,
+        });
+      }
+    }
+
+    // 2️⃣ **Eliminar productos e insumos antiguos**
+    await producto.destroy({ where: { id_ot } });
+    await otinsumo.destroy({ where: { id_ot } });
+
+    // 3️⃣ **Actualizar la OT**
+    await otData.update({
+      id_cliente,
+      tipo_documento,
+      fecha_solicitud,
+      fecha_entrega,
+      tipo_ot,
+      equipo,
+      numero_serie,
+      horas_trabajo,
+      observacion_final,
+      descripcion,
+      sub_total,
+      comentario,
+      descuento_global,
+      monto_neto,
+      monto_exento,
+      iva,
+      total,
     });
+
+    // 4️⃣ **Crear los nuevos productos**
+    const productosData = productos.map((producto) => ({
+      id_ot,
+      nombre_producto: producto.nombre_producto,
+      cantidad_producto: producto.cantidad_producto,
+      precio_unitario: producto.precio_unitario,
+      descuento_producto: producto.descuento_producto,
+      recargo_producto: producto.recargo_producto,
+      af_ex: producto.af_ex,
+      precio_total: producto.precio_total,
+    }));
+
+    await producto.bulkCreate(productosData);
+
+    // 5️⃣ **Crear los nuevos insumos**
+    for (const insumoData of insumos) {
+      const insumoEncontrado = await insumo.findOne({
+        where: { id_insumo: insumoData.id_insumo },
+      });
+
+      // **Verificar stock en la tabla insumo**
+      if (
+        !insumoEncontrado ||
+        insumoEncontrado.cantidad < insumoData.cantidad_insumo
+      ) {
+        return res.status(400).json({
+          msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}`,
+        });
+      }
+
+      // **Restar la nueva cantidad del insumo en la tabla insumo**
+      await insumoEncontrado.update({
+        cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+      });
+
+      // **Crear la relación entre OT e insumo**
+      await otinsumo.create({
+        id_ot,
+        id_insumo: insumoData.id_insumo,
+        cantidad_insumo: insumoData.cantidad_insumo,
+        precio_unitario: insumoData.precio_unitario,
+        descuento_insumo: insumoData.descuento_insumo,
+        recargo_insumo: insumoData.recargo_insumo,
+        af_ex_insumo: insumoData.af_ex_insumo,
+        precio_total: insumoData.precio_total,
+      });
+    }
 
     res.json({ msg: "Orden de trabajo actualizada correctamente" });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
+    console.error("Error al actualizar la orden de trabajo:", error.message);
+    res.status(500).json({
       msg: "Error al actualizar la orden de trabajo",
-      error,
+      error: error.message,
     });
   }
 };
 
 // Eliminar una orden de trabajo
-const deleteOT = async (req, res) => {
+const deleteOt = async (req, res) => {
   const { id_ot } = req.params;
 
   try {
-    // Buscar la orden de trabajo por ID
-    const ot = await OT.findByPk(id_ot);
-    if (!ot) {
+    const otData = await ot.findByPk(id_ot);
+    if (!otData) {
       return res.status(404).json({
         msg: "No se encontró ninguna orden de trabajo para eliminar.",
       });
     }
 
-    // Eliminar la orden de trabajo
-    await ot.destroy();
+    // Eliminar productos e insumos relacionados
+    await producto.destroy({ where: { id_ot } });
+    await otinsumo.destroy({ where: { id_ot } });
+
+    // Eliminar la OT
+    await otData.destroy();
 
     res.json({ msg: "Orden de trabajo eliminada correctamente" });
   } catch (error) {
@@ -231,4 +402,4 @@ const deleteOT = async (req, res) => {
   }
 };
 
-module.exports = { getOTs, getOT, newOT, updateOT, deleteOT };
+module.exports = { getOts, getOt, newOt, updateOt, deleteOt };

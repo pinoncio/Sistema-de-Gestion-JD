@@ -41,7 +41,7 @@ const ClientePage = () => {
     try {
       const data = await getClientes();
       const clientesOrdenados = data.sort(
-        (a, b) => a.ID_CLIENTE - b.ID_CLIENTE
+        (a, b) => a.id_cliente - b.id_cliente
       );
       setClientes(clientesOrdenados);
     } catch (error) {
@@ -51,18 +51,18 @@ const ClientePage = () => {
 
   const filteredClientes = clientes.filter(
     (cliente) =>
-      cliente.NOMBRE_RAZON_SOCIAL.toLowerCase().includes(
+      cliente.nombre_razon_social.toLowerCase().includes(
         searchQuery.toLowerCase()
       ) ||
-      cliente.NOMBRE_FANTASIA.toLowerCase().includes(
+      cliente.nombre_fantasia.toLowerCase().includes(
         searchQuery.toLowerCase()
       ) ||
-      cliente.RUT.toLowerCase().includes(searchQuery.toLowerCase())
+      cliente.rut.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCreateCliente = async (formData) => {
     try {
-      const response = await createCliente(formData); // Aquí pasas formData
+      const response = await createCliente(formData);
       console.log("Cliente creado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();
@@ -142,8 +142,8 @@ const ClientePage = () => {
       await toggleClienteStatus(id_cliente, nuevoEstado);
       setClientes((prevClientes) =>
         prevClientes.map((cliente) =>
-          cliente.ID_CLIENTE === id_cliente
-            ? { ...cliente, CLIENTE_VIGENTE: nuevoEstado }
+          cliente.id_cliente === id_cliente
+            ? { ...cliente, cliente_vigente: nuevoEstado }
             : cliente
         )
       );
@@ -163,7 +163,7 @@ const ClientePage = () => {
   const handleOpenModal = (cliente = null) => {
     if (cliente) {
       setEditing(true);
-      setEditId(cliente.ID_CLIENTE);
+      setEditId(cliente.id_cliente);
     } else {
       setEditing(false);
       setEditId(null);
@@ -231,7 +231,7 @@ const ClientePage = () => {
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        clienteData={clientes.find((cliente) => cliente.ID_CLIENTE === editId)}
+        clienteData={clientes.find((cliente) => cliente.id_cliente === editId)}
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}

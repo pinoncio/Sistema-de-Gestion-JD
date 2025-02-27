@@ -31,9 +31,9 @@ const InsumoProfilePage = () => {
       const data = await getInsumo(id_insumo);
       setInsumo(data);
 
-      if (data.ID_CATEGORIA) {
-        const categoriaData = await getCategoria(data.ID_CATEGORIA);
-        setCategoria(categoriaData.NOMBRE_CATEGORIA); // Ajustar según la estructura de la respuesta
+      if (data.id_categoria) {
+        const categoriaData = await getCategoria(data.id_categoria);
+        setCategoria(categoriaData.nombre_categoria); // Ajustar según la estructura de la respuesta
       }
     } catch (error) {
       setError("Error al obtener la información del insumo.");
@@ -113,28 +113,28 @@ const InsumoProfilePage = () => {
               />
               <TextField
                 label="Tipo Insumo"
-                value={insumo.TIPO_INSUMO || ""}
+                value={insumo.tipo_insumo || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Nombre Insumo"
-                value={insumo.NOMBRE_INSUMO || ""}
+                value={insumo.nombre_insumo || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Ubicación"
-                value={insumo.UBICACION || ""}
+                value={insumo.ubicacion || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Cantidad"
-                value={insumo.CANTIDAD || ""}
+                value={insumo.cantidad || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
@@ -142,8 +142,8 @@ const InsumoProfilePage = () => {
               <TextField
                 label="Costo Unidad"
                 value={
-                  insumo.COSTO_UNIDAD
-                    ? `$${insumo.COSTO_UNIDAD.toLocaleString()}`
+                  insumo.costo_unidad
+                    ? `$${insumo.costo_unidad.toLocaleString()}`
                     : ""
                 }
                 variant="outlined"
@@ -153,8 +153,8 @@ const InsumoProfilePage = () => {
               <TextField
                 label="Sub Total"
                 value={
-                  insumo.SUB_TOTAL
-                    ? `$${insumo.SUB_TOTAL.toLocaleString()}`
+                  insumo.sub_total
+                    ? `$${insumo.sub_total.toLocaleString()}`
                     : ""
                 }
                 variant="outlined"
@@ -164,8 +164,8 @@ const InsumoProfilePage = () => {
               <TextField
                 label="Ajuste Actual"
                 value={
-                  insumo.AJUSTE_ACTUAL
-                    ? `$${insumo.AJUSTE_ACTUAL.toLocaleString()}`
+                  insumo.ajuste_actual
+                    ? `$${insumo.ajuste_actual.toLocaleString()}`
                     : ""
                 }
                 variant="outlined"
@@ -174,7 +174,7 @@ const InsumoProfilePage = () => {
               />
               <TextField
                 label="Stock Disponible"
-                value={insumo.STOCK_DISPONIBLE || ""}
+                value={insumo.stock_disponible || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
@@ -182,8 +182,8 @@ const InsumoProfilePage = () => {
               <TextField
                 label="Precio Neto"
                 value={
-                  insumo.PRECIO_NETO
-                    ? `$${insumo.PRECIO_NETO.toLocaleString()}`
+                  insumo.precio_neto
+                    ? `$${insumo.precio_neto.toLocaleString()}`
                     : ""
                 }
                 variant="outlined"
@@ -193,8 +193,8 @@ const InsumoProfilePage = () => {
               <TextField
                 label="Total"
                 value={
-                  insumo.PRECIO_VENTA
-                    ? `$${insumo.PRECIO_VENTA.toLocaleString()}`
+                  insumo.precio_venta
+                    ? `$${insumo.precio_venta.toLocaleString()}`
                     : ""
                 }
                 variant="outlined"

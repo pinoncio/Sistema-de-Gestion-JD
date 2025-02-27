@@ -7,7 +7,7 @@ const {
   getInsumos,
   deleteInsumo,
   activarInsumo,
-} = require("../controllers/insumoController");
+} = require("../controllers/insumocontroller");
 
 // Ruta para obtener todos los insumos
 router.get("/list", getInsumos);

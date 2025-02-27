@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getOts, createOt, updateOt, deleteOt } from "../Services/otService";
+import { useNavigate } from "react-router-dom";
+import { getOts, deleteOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
-import { getInsumos } from "../Services/insumoService";
 import OtTable from "../Components/OtTable";
-import OtFormModal from "../Components/OtFormModal";
 import {
   Button,
   TextField,
@@ -22,25 +21,21 @@ import "../Styles/User.css";
 const OtPage = () => {
   const [ordenes, setOrdenes] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [insumos, setInsumos] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [editId, setEditId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage] = useState("");
+  const [snackbarSeverity] = useState("success");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrdenes();
     fetchClientes();
-    fetchInsumos();
   }, []);
 
   const fetchOrdenes = async () => {
     try {
       const data = await getOts();
-      const ordenesOrdenadas = data.sort((a, b) => a.ID_OT - b.ID_OT);
+      const ordenesOrdenadas = data.sort((a, b) => a.id_ot - b.id_ot);
       setOrdenes(ordenesOrdenadas);
     } catch (error) {
       console.error("Error al obtener las órdenes de trabajo", error);
@@ -56,79 +51,14 @@ const OtPage = () => {
     }
   };
 
-  const fetchInsumos = async () => {
-    try {
-      const data = await getInsumos();
-      setInsumos(data);
-    } catch (error) {
-      console.error("Error al obtener los insumos", error);
-    }
-  };
-
   const getClienteName = (id_cliente) => {
-    const cliente = clientes.find((c) => c.ID_CLIENTE === id_cliente);
-    return cliente ? cliente.NOMBRE_RAZON_SOCIAL : "Sin Cliente";
-  };
-
-  const getInsumoName = (id_insumo) => {
-    const insumo = insumos.find((i) => i.ID_INSUMO === id_insumo);
-    return insumo ? insumo.NOMBRE_INSUMO : "Sin Insumo";
+    const cliente = clientes.find((c) => c.id_cliente === id_cliente);
+    return cliente ? cliente.nombre_razon_social : "Sin Cliente";
   };
 
   const filteredOrdenes = ordenes.filter((orden) =>
-    orden.ID_OT.toString().includes(searchQuery.toLowerCase())
+    orden.id_ot.toString().includes(searchQuery.toLowerCase())
   );
-  
-
-  const handleCreateOt = async (formData) => {
-    try {
-      await createOt(formData);
-      setOpen(false);
-      fetchOrdenes();
-
-      setSnackbarMessage("Orden de trabajo creada exitosamente!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Error al crear la orden de trabajo:", error);
-      setSnackbarMessage("Ha ocurrido un error al crear la orden de trabajo.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
-  const handleUpdateOt = async (id, formData) => {
-    try {
-      await updateOt(id, formData);
-      setOpen(false);
-      fetchOrdenes();
-
-      setSnackbarMessage("Orden de trabajo actualizada exitosamente!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Error al actualizar la orden de trabajo:", error);
-      setSnackbarMessage(
-        "Ha ocurrido un error al actualizar la orden de trabajo."
-      );
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
-  const handleFormSubmit = async (formData) => {
-    try {
-      if (editing) {
-        await handleUpdateOt(editId, formData);
-      } else {
-        await handleCreateOt(formData);
-      }
-      setOpen(false);
-      fetchOrdenes();
-    } catch (error) {
-      console.error("Error al guardar la orden de trabajo", error);
-    }
-  };
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -162,27 +92,6 @@ const OtPage = () => {
     });
   };
 
-  const handleOpenModal = (orden = null) => {
-    if (orden) {
-      setEditing(true);
-      setEditId(orden.ID_OT);
-    } else {
-      setEditing(false);
-      setEditId(null);
-    }
-    setOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpen(false);
-    setEditing(false);
-    setEditId(null);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-
   return (
     <UserLayout>
       <h1>Lista completa de órdenes de trabajo</h1>
@@ -206,7 +115,7 @@ const OtPage = () => {
 
       <div className="ot-actions">
         <Button
-          onClick={() => handleOpenModal()}
+          onClick={() => navigate("/create-ot")}
           startIcon={<AddIcon />}
           style={{
             backgroundColor: "#f0f0f1",
@@ -223,33 +132,19 @@ const OtPage = () => {
           <OtTable
             ordenes={filteredOrdenes}
             onDelete={handleDelete}
-            onEdit={handleOpenModal}
             getClienteName={getClienteName}
-            getInsumoName={getInsumoName}
           />
         </CardContent>
       </Card>
 
-      <OtFormModal
-        open={open}
-        onClose={handleCloseModal}
-        onSubmit={handleFormSubmit}
-        otData={ordenes.find((orden) => orden.ID_OT === editId)}
-        editing={editing}
-        setEditing={setEditing}
-        setEditId={setEditId}
-        clientes={clientes}
-        insumos={insumos}
-      />
-
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
+        onClose={() => setSnackbarOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
-          onClose={handleCloseSnackbar}
+          onClose={() => setSnackbarOpen(false)}
           severity={snackbarSeverity}
           sx={{
             width: "auto",

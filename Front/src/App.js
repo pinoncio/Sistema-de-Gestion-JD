@@ -14,6 +14,8 @@ import InsumoPage from "./Pages/InsumoPage";
 import UserHome from "./Pages/UserHome";
 import InsumoProfilePage from "./Pages/InsumoVerPage";
 import OtPage from "./Pages/OtPage";
+import OTProfilePage from "./Pages/OtVerPage";
+import OrderForm from "./Components/OrderForm";
 
 const App = () => {
   return (
@@ -25,32 +27,33 @@ const App = () => {
           <Route
             path="/admin"
             element={
-              <PrivateRoute>
-                <AdminHome rolPermitido={1}/>
+              <PrivateRoute rolPermitido={1}>
+                <AdminHome />
               </PrivateRoute>
             }
           />
+
           <Route
             path="/users"
             element={
-              <PrivateRoute>
-                <UserPage rolPermitido={1}/>
+              <PrivateRoute rolPermitido={1}>
+                <UserPage  />
               </PrivateRoute>
             }
           />
           <Route
             path="/role"
             element={
-              <PrivateRoute>
-                <RolePage rolPermitido={1}/>
+              <PrivateRoute rolPermitido={1}>
+                <RolePage  />
               </PrivateRoute>
             }
           />
           <Route
             path="/perfil/:id_usuario"
             element={
-              <PrivateRoute>
-                <UserProfilePage rolPermitido={1}/>
+              <PrivateRoute rolPermitido={1}>
+                <UserProfilePage  />
               </PrivateRoute>
             }
           />
@@ -111,15 +114,23 @@ const App = () => {
             path="/ots"
             element={
               <PrivateRoute rolPermitido={2}>
-                < OtPage />
+                <OtPage />
               </PrivateRoute>
             }
           />
           <Route
-            path="/otProfile/:id_insumo"
+            path="/otProfile/:id_ot"
             element={
               <PrivateRoute rolPermitido={2}>
-                <InsumoProfilePage />
+                <OTProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create-ot"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <OrderForm />
               </PrivateRoute>
             }
           />

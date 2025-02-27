@@ -71,7 +71,7 @@ const ClientProfilePage = () => {
 
       // Obtener contacto comercial
       try {
-        const contactoData = await getContactoComercial(data.ID_CLIENTE);
+        const contactoData = await getContactoComercial(data.id_cliente);
         setContactoComercial(contactoData || null);
       } catch (error) {
         console.warn("No se pudo obtener el contacto comercial.", error);
@@ -226,63 +226,63 @@ const ClientProfilePage = () => {
             >
               <TextField
                 label="Código Cliente"
-                value={client.CODIGO_CLIENTE || ""}
+                value={client.codigo_cliente || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Razón Social"
-                value={client.NOMBRE_RAZON_SOCIAL || ""}
+                value={client.nombre_razon_social || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Nombre Fantasía"
-                value={client.NOMBRE_FANTASIA || ""}
+                value={client.nombre_fantasia || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="RUT"
-                value={client.RUT || ""}
+                value={client.rut || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Giro"
-                value={client.GIRO || ""}
+                value={client.giro || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Dirección"
-                value={client.DIRECCION || ""}
+                value={client.direccion || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Ciudad"
-                value={client.CIUDAD || ""}
+                value={client.ciudad || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Comuna"
-                value={client.COMUNA || ""}
+                value={client.comuna || ""}
                 variant="outlined"
                 fullWidth
                 readOnly
               />
               <TextField
                 label="Cliente Vigente"
-                value={client.CLIENTE_VIGENTE ? "Sí" : "No"}
+                value={client.cliente_vigente ? "Sí" : "No"}
                 variant="outlined"
                 fullWidth
                 readOnly
@@ -313,7 +313,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Nombre Responsable"
                     value={
-                      informacionPago.NOMBRE_RESPONSABLE || "No disponible"
+                      informacionPago.nombre_responsable || "No disponible"
                     }
                     variant="outlined"
                     fullWidth
@@ -323,7 +323,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Correo Electrónico"
                     value={
-                      informacionPago.CORREO_ELECTRONICO || "No disponible"
+                      informacionPago.correo_electronico || "No disponible"
                     }
                     variant="outlined"
                     fullWidth
@@ -333,7 +333,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Teléfono Responsable"
                     value={
-                      informacionPago.TELEFONO_RESPONSABLE || "No disponible"
+                      informacionPago.telefono_responsable || "No disponible"
                     }
                     variant="outlined"
                     fullWidth
@@ -356,7 +356,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Contacto Comercial"
                     value={
-                      contactoComercial.CONTACTO_COMERCIAL || "No disponible"
+                      contactoComercial.contacto_comercial || "No disponible"
                     }
                     variant="outlined"
                     fullWidth
@@ -366,7 +366,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Correo Electrónico Comercial"
                     value={
-                      contactoComercial.CORREO_ELECTRONICO_COMERCIAL ||
+                      contactoComercial.correo_electronico_comercial ||
                       "No disponible"
                     }
                     variant="outlined"
@@ -376,7 +376,7 @@ const ClientProfilePage = () => {
                   />
                   <TextField
                     label="Teléfono Fijo"
-                    value={contactoComercial.TELEFONO_FIJO || "No disponible"}
+                    value={contactoComercial.telefono_fijo || "No disponible"}
                     variant="outlined"
                     fullWidth
                     readOnly
@@ -385,7 +385,7 @@ const ClientProfilePage = () => {
                   <TextField
                     label="Teléfono Celular"
                     value={
-                      contactoComercial.TELEFONO_CELULAR || "No disponible"
+                      contactoComercial.telefono_celular || "No disponible"
                     }
                     variant="outlined"
                     fullWidth
@@ -419,13 +419,13 @@ const ClientProfilePage = () => {
                   >
                     <TextField
                       label="Método de Pago"
-                      value={metodo.metodoPago.NOMBRE_METODO}
+                      value={metodo.metodoPago.nombre_metodo}
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />
                     <TextField
                       label="Referencia"
-                      value={metodo.REFERENCIA}
+                      value={metodo.referencia}
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />
@@ -436,8 +436,8 @@ const ClientProfilePage = () => {
                         color="error"
                         onClick={() =>
                           handleDeleteMetodoPago(
-                            client.ID_CLIENTE, // Pasando el id_cliente
-                            metodo.ID_METODO_PAGO // Pasando el id_metodo_pago
+                            client.id_cliente, // Pasando el id_cliente
+                            metodo.id_metodo_pago // Pasando el id_metodo_pago
                           )
                         }
                       >
@@ -467,10 +467,10 @@ const ClientProfilePage = () => {
               >
                 {metodosPago.map((metodo) => (
                   <MenuItem
-                    key={metodo.ID_METODO_PAGO}
-                    value={metodo.ID_METODO_PAGO}
+                    key={metodo.id_metodo_pago}
+                    value={metodo.id_metodo_pago}
                   >
-                    {metodo.NOMBRE_METODO}
+                    {metodo.nombre_metodo}
                   </MenuItem>
                 ))}
               </Select>

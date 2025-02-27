@@ -29,7 +29,7 @@ const CategoriaPage = () => {
     try {
       const data = await getCategorias();
       const categoriasOrdenadas = data.sort(
-        (a, b) => a.ID_CATEGORIA - b.ID_CATEGORIA
+        (a, b) => a.id_categoria - b.id_categoria
       );
       setCategorias(categoriasOrdenadas);
     } catch (error) {
@@ -100,7 +100,7 @@ const CategoriaPage = () => {
   const handleOpenModal = (categoria = null) => {
     if (categoria) {
       setEditing(true);
-      setEditId(categoria.ID_CATEGORIA);
+      setEditId(categoria.id_categoria);
     } else {
       setEditing(false);
       setEditId(null);
@@ -153,7 +153,7 @@ const CategoriaPage = () => {
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
         categoriaData={categorias.find(
-          (categoria) => categoria.ID_CATEGORIA === editId
+          (categoria) => categoria.id_categoria === editId
         )}
         editing={editing}
         setEditing={setEditing}

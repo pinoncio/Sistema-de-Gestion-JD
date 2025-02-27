@@ -1,96 +1,106 @@
-const { Rol } = require("../models/roleModel");
+const { rol } = require("../models/rolemodel");
 
 const getRoles = async (req, res) => {
   try {
-    const roles = await Rol.findAll();
+    const roles = await rol.findAll();
     res.json(roles);
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       msg: "Error al obtener la lista de roles.",
-      error,
+      error: error.message,
+      stack: error.stack,
     });
   }
 };
 
 const newRol = async (req, res) => {
-  const { nombre_rol } = req.body;
+  const { nombreRol } = req.body;
   try {
-    await Rol.create({
-      NOMBRE_ROL: nombre_rol,
+    await rol.create({
+      nombre_rol: nombreRol,
     });
     return res.status(201).json({
       msg: "Rol creado correctamente",
     });
   } catch (error) {
+    console.error(error);
     res.status(400).json({
       msg: "Ocurrió un error al crear el rol",
-      error,
+      error: error.message,
+      stack: error.stack,
     });
   }
 };
 
 const updateRol = async (req, res) => {
-  const { id_rol } = req.params;
-  const { nombre_rol } = req.body;
-  const rol = await Rol.findOne({ where: { ID_ROL: id_rol } });
-  if (!rol) {
-    return res.status(404).json({
-      msg: "No existe un rol con id: " + id_rol,
-    });
-  }
+  const { idRol } = req.params;
+  const { nombreRol } = req.body;
   try {
-    await Rol.update(
-      {
-        NOMBRE_ROL: nombre_rol,
-      },
-      { where: { ID_ROL: id_rol } }
+    const rolData = await rol.findOne({ where: { id_rol: idRol } });
+    if (!rolData) {
+      return res.status(404).json({
+        msg: `No existe un rol con id: ${idRol}`,
+      });
+    }
+
+    await rol.update(
+      { nombre_rol: nombreRol },
+      { where: { id_rol: idRol } }
     );
     return res.json({
-      msg: "Rol " + id_rol + " actualizado correctamente",
+      msg: `Rol con id ${idRol} actualizado correctamente`,
     });
   } catch (error) {
+    console.error(error);
     return res.status(400).json({
-      msg: "Ha ocurrido un error al actualizar el rol: " + id_rol,
-      error,
+      msg: `Ha ocurrido un error al actualizar el rol con id: ${idRol}`,
+      error: error.message,
+      stack: error.stack,
     });
   }
 };
 
 const deleteRol = async (req, res) => {
-  const { id_rol } = req.params;
-  const rol = await Rol.findOne({ where: { ID_ROL: id_rol } });
-  if (!rol) {
-    return res.status(404).json({
-      msg: "El rol con id: " + id_rol + " no existe",
-    });
-  }
+  const { idRol } = req.params;
   try {
-    await Rol.destroy({ where: { ID_ROL: id_rol } });
+    const rolData = await rol.findOne({ where: { id_rol: idRol } });
+    if (!rolData) {
+      return res.status(404).json({
+        msg: `El rol con id: ${idRol} no existe`,
+      });
+    }
+
+    await rol.destroy({ where: { id_rol: idRol } });
     return res.json({
-      msg: "Rol con id " + id_rol + " borrado correctamente",
+      msg: `Rol con id ${idRol} borrado correctamente`,
     });
   } catch (error) {
+    console.error(error);
     return res.status(400).json({
-      msg: "Ha ocurrido un error al borrar el rol con id: " + id_rol,
-      error,
+      msg: `Ha ocurrido un error al borrar el rol con id: ${idRol}`,
+      error: error.message,
+      stack: error.stack,
     });
   }
 };
 
 const getRol = async (req, res) => {
-  const { id_rol } = req.params;
+  const { idRol } = req.params;
   try {
-    const rol = await Rol.findOne({ where: { ID_ROL: id_rol } });
-    if (!rol) {
+    const rolData = await rol.findOne({ where: { id_rol: idRol } });
+    if (!rolData) {
       return res.status(404).json({
-        msg: "El rol con id: " + id_rol + " no existe",
+        msg: `El rol con id: ${idRol} no existe`,
       });
     }
-    res.json(rol);
+    res.json(rolData);
   } catch (error) {
+    console.error(error);
     return res.status(400).json({
-      msg: "Ha ocurrido un error al encontrar el rol con id: " + id_rol,
-      error,
+      msg: `Ha ocurrido un error al encontrar el rol con id: ${idRol}`,
+      error: error.message,
+      stack: error.stack,
     });
   }
 };

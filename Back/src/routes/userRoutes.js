@@ -8,7 +8,7 @@ const {
   getUsuarios,
   deleteUsuario,
   activarUsuario,
-} = require("../controllers/userController");
+} = require("../controllers/usercontroller");
 
 // Ruta para obtener todos los usuarios
 router.get("/list", getUsuarios);

@@ -1,16 +1,22 @@
 const { DataTypes } = require("sequelize");
-const dbConnection = require("../config/db");
+const dbconnection = require("../config/db");
 
-const Categoria = dbConnection.define(
+const categoria = dbconnection.define(
   "categoria",
   {
-    ID_CATEGORIA: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    NOMBRE_CATEGORIA: { type: DataTypes.STRING },
+    id_categoria: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre_categoria: {
+      type: DataTypes.STRING,
+    },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // 'freezeTableName' debe estar en minúsculas
     timestamps: false,
   }
 );
 
-module.exports = { Categoria };
+module.exports = { categoria };

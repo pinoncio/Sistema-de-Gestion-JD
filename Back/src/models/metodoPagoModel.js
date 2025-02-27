@@ -1,21 +1,21 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
 
-const MetodoPago = db.define(
+const metodopago = db.define(
   "metodos_pago",
   {
-    ID_METODO_PAGO: {
+    id_metodo_pago: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    NOMBRE_METODO: { type: DataTypes.STRING },
-    DESCRIPCION: { type: DataTypes.STRING },
+    nombre_metodo: { type: DataTypes.STRING },
+    descripcion: { type: DataTypes.STRING },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-module.exports = { MetodoPago };
+module.exports = { metodopago };

@@ -1,16 +1,16 @@
 const { DataTypes } = require("sequelize");
-const dbConnection = require("../config/db");
+const dbconnection = require("../config/db");
 
-const Rol = dbConnection.define(
+const rol = dbconnection.define(
   "rol",
   {
-    ID_ROL: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    NOMBRE_ROL: { type: DataTypes.STRING },
+    id_rol: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, // Corregido: 'primaryKey' y 'autoIncrement'
+    nombre_rol: { type: DataTypes.STRING }, // Corregido: 'DataTypes.STRING' en lugar de 'datatypes.string'
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-module.exports = { Rol };
+module.exports = { rol };

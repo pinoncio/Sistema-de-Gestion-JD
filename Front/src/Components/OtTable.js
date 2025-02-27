@@ -18,7 +18,6 @@ const OtTable = ({
   onDelete,
   onEdit,
   getClienteName,
-  getInsumoName,
 }) => {
   const [order] = useState("asc");
   const [orderBy] = useState("");
@@ -51,29 +50,27 @@ const OtTable = ({
           <TableCell>Fecha entrega</TableCell>
           <TableCell>Tipo OT</TableCell>
           <TableCell>Observacion final</TableCell>
-          <TableCell>Insumo</TableCell>
           <TableCell>Total</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {stableSort(ordenes, comparator).map((orden, index) => (
-          <TableRow key={orden.ID_OT || index}>
-            <TableCell>{getClienteName(orden.ID_CLIENTE)}</TableCell>
-            <TableCell>{orden.TIPO_DOCUMENTO}</TableCell>
-            <TableCell>{moment(orden.FECHA_SOLICITUD).format("DD/MM/YYYY")}</TableCell>
-            <TableCell>{moment(orden.FECHA_ENTREGA).format("DD/MM/YYYY")}</TableCell>
-            <TableCell>{orden.TIPO_OT}</TableCell>
-            <TableCell>{orden.OBSERVACION_FINAL}</TableCell>
-            <TableCell>{getInsumoName(orden.ID_INSUMO)}</TableCell>
+          <TableRow key={orden.id_ot || index}>
+            <TableCell>{getClienteName(orden.id_cliente)}</TableCell>
+            <TableCell>{orden.tipo_documento}</TableCell>
+            <TableCell>{moment(orden.fecha_solicitud).format("DD/MM/YYYY")}</TableCell>
+            <TableCell>{moment(orden.fecha_entrega).format("DD/MM/YYYY")}</TableCell>
+            <TableCell>{orden.tipo_ot}</TableCell>
+            <TableCell>{orden.observacion_final}</TableCell>
             <TableCell>
               {new Intl.NumberFormat("es-CL", {
                 style: "currency",
                 currency: "CLP",
-              }).format(orden.TOTAL)}
+              }).format(orden.total)}
             </TableCell>
             <TableCell>
-              <Link to={`/ordenProfile/${orden.ID_OT}`}>
+              <Link to={`/otProfile/${orden.id_ot}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -83,7 +80,7 @@ const OtTable = ({
               </IconButton>
               <IconButton
                 sx={{ ml: 1 }}
-                onClick={() => onDelete(orden.ID_OT)}
+                onClick={() => onDelete(orden.id_ot)}
               >
                 <DeleteIcon />
               </IconButton>

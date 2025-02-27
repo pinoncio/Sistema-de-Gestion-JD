@@ -63,8 +63,8 @@ const RoleTable = ({
       </TableHead>
       <TableBody>
         {stableSort(roles, comparator).map((rol) => (
-          <TableRow key={rol.ID_ROL}>
-            <TableCell>{rol.NOMBRE_ROL}</TableCell>
+          <TableRow key={rol.id_rol}>
+            <TableCell>{rol.nombre_rol}</TableCell>
             <TableCell>
               <IconButton
                 style={{ marginLeft: "10px" }}
@@ -74,7 +74,7 @@ const RoleTable = ({
               </IconButton>
               <IconButton
                 style={{ marginLeft: "10px" }}
-                onClick={() => onDelete(rol.ID_ROL)}
+                onClick={() => onDelete(rol.id_rol)}
               >
                 <DeleteIcon />
               </IconButton>

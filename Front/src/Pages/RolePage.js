@@ -28,7 +28,7 @@ const RolePage = () => {
   const fetchRoles = async () => {
     try {
       const data = await getRoles();
-      const rolesOrdenados = data.sort((a, b) => a.ID_ROL - b.ID_ROL);
+      const rolesOrdenados = data.sort((a, b) => a.id_rol - b.id_rol); // changed ID_ROL to id_rol
       setRoles(rolesOrdenados);
     } catch (error) {
       console.error("Error al obtener los roles", error);
@@ -98,7 +98,7 @@ const RolePage = () => {
   const handleOpenModal = (role = null) => {
     if (role) {
       setEditing(true);
-      setEditId(role.ID_ROL);
+      setEditId(role.id_rol); // changed ID_ROL to id_rol
     } else {
       setEditing(false);
       setEditId(null);
@@ -150,7 +150,7 @@ const RolePage = () => {
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        roleData={roles.find((role) => role.ID_ROL === editId)}
+        roleData={roles.find((role) => role.id_rol === editId)} // changed ID_ROL to id_rol
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}

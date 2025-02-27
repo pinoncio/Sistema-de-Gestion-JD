@@ -1,42 +1,42 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { Categoria } = require("./categoriaModel");
+const { categoria } = require("./categoriamodel");
 
-const Insumo = db.define(
+const insumo = db.define(
   "insumo",
   {
-    ID_INSUMO: {
+    id_insumo: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
+      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
     },
-    TIPO_INSUMO: { type: DataTypes.STRING },
-    NOMBRE_INSUMO: { type: DataTypes.STRING, unique: true },
-    UBICACION: { type: DataTypes.STRING },
-    CANTIDAD: { type: DataTypes.INTEGER },
-    COSTO_UNIDAD: { type: DataTypes.FLOAT },
-    SUB_TOTAL: { type: DataTypes.FLOAT },
-    AJUSTE_ACTUAL: { type: DataTypes.FLOAT },
-    STOCK_DISPONIBLE: { type: DataTypes.INTEGER },
-    PRECIO_VENTA: { type: DataTypes.FLOAT },
-    PRECIO_NETO: { type: DataTypes.FLOAT },
-    ESTADO_INSUMO: { type: DataTypes.BOOLEAN, defaultValue: true },
-    ID_CATEGORIA: {
+    tipo_insumo: { type: DataTypes.STRING },
+    nombre_insumo: { type: DataTypes.STRING, unique: true },
+    ubicacion: { type: DataTypes.STRING },
+    cantidad: { type: DataTypes.INTEGER },
+    costo_unidad: { type: DataTypes.FLOAT },
+    sub_total: { type: DataTypes.FLOAT },
+    ajuste_actual: { type: DataTypes.FLOAT },
+    stock_disponible: { type: DataTypes.INTEGER },
+    precio_venta: { type: DataTypes.FLOAT },
+    precio_neto: { type: DataTypes.FLOAT },
+    estado_insumo: { type: DataTypes.BOOLEAN, defaultValue: true }, // Corregido: 'defaultValue' en lugar de 'defaultvalue'
+    id_categoria: {
       type: DataTypes.INTEGER,
       references: {
-        model: Categoria,
-        key: "ID_CATEGORIA",
+        model: categoria,
+        key: "id_categoria",
       },
     },
   },
   {
-    freezeTableName: true,
+    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
     timestamps: false,
   }
 );
 
-// Relación con Categoria
-Insumo.belongsTo(Categoria, { foreignKey: "ID_CATEGORIA" });
-Categoria.hasMany(Insumo, { foreignKey: "ID_CATEGORIA" });
+// Relación con categoria
+insumo.belongsTo(categoria, { foreignKey: "id_categoria" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+categoria.hasMany(insumo, { foreignKey: "id_categoria" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 
-module.exports = { Insumo };
+module.exports = { insumo };

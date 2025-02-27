@@ -49,13 +49,13 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
       <TableHead>
         <TableRow>
           {[
-            "Código",
-            "Razón Social",
-            "Nombre Fantasía",
-            "RUT",
-            "Giro",
-            "Estado Vigente",
-            "Acciones",
+            "código",
+            "razón social",
+            "nombre fantasía",
+            "rut",
+            "giro",
+            "estado vigente",
+            "acciones",
           ].map((header) => (
             <TableCell key={header}>
               <TableSortLabel
@@ -71,22 +71,22 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
       </TableHead>
       <TableBody>
         {stableSort(clientes, comparator).map((cliente) => (
-          <TableRow key={cliente.ID_CLIENTE}>
-            <TableCell>{cliente.CODIGO_CLIENTE}</TableCell>
-            <TableCell>{cliente.NOMBRE_RAZON_SOCIAL}</TableCell>
-            <TableCell>{cliente.NOMBRE_FANTASIA}</TableCell>
-            <TableCell>{cliente.RUT}</TableCell>
-            <TableCell>{cliente.GIRO}</TableCell>
+          <TableRow key={cliente.id_cliente}>
+            <TableCell>{cliente.codigo_cliente}</TableCell>
+            <TableCell>{cliente.nombre_razon_social}</TableCell>
+            <TableCell>{cliente.nombre_fantasia}</TableCell>
+            <TableCell>{cliente.rut}</TableCell>
+            <TableCell>{cliente.giro}</TableCell>
             <TableCell>
               <Switch
-                checked={cliente.CLIENTE_VIGENTE}
+                checked={cliente.cliente_vigente}
                 onChange={() =>
-                  onToggleStatus(cliente.ID_CLIENTE, !cliente.CLIENTE_VIGENTE)
+                  onToggleStatus(cliente.id_cliente, !cliente.cliente_vigente)
                 }
               />
             </TableCell>
             <TableCell>
-              <Link to={`/clienteProfile/${cliente.ID_CLIENTE}`}>
+              <Link to={`/clienteProfile/${cliente.id_cliente}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -94,7 +94,7 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
               <IconButton onClick={() => onEdit(cliente)}>
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={() => onDelete(cliente.ID_CLIENTE)}>
+              <IconButton onClick={() => onDelete(cliente.id_cliente)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>

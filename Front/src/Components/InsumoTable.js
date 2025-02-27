@@ -54,9 +54,9 @@ const InsumoTable = ({
         <TableRow>
           <TableCell>
             <TableSortLabel
-              active={orderBy === "NOMBRE_INSUMO"}
-              direction={orderBy === "NOMBRE_INSUMO" ? order : "asc"}
-              onClick={() => handleRequestSort("NOMBRE_INSUMO")}
+              active={orderBy === "nombre_insumo"}
+              direction={orderBy === "nombre_insumo" ? order : "asc"}
+              onClick={() => handleRequestSort("nombre_insumo")}
             >
               Nombre
             </TableSortLabel>
@@ -72,36 +72,36 @@ const InsumoTable = ({
       </TableHead>
       <TableBody>
         {stableSort(insumos, comparator).map((insumo) => (
-          <TableRow key={insumo.ID_INSUMO}>
-            <TableCell>{insumo.NOMBRE_INSUMO}</TableCell>
-            <TableCell>{getCategoriaName(insumo.ID_CATEGORIA)}</TableCell>
-            <TableCell>{insumo.TIPO_INSUMO}</TableCell>
+          <TableRow key={insumo.id_insumo}>
+            <TableCell>{insumo.nombre_insumo}</TableCell>
+            <TableCell>{getCategoriaName(insumo.id_categoria)}</TableCell>
+            <TableCell>{insumo.tipo_insumo}</TableCell>
             <TableCell>
               <Switch
-                checked={insumo.ESTADO_INSUMO}
+                checked={insumo.estado_insumo}
                 onChange={() =>
-                  onToggleStatus(insumo.ID_INSUMO, !insumo.ESTADO_INSUMO)
+                  onToggleStatus(insumo.id_insumo, !insumo.estado_insumo)
                 }
                 name="estado"
                 inputProps={{ "aria-label": "controlled" }}
               />
             </TableCell>
-            <TableCell>{insumo.STOCK_DISPONIBLE}</TableCell>
+            <TableCell>{insumo.stock_disponible}</TableCell>
             <TableCell>
               {new Intl.NumberFormat("es-CL", {
                 style: "currency",
                 currency: "CLP",
-              }).format(insumo.PRECIO_NETO)}
+              }).format(insumo.precio_neto)}
             </TableCell>
             <TableCell>
               {new Intl.NumberFormat("es-CL", {
                 style: "currency",
                 currency: "CLP",
-              }).format(insumo.PRECIO_VENTA)}
+              }).format(insumo.precio_venta)}
             </TableCell>
 
             <TableCell>
-              <Link to={`/insumoProfile/${insumo.ID_INSUMO}`}>
+              <Link to={`/insumoProfile/${insumo.id_insumo}`}>
                 <IconButton>
                   <VisibilityIcon />
                 </IconButton>
@@ -111,7 +111,7 @@ const InsumoTable = ({
               </IconButton>
               <IconButton
                 sx={{ ml: 1 }}
-                onClick={() => onDelete(insumo.ID_INSUMO)}
+                onClick={() => onDelete(insumo.id_insumo)}
               >
                 <DeleteIcon />
               </IconButton>

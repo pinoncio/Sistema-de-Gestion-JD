@@ -6,7 +6,7 @@ const {
   deleteRol,
   getRoles,
   getRol,
-} = require("../controllers/roleController");
+} = require("../controllers/rolecontroller");
 const router = Router();
 
 router.post("/", newRol);

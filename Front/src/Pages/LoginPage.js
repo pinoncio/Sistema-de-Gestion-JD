@@ -16,23 +16,23 @@ import { AccountCircle, Lock } from "@mui/icons-material";
 import { useLocation } from "react-router-dom";
 import "../Styles/login.css";
 
-// Función para formatear el RUT
-const formatRUT = (rut) => {
-  let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
-  if (cleanedRUT.length <= 8) {
-    cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
-  } else if (cleanedRUT.length === 9) {
-    cleanedRUT = cleanedRUT.replace(
+// Función para formatear el rut
+const formatRut = (rut) => {
+  let cleanedRut = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
+  if (cleanedRut.length <= 8) {
+    cleanedRut = cleanedRut.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
+  } else if (cleanedRut.length === 9) {
+    cleanedRut = cleanedRut.replace(
       /(\d{2})(\d{3})(\d{3})(\d{1})/,
       "$1.$2.$3-$4"
     );
   } else {
-    cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
+    cleanedRut = cleanedRut.substring(0, 9); // Limitar a 9 caracteres
   }
-  return cleanedRUT;
+  return cleanedRut;
 };
 
-// Función para validar el RUT
+// Función para validar el rut
 const validateRut = (rut) => {
   let rutSinPuntos = rut.replace(/[^\dKk]/g, "");
   if (rutSinPuntos.length < 8 || rutSinPuntos.length > 9) return false;
@@ -59,7 +59,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRUTChange = (e) => {
+  const handleRutChange = (e) => {
     let value = e.target.value;
     let onlyValidChars = value.replace(/[^0-9.-]/g, "");
     const onlyNumbers = onlyValidChars.replace(/[^\d]/g, "");
@@ -71,12 +71,12 @@ const LoginPage = () => {
       setError(null);
     }
 
-    let formattedRUT = formatRUT(onlyNumbers);
-    if (formattedRUT.endsWith("-") && e.target.value.length < rut.length) {
-      formattedRUT = formattedRUT.slice(0, -1);
+    let formattedRut = formatRut(onlyNumbers);
+    if (formattedRut.endsWith("-") && e.target.value.length < rut.length) {
+      formattedRut = formattedRut.slice(0, -1);
     }
 
-    setRut(formattedRUT);
+    setRut(formattedRut);
   };
 
   const handleSnackbarClose = () => {
@@ -88,7 +88,7 @@ const LoginPage = () => {
     setLoading(true);
 
     if (!validateRut(rut)) {
-      setError("El RUT ingresado no es válido.");
+      setError("El rut ingresado no es válido.");
       setOpenSnackbar(true);
       setLoading(false);
       return;
@@ -96,15 +96,25 @@ const LoginPage = () => {
 
     try {
       const data = await loginUser(rut, contrasenia);
+
+      console.log("Datos recibidos de la API:", data);
+      console.log("ID de Usuario:", data.id_usuario);
+      console.log("Rol del Usuario:", data.rol);
+
       localStorage.setItem("token", data.token);
       localStorage.setItem(
         "user",
-        JSON.stringify({ idUsuario: data.idUsuario, rol: data.rol })
+        JSON.stringify({ idUsuario: data.id_usuario, rol: data.rol })
+      );
+
+      console.log(
+        "User guardado en localStorage:",
+        localStorage.getItem("user")
       );
 
       // Redirige según el rol del usuario
       if (data.rol === 1) {
-        navigate("/admin");
+        navigate("/admin"); // Verifica que la ruta /admin esté configurada correctamente
       } else if (data.rol === 2) {
         navigate("/user");
       } else {
@@ -145,7 +155,7 @@ const LoginPage = () => {
                     variant="outlined"
                     fullWidth
                     value={rut}
-                    onChange={handleRUTChange}
+                    onChange={handleRutChange}
                     required
                     className="login-input"
                   />

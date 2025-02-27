@@ -23,14 +23,14 @@ const InsumoFormModal = ({
   categorias,
 }) => {
   const [formData, setFormData] = useState({
-    TIPO_INSUMO: "",
-    NOMBRE_INSUMO: "",
-    UBICACION: "",
-    CANTIDAD: "",
-    COSTO_UNIDAD: "",
-    SUB_TOTAL: "",
-    AJUSTE_ACTUAL: "",
-    ID_CATEGORIA: "",
+    tipo_insumo: "",
+    nombre_insumo: "",
+    ubicacion: "",
+    cantidad: "",
+    costo_unidad: "",
+    sub_total: "",
+    ajuste_actual: "",
+    id_categoria: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -40,14 +40,14 @@ const InsumoFormModal = ({
     if (open) {
       if (editing && insumoData) {
         setFormData({
-          TIPO_INSUMO: insumoData.TIPO_INSUMO || "",
-          NOMBRE_INSUMO: insumoData.NOMBRE_INSUMO || "",
-          UBICACION: insumoData.UBICACION || "",
-          CANTIDAD: insumoData.CANTIDAD || "",
-          COSTO_UNIDAD: insumoData.COSTO_UNIDAD || "",
-          SUB_TOTAL: insumoData.SUB_TOTAL || "",
-          AJUSTE_ACTUAL: insumoData.AJUSTE_ACTUAL || "",
-          ID_CATEGORIA: insumoData.ID_CATEGORIA || "",
+          tipo_insumo: insumoData.tipo_insumo || "",
+          nombre_insumo: insumoData.nombre_insumo || "",
+          ubicacion: insumoData.ubicacion || "",
+          cantidad: insumoData.cantidad || "",
+          costo_unidad: insumoData.costo_unidad || "",
+          sub_total: insumoData.sub_total || "",
+          ajuste_actual: insumoData.ajuste_actual || "",
+          id_categoria: insumoData.id_categoria || "",
         });
       } else {
         resetForm();
@@ -57,33 +57,33 @@ const InsumoFormModal = ({
 
   const resetForm = () => {
     setFormData({
-      TIPO_INSUMO: "",
-      NOMBRE_INSUMO: "",
-      UBICACION: "",
-      CANTIDAD: "",
-      COSTO_UNIDAD: "",
-      SUB_TOTAL: "",
-      AJUSTE_ACTUAL: "",
-      ID_CATEGORIA: "",
+      tipo_insumo: "",
+      nombre_insumo: "",
+      ubicacion: "",
+      cantidad: "",
+      costo_unidad: "",
+      sub_total: "",
+      ajuste_actual: "",
+      id_categoria: "",
     });
     setErrors({});
   };
 
   useEffect(() => {
     const calculateSubtotal = () => {
-      const cantidad = parseFloat(formData.CANTIDAD) || 0;
-      const costoUnidad = parseFloat(formData.COSTO_UNIDAD) || 0;
+      const cantidad = parseFloat(formData.cantidad) || 0;
+      const costoUnidad = parseFloat(formData.costo_unidad) || 0;
       const subtotal = cantidad * costoUnidad;
       setFormData((prevData) => ({
         ...prevData,
-        SUB_TOTAL: subtotal.toFixed(2), // Guardamos el subtotal con 2 decimales
+        sub_total: subtotal.toFixed(2), // Guardamos el subtotal con 2 decimales
       }));
     };
 
-    if (formData.CANTIDAD && formData.COSTO_UNIDAD) {
+    if (formData.cantidad && formData.costo_unidad) {
       calculateSubtotal();
     }
-  }, [formData.CANTIDAD, formData.COSTO_UNIDAD]);
+  }, [formData.cantidad, formData.costo_unidad]);
 
   const validateName = (value) => {
     const regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/;
@@ -183,114 +183,114 @@ const InsumoFormModal = ({
                 <InputLabel>Categoria</InputLabel>
                 <Select
                   label="Categoria"
-                  value={formData.ID_CATEGORIA}
+                  value={formData.id_categoria}
                   onChange={(e) =>
-                    setFormData({ ...formData, ID_CATEGORIA: e.target.value })
+                    setFormData({ ...formData, id_categoria: e.target.value })
                   }
                 >
                   {categorias.map((categoria) => (
                     <MenuItem
-                      key={categoria.ID_CATEGORIA}
-                      value={categoria.ID_CATEGORIA}
+                      key={categoria.id_categoria}
+                      value={categoria.id_categoria}
                     >
-                      {categoria.NOMBRE_CATEGORIA}
+                      {categoria.nombre_categoria}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <TextField
                 label="Tipo de Insumo"
-                value={formData.TIPO_INSUMO}
-                onChange={(e) => handleNameChange(e, "TIPO_INSUMO")}
+                value={formData.tipo_insumo}
+                onChange={(e) => handleNameChange(e, "tipo_insumo")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.TIPO_INSUMO ||
-                  (!formData.TIPO_INSUMO
+                  errors.tipo_insumo ||
+                  (!formData.tipo_insumo
                     ? "El tipo de insumo es obligatorio."
                     : "")
                 }
-                error={!!errors.TIPO_INSUMO}
+                error={!!errors.tipo_insumo}
               />
               <TextField
                 label="Nombre del Insumo"
-                value={formData.NOMBRE_INSUMO}
-                onChange={(e) => handleNameChange(e, "NOMBRE_INSUMO")}
+                value={formData.nombre_insumo}
+                onChange={(e) => handleNameChange(e, "nombre_insumo")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.NOMBRE_INSUMO ||
-                  (!formData.NOMBRE_INSUMO
+                  errors.nombre_insumo ||
+                  (!formData.nombre_insumo
                     ? "El nombre del insumo es obligatorio."
                     : "")
                 }
-                error={!!errors.NOMBRE_INSUMO}
+                error={!!errors.nombre_insumo}
               />
               <TextField
                 label="Ubicación"
-                value={formData.UBICACION}
-                onChange={(e) => handleNameChange(e, "UBICACION")}
+                value={formData.ubicacion}
+                onChange={(e) => handleNameChange(e, "ubicacion")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.UBICACION ||
-                  (!formData.UBICACION
+                  errors.ubicacion ||
+                  (!formData.ubicacion
                     ? "La ubicacion del insumo es obligatorio."
                     : "")
                 }
-                error={!!errors.UBICACION}
+                error={!!errors.ubicacion}
               />
             </div>
             <div className="form-group">
               <TextField
                 label="Cantidad"
-                value={formData.CANTIDAD}
-                onChange={(e) => handleChange(e, "CANTIDAD")}
+                value={formData.cantidad}
+                onChange={(e) => handleChange(e, "cantidad")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.CANTIDAD ||
-                  (!formData.CANTIDAD ? "La cantidad es obligatoria." : "")
+                  errors.cantidad ||
+                  (!formData.cantidad ? "La cantidad es obligatoria." : "")
                 }
-                error={!!errors.CANTIDAD}
+                error={!!errors.cantidad}
               />
               <TextField
                 label="Costo por Unidad"
-                value={formData.COSTO_UNIDAD}
-                onChange={(e) => handleChange(e, "COSTO_UNIDAD")}
+                value={formData.costo_unidad}
+                onChange={(e) => handleChange(e, "costo_unidad")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.COSTO_UNIDAD ||
-                  (!formData.COSTO_UNIDAD
+                  errors.costo_unidad ||
+                  (!formData.costo_unidad
                     ? "El costo por unidad es obligatorio."
                     : "")
                 }
-                error={!!errors.COSTO_UNIDAD}
+                error={!!errors.costo_unidad}
               />
               <TextField
                 label="Ajuste Actual"
-                value={formData.AJUSTE_ACTUAL}
-                onChange={(e) => handleChange(e, "AJUSTE_ACTUAL")}
+                value={formData.ajuste_actual}
+                onChange={(e) => handleChange(e, "ajuste_actual")}
                 fullWidth
                 margin="normal"
                 required
                 helperText={
-                  errors.AJUSTE_ACTUAL ||
-                  (!formData.AJUSTE_ACTUAL
+                  errors.ajuste_actual ||
+                  (!formData.ajuste_actual
                     ? "El ajuste actual es obligatorio."
                     : "")
                 }
-                error={!!errors.AJUSTE_ACTUAL}
+                error={!!errors.ajuste_actual}
               />
               <TextField
                 label="Sub Total"
-                value={formData.SUB_TOTAL}
+                value={formData.sub_total}
                 fullWidth
                 margin="normal"
                 required
@@ -308,7 +308,7 @@ const InsumoFormModal = ({
           open={openSnackbar}
           autoHideDuration={3000}
           onClose={handleSnackbarClose}
-          message={errors.GENERALES}
+          message={errors.generales}
         />
       </div>
     </Modal>
