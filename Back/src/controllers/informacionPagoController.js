@@ -1,15 +1,14 @@
-const { informacionDePago } = require("../models/informacionpagomodel");
+const { informaciondepago } = require("../models/informacionpagomodel");
 const { cliente } = require("../models/clientemodel");
 
 // Obtener todas las informaciones de pago
 const getInformacionesDePago = async (req, res) => {
   try {
-    const informaciones = await informacionDePago.findAll({
-      attributes: { exclude: [] }, // Permite que todos los atributos puedan ser nulos
+    const informaciones = await informaciondepago.findAll({
       include: [
         {
           model: cliente,
-          as: "cliente",
+          as: "cliente",  // Relación definida en el modelo
           attributes: ["nombre_razon_social", "rut"],
         },
       ],
@@ -30,9 +29,15 @@ const getInformacionesDePago = async (req, res) => {
 const getInformacionDePago = async (req, res) => {
   const { id_cliente } = req.params;
   try {
-    const informacion = await informacionDePago.findOne({
+    const informacion = await informaciondepago.findOne({
       where: { id_cliente: id_cliente },
-      attributes: { exclude: [] }, // Permite atributos con valores nulos
+      include: [
+        {
+          model: cliente,
+          as: "cliente", // Relación definida en el modelo
+          attributes: ["nombre_razon_social", "rut"],
+        },
+      ],
     });
 
     if (!informacion) {
@@ -73,7 +78,7 @@ const newInformacionDePago = async (req, res) => {
     }
 
     // Crear la información de pago
-    const informacion = await informacionDePago.create({
+    const informacion = await informaciondepago.create({
       id_cliente,
       nombre_responsable,
       correo_electronico,
@@ -101,7 +106,7 @@ const updateInformacionDePago = async (req, res) => {
   const { nombre_responsable, correo_electronico, telefono_responsable } =
     req.body;
 
-  const informacion = await informacionDePago.findOne({
+  const informacion = await informaciondepago.findOne({
     where: { id_cliente: id_cliente },
   });
   if (!informacion) {
@@ -112,7 +117,7 @@ const updateInformacionDePago = async (req, res) => {
 
   try {
     // Actualizar la información de pago
-    await informacionDePago.update(
+    await informaciondepago.update(
       { nombre_responsable, correo_electronico, telefono_responsable },
       { where: { id_cliente: id_cliente } }
     );
@@ -134,7 +139,7 @@ const deleteInformacionDePago = async (req, res) => {
   const { id_informacion } = req.params;
 
   try {
-    const result = await informacionDePago.destroy({
+    const result = await informaciondepago.destroy({
       where: { id_informacion: id_informacion },
     });
 

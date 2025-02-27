@@ -102,14 +102,19 @@ const InsumoTable = ({
 
             <TableCell>
               <Link to={`/insumoProfile/${insumo.id_insumo}`}>
-                <IconButton>
+                <IconButton color="success" >
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <IconButton sx={{ ml: 1 }} onClick={() => onEdit(insumo)}>
+              <IconButton
+                color="warning"
+                sx={{ ml: 1 }}
+                onClick={() => onEdit(insumo)}
+              >
                 <EditIcon />
               </IconButton>
               <IconButton
+                color="error"
                 sx={{ ml: 1 }}
                 onClick={() => onDelete(insumo.id_insumo)}
               >

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Grid2, Paper, Typography, Container } from "@mui/material";
-import { People, Category, Inventory } from "@mui/icons-material"; // Añadimos más iconos
+import { People, Category, Inventory, Assignment } from "@mui/icons-material"; // Añadimos más iconos
 import { useNavigate } from "react-router-dom";
 import UserLayout from "../Components/Layout/UserLayout";
 
@@ -25,17 +25,16 @@ const UserHome = () => {
       route: "/insumo",
     },
     {
-      //icon: <Settings sx={{ fontSize: "6rem" }} />,
+      icon: <Assignment sx={{ fontSize: "6rem" }} />,
       title: "Ordenes de Trabajo",
       route: "/ots",
-    },
+    }
+    ,
     {
-      //icon: <Help sx={{ fontSize: "6rem" }} />,
       title: "Proximamente",
       route: "",
     },
     {
-      //icon: <InsertChart sx={{ fontSize: "6rem" }} />,
       title: "Proximamente",
       route: "",
     },

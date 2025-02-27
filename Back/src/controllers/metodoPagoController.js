@@ -1,9 +1,9 @@
-const { metodoPago } = require("../models/metodopagomodel");
+const { metodopago } = require("../models/metodopagomodel");
 
 // Obtener todos los métodos de pago
 const getAllMetodoPago = async (req, res) => {
   try {
-    const metodosPago = await metodoPago.findAll();
+    const metodosPago = await metodopago.findAll();
     if (metodosPago.length === 0) {
       return res.status(404).json({ message: "No se encontraron métodos de pago." });
     }
@@ -23,7 +23,7 @@ const getMetodoPagoById = async (req, res) => {
 
   try {
     // Buscar el método de pago por su id
-    const metodoPago = await metodoPago.findByPk(id_metodo_pago);
+    const metodoPago = await metodopago.findByPk(id_metodo_pago);
     
     // Si no se encuentra el método de pago
     if (!metodoPago) {
@@ -43,26 +43,26 @@ const getMetodoPagoById = async (req, res) => {
 
 // Crear un nuevo método de pago
 const createMetodoPago = async (req, res) => {
-  const { nombreMetodo, descripcion } = req.body;
+  const { nombre_metodo, descripcion } = req.body;
 
-  console.log('Datos recibidos en el backend:', { nombreMetodo, descripcion });
+  console.log('Datos recibidos en el backend:', { nombre_metodo, descripcion });
 
-  if (!nombreMetodo || !descripcion) {
+  if (!nombre_metodo || !descripcion) {
     return res.status(400).json({
-      message: "Faltan datos requeridos: nombreMetodo o descripcion.",
+      message: "Faltan datos requeridos: nombre_metodo o descripcion.",
     });
   }
 
   try {
     // Crear el nuevo método de pago
-    const nuevoMetodo = await metodoPago.create({
-      nombreMetodo,
+    const nuevoMetodo = await metodopago.create({
+      nombre_metodo,
       descripcion,
     });
 
     return res.status(201).json({
       message: "Método de pago creado correctamente.",
-      metodoPago: nuevoMetodo, // Devolver el objeto creado
+      metodo_pago: nuevoMetodo, // Devolver el objeto creado
     });
   } catch (error) {
     console.error("Error al crear el método de pago:", error);
@@ -76,28 +76,28 @@ const createMetodoPago = async (req, res) => {
 // Actualizar un método de pago
 const updateMetodoPago = async (req, res) => {
   const { id_metodo_pago } = req.params;
-  const { nombreMetodo, descripcion } = req.body;
+  const { nombre_metodo, descripcion } = req.body;
 
-  if (!nombreMetodo && !descripcion) {
+  if (!nombre_metodo && !descripcion) {
     return res.status(400).json({
       message: "Se debe proporcionar al menos un campo para actualizar.",
     });
   }
 
   try {
-    const metodoPago = await metodoPago.findByPk(id_metodo_pago);
+    const metodoPago = await metodopago.findByPk(id_metodo_pago);
     if (!metodoPago) {
       return res.status(404).json({ message: "Método de pago no encontrado." });
     }
 
-    metodoPago.nombreMetodo = nombreMetodo || metodoPago.nombreMetodo;
+    metodoPago.nombre_metodo = nombre_metodo || metodoPago.nombre_metodo;
     metodoPago.descripcion = descripcion || metodoPago.descripcion;
 
     await metodoPago.save();
 
     res.json({
       message: "Método de pago actualizado correctamente.",
-      metodoPago,
+      metodo_pago: metodoPago,
     });
   } catch (error) {
     console.error("Error al actualizar el método de pago:", error);
@@ -113,7 +113,7 @@ const deleteMetodoPago = async (req, res) => {
   const { id_metodo_pago } = req.params;
 
   try {
-    const metodoPago = await metodoPago.findByPk(id_metodo_pago);
+    const metodoPago = await metodopago.findByPk(id_metodo_pago);
     if (!metodoPago) {
       return res.status(404).json({ message: "Método de pago no encontrado." });
     }

@@ -87,14 +87,14 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
             </TableCell>
             <TableCell>
               <Link to={`/clienteProfile/${cliente.id_cliente}`}>
-                <IconButton>
+                <IconButton color="success">
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <IconButton onClick={() => onEdit(cliente)}>
+              <IconButton color="warning" onClick={() => onEdit(cliente)}>
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={() => onDelete(cliente.id_cliente)}>
+              <IconButton color="error" onClick={() => onDelete(cliente.id_cliente)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>

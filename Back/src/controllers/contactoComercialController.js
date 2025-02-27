@@ -1,10 +1,10 @@
-const { contactoComercial } = require("../models/contactocomercialmodel");
+const { contactocomercial } = require("../models/contactocomercialmodel");
 const { cliente } = require("../models/clientemodel");
 
 // Obtener todos los contactos comerciales
 const getContactosComerciales = async (req, res) => {
   try {
-    const contactos = await contactoComercial.findAll({
+    const contactos = await contactocomercial.findAll({
       include: [
         {
           model: cliente,
@@ -34,7 +34,7 @@ const getContactosComerciales = async (req, res) => {
 const getContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   try {
-    const contacto = await contactoComercial.findOne({
+    const contacto = await contactocomercial.findOne({
       where: { id_cliente: id_cliente },
       include: [
         {
@@ -65,6 +65,7 @@ const getContactoComercial = async (req, res) => {
 };
 
 // Crear un nuevo contacto comercial
+// Crear un nuevo contacto comercial
 const newContactoComercial = async (req, res) => {
   const {
     id_cliente,
@@ -84,7 +85,7 @@ const newContactoComercial = async (req, res) => {
     }
 
     // Crear el contacto comercial
-    const contacto = await contactoComercial.create({
+    const contacto = await contactocomercial.create({
       id_cliente,
       contacto_comercial,
       correo_electronico_comercial,
@@ -117,7 +118,7 @@ const updateContactoComercial = async (req, res) => {
     telefono_celular,
   } = req.body;
 
-  const contacto = await contactoComercial.findOne({
+  const contacto = await contactocomercial.findOne({
     where: { id_cliente: id_cliente },
   });
 
@@ -129,7 +130,7 @@ const updateContactoComercial = async (req, res) => {
 
   try {
     // Actualizar el contacto comercial
-    await contactoComercial.update(
+    await contactocomercial.update(
       {
         contacto_comercial,
         correo_electronico_comercial,
@@ -156,7 +157,7 @@ const deleteContactoComercial = async (req, res) => {
   const { id_contacto } = req.params;
 
   try {
-    const result = await contactoComercial.destroy({
+    const result = await contactocomercial.destroy({
       where: { id_contacto: id_contacto },
     });
 
@@ -164,7 +165,9 @@ const deleteContactoComercial = async (req, res) => {
       console.log(
         `Contacto comercial con id ${id_contacto} eliminado correctamente.`
       );
-      return res.status(200).json({ msg: "Contacto comercial eliminado correctamente." });
+      return res
+        .status(200)
+        .json({ msg: "Contacto comercial eliminado correctamente." });
     } else {
       console.log(
         `No se encontró ningún contacto comercial con id ${id_contacto} para eliminar.`

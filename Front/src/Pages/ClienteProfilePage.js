@@ -47,39 +47,58 @@ const ClientProfilePage = () => {
       setLoading(true);
       setError(null);
 
+      console.log("Iniciando fetchClient para id_cliente:", id_cliente);
+
       // Obtener cliente
-      const data = await getCliente(id_cliente);
-      setClient(data);
+      let data;
+      try {
+        data = await getCliente(id_cliente);
+        console.log("Cliente obtenido:", data);
+        setClient(data);
+      } catch (error) {
+        console.error("Error al obtener cliente:", error);
+        setError("No se pudo obtener el cliente.");
+        setClient(null);
+        return; // Detener ejecución si falla la carga del cliente
+      }
 
       // Obtener métodos de pago
       try {
-        const metodosData = await getMetodosPago();
+        const metodosData = await getMetodosPago(id_cliente);
+        console.log("Métodos de pago obtenidos:", metodosData);
         setMetodosPago(metodosData);
       } catch (error) {
         console.warn("No se pudieron obtener los métodos de pago.", error);
-        setMetodosPago([]); // Asignar lista vacía si falla
+        setMetodosPago([]);
       }
 
       // Obtener información de pago
       try {
         const informacionPagoData = await getInformacionDePago(id_cliente);
-        setInformacionPago(informacionPagoData || {}); // Asegurar que no sea undefined
+        console.log("Información de pago obtenida:", informacionPagoData);
+        setInformacionPago(informacionPagoData || {});
       } catch (error) {
         console.warn("No se pudo obtener la información de pago.", error);
-        setInformacionPago(null); // Permitir que sea null si falla
+        setInformacionPago(null);
       }
 
       // Obtener contacto comercial
       try {
-        const contactoData = await getContactoComercial(data.id_cliente);
-        setContactoComercial(contactoData || null);
+        if (data?.id_cliente) {
+          const contactoData = await getContactoComercial(data.id_cliente);
+          console.log("Contacto comercial obtenido:", contactoData);
+          setContactoComercial(contactoData || null);
+        } else {
+          console.warn("ID de cliente no disponible para contacto comercial.");
+          setContactoComercial(null);
+        }
       } catch (error) {
         console.warn("No se pudo obtener el contacto comercial.", error);
         setContactoComercial(null);
       }
     } catch (error) {
+      console.error("Error general en fetchClient:", error);
       setError("Error al obtener la información del cliente.");
-      console.error("Error al obtener datos", error);
     } finally {
       setLoading(false);
     }
@@ -87,17 +106,10 @@ const ClientProfilePage = () => {
 
   useEffect(() => {
     if (id_cliente) {
+      console.log("useEffect ejecutado con id_cliente:", id_cliente);
       fetchClient();
     } else {
-      setError("ID de cliente no válido");
-      setLoading(false);
-    }
-  }, [id_cliente, fetchClient]);
-
-  useEffect(() => {
-    if (id_cliente) {
-      fetchClient();
-    } else {
+      console.warn("ID de cliente no válido:", id_cliente);
       setError("ID de cliente no válido");
       setLoading(false);
     }
@@ -406,9 +418,9 @@ const ClientProfilePage = () => {
                 gap: 3,
               }}
             >
-              {client.clienteMetodosPago &&
-              client.clienteMetodosPago.length > 0 ? (
-                client.clienteMetodosPago.map((metodo, index) => (
+              {client.clientemetodospago &&
+              client.clientemetodospago.length > 0 ? (
+                client.clientemetodospago.map((metodo, index) => (
                   <Box
                     key={index}
                     sx={{
@@ -419,7 +431,7 @@ const ClientProfilePage = () => {
                   >
                     <TextField
                       label="Método de Pago"
-                      value={metodo.metodoPago.nombre_metodo}
+                      value={metodo.metodopago.nombre_metodo}
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />

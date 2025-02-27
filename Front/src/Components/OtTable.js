@@ -6,6 +6,7 @@ import {
   TableRow,
   TableCell,
   IconButton,
+  TableSortLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,14 +14,15 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
-const OtTable = ({
-  ordenes,
-  onDelete,
-  onEdit,
-  getClienteName,
-}) => {
-  const [order] = useState("asc");
-  const [orderBy] = useState("");
+const OtTable = ({ ordenes, onDelete, onEdit, getClienteName }) => {
+  const [order, setOrder] = useState("asc"); // El estado del orden (asc o desc)
+  const [orderBy, setOrderBy] = useState("fecha_solicitud"); // El estado de la columna por la cual ordenar
+
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const stableSort = (array, comparator) => {
     if (!orderBy) return array;
@@ -35,8 +37,10 @@ const OtTable = ({
 
   const comparator = (a, b) => {
     if (!orderBy) return 0;
-    if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
-    if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+    const dateA = moment(a[orderBy]);
+    const dateB = moment(b[orderBy]);
+    if (dateA.isBefore(dateB)) return order === "asc" ? -1 : 1;
+    if (dateA.isAfter(dateB)) return order === "asc" ? 1 : -1;
     return 0;
   };
 
@@ -46,8 +50,24 @@ const OtTable = ({
         <TableRow>
           <TableCell>Cliente</TableCell>
           <TableCell>Tipo documento</TableCell>
-          <TableCell>Fecha solicitud</TableCell>
-          <TableCell>Fecha entrega</TableCell>
+          <TableCell>
+            <TableSortLabel
+              active={orderBy === "fecha_solicitud"}
+              direction={orderBy === "fecha_solicitud" ? order : "asc"}
+              onClick={() => handleRequestSort("fecha_solicitud")}
+            >
+              Fecha solicitud
+            </TableSortLabel>
+          </TableCell>
+          <TableCell>
+            <TableSortLabel
+              active={orderBy === "fecha_entrega"}
+              direction={orderBy === "fecha_entrega" ? order : "asc"}
+              onClick={() => handleRequestSort("fecha_entrega")}
+            >
+              Fecha entrega
+            </TableSortLabel>
+          </TableCell>
           <TableCell>Tipo OT</TableCell>
           <TableCell>Observacion final</TableCell>
           <TableCell>Total</TableCell>
@@ -59,8 +79,12 @@ const OtTable = ({
           <TableRow key={orden.id_ot || index}>
             <TableCell>{getClienteName(orden.id_cliente)}</TableCell>
             <TableCell>{orden.tipo_documento}</TableCell>
-            <TableCell>{moment(orden.fecha_solicitud).format("DD/MM/YYYY")}</TableCell>
-            <TableCell>{moment(orden.fecha_entrega).format("DD/MM/YYYY")}</TableCell>
+            <TableCell>
+              {moment(orden.fecha_solicitud).format("DD/MM/YYYY")}
+            </TableCell>
+            <TableCell>
+              {moment(orden.fecha_entrega).format("DD/MM/YYYY")}
+            </TableCell>
             <TableCell>{orden.tipo_ot}</TableCell>
             <TableCell>{orden.observacion_final}</TableCell>
             <TableCell>
@@ -71,14 +95,17 @@ const OtTable = ({
             </TableCell>
             <TableCell>
               <Link to={`/otProfile/${orden.id_ot}`}>
-                <IconButton>
+                <IconButton color="success">
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <IconButton sx={{ ml: 1 }} onClick={() => onEdit(orden)}>
-                <EditIcon />
-              </IconButton>
+              <Link to={`/update-ot/${orden.id_ot}`}>
+                <IconButton color="warning" sx={{ ml: 1 }}>
+                  <EditIcon />
+                </IconButton>
+              </Link>
               <IconButton
+                color="error"
                 sx={{ ml: 1 }}
                 onClick={() => onDelete(orden.id_ot)}
               >

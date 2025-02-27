@@ -56,8 +56,11 @@ const OtPage = () => {
     return cliente ? cliente.nombre_razon_social : "Sin Cliente";
   };
 
+  // Filtrar las órdenes por el nombre del cliente
   const filteredOrdenes = ordenes.filter((orden) =>
-    orden.id_ot.toString().includes(searchQuery.toLowerCase())
+    getClienteName(orden.id_cliente)
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()) // Filtra por nombre_razon_social
   );
 
   const handleDelete = async (id) => {
@@ -98,7 +101,7 @@ const OtPage = () => {
 
       <div className="search-bar">
         <TextField
-          label="Buscar OT"
+          label="Buscar por cliente"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth

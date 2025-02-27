@@ -67,12 +67,14 @@ const RoleTable = ({
             <TableCell>{rol.nombre_rol}</TableCell>
             <TableCell>
               <IconButton
+                color="warning"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onEdit(rol)}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
+                color="error"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onDelete(rol.id_rol)}
               >

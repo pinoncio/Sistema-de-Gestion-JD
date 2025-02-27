@@ -59,16 +59,18 @@ const CategoriaTable = ({ categorias = [], onDelete, onEdit }) => {
       </TableHead>
       <TableBody>
         {stableSort(categorias, comparator).map((categoria) => (
-          <TableRow key={categoria.id_categoria}> 
+          <TableRow key={categoria.id_categoria}>
             <TableCell>{categoria.nombre_categoria}</TableCell>
             <TableCell>
               <IconButton
+                color="warning"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onEdit(categoria)}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
+                color="error"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onDelete(categoria.id_categoria)}
               >

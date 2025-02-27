@@ -5,7 +5,6 @@ import {
   MenuItem,
   Button,
   Grid,
-  InputAdornment,
   Box,
   Table,
   TableBody,
@@ -19,17 +18,20 @@ import {
   Snackbar,
   SnackbarContent,
 } from "@mui/material";
-import { createOt } from "../Services/otService";
+import { getOt, updateOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
 import { getInsumos } from "../Services/insumoService";
+import { getInsumosByOT } from "../Services/otInsumoService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "./Layout/UserLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-const OrderForm = () => {
+const OrderUForm = () => {
+  const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
+  const [ot_insumos, setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -51,7 +53,7 @@ const OrderForm = () => {
     monto_exento: "1",
     iva: "19",
     total: "0",
-    insumos: [],
+    ot_insumos: [],
     productos: [],
   });
 
@@ -77,17 +79,45 @@ const OrderForm = () => {
   useEffect(() => {
     fetchClientes();
     fetchInsumos();
-  }, []);
+    if (id_ot) {
+      fetchOt(id_ot);
+    }
+  }, [id_ot]);
+
+  const fetchOt = async (id_ot) => {
+    try {
+      const otData = await getOt(id_ot); 
+      setFormData({
+        ...otData, 
+      });
+    } catch (error) {
+      console.error("Error al obtener la OT:", error);
+    }
+  };
+
+  const fetchOtInsumo = async (id_ot) => {
+    try {
+      const oInsumoData = await getInsumosByOT(id_ot); 
+      setOtInsumos({oInsumoData
+      });
+    } catch (error) {
+      console.error("Error al obtener la OT:", error);
+    }
+  };
+
   const fetchClientes = async () => {
     try {
-      setClientes(await getClientes());
+      const clientesData = await getClientes();
+      setClientes(clientesData);
     } catch (error) {
       console.error("Error al obtener los clientes:", error);
     }
   };
+
   const fetchInsumos = async () => {
     try {
-      setInsumos(await getInsumos());
+      const insumosData = await getInsumos();
+      setInsumos(insumosData);
     } catch (error) {
       console.error("Error al obtener los insumos:", error);
     }
@@ -141,58 +171,21 @@ const OrderForm = () => {
       });
   };
 
-  const handleCreateOt = async (data) => {
+  const handleUpdateOt = async (data) => {
     try {
-      await createOt(data);
+      await updateOt(id_ot, data); // Actualizar la OT
       setOpenSnackbar(true); // Muestra el Snackbar en caso de éxito
-      setFormData({
-        // Limpiar formulario
-        id_cliente: "",
-        tipo_documento: "Orden de Trabajo",
-        fecha_solicitud: "",
-        fecha_entrega: "",
-        tipo_ot: "",
-        equipo: "",
-        numero_serie: "",
-        horas_trabajo: "",
-        observacion_final: "",
-        descripcion: "",
-        comentario: "",
-        descuento_global: "",
-        sub_total: "0",
-        monto_neto: "0",
-        monto_exento: "1",
-        iva: "19",
-        total: "0",
-        insumos: [],
-        productos: [],
-      });
-      setCurrentInsumo({
-        id_insumo: "",
-        cantidad_insumo: "",
-        precio_unitario: "",
-        descuento_insumo: "",
-        recargo_insumo: "",
-        af_ex_insumo: "Afecto",
-        precio_total: "",
-      });
-      setCurrentProducto({
-        nombre_producto: "",
-        cantidad_producto: "",
-        precio_unitario: "",
-        descuento_producto: "",
-        recargo_producto: "",
-        af_ex: "Afecto",
-        precio_total: "",
-      });
       setErrors({});
+      setTimeout(() => {
+        navigate("/ots");
+      }, 2000); // Redirige a /ots después de 2 segundos
     } catch (error) {
-      console.error("Error al crear la orden de trabajo:", error);
+      console.error("Error al actualizar la orden de trabajo:", error);
       setErrors({
         ...errors,
         generales:
           error.response?.data?.message ||
-          "Ha ocurrido un error al crear la orden de trabajo.",
+          "Ha ocurrido un error al actualizar la orden de trabajo.",
       });
       setOpenSnackbar(true);
     }
@@ -392,7 +385,7 @@ const OrderForm = () => {
     }
 
     try {
-      await handleCreateOt(lowerCaseFormData); // Llamada a la función para crear la OT
+      await handleUpdateOt(lowerCaseFormData); // Llamada a la función para crear la OT
       // Limpiar formulario después de la creación
       setFormData({
         id_cliente: "",
@@ -685,118 +678,6 @@ const OrderForm = () => {
               />
             </Grid>
 
-            {/* Fila para seleccionar el Insumo */}
-            <Grid item xs={12}>
-              <TextField
-                label="Insumo Fijo"
-                select
-                value={currentInsumo.id_insumo}
-                onChange={(e) => handleCurrentInsumoChange(e, "id_insumo")}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              >
-                <MenuItem value="">Seleccionar</MenuItem>
-                {insumos.map((i) => (
-                  <MenuItem key={i.id_insumo} value={i.id_insumo}>
-                    {i.nombre_insumo}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            {/* Campos del insumo */}
-            <Grid item xs={2}>
-              <TextField
-                label="Cantidad"
-                type="number"
-                value={currentInsumo.cantidad_insumo}
-                onChange={(e) =>
-                  handleCurrentInsumoChange(e, "cantidad_insumo")
-                }
-                fullWidth
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Unitario"
-                type="number"
-                value={currentInsumo.precio_unitario}
-                onChange={(e) =>
-                  handleCurrentInsumoChange(e, "precio_unitario")
-                }
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Desc. %"
-                type="number"
-                value={currentInsumo.descuento_insumo}
-                onChange={(e) =>
-                  handleCurrentInsumoChange(e, "descuento_insumo")
-                }
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Recargo"
-                type="number"
-                value={currentInsumo.recargo_insumo}
-                onChange={(e) => handleCurrentInsumoChange(e, "recargo_insumo")}
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="AF/EX"
-                type="text"
-                value={currentInsumo.af_ex_insumo}
-                fullWidth
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Total"
-                value={currentInsumo.precio_total}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button variant="contained" onClick={handleAddInsumo}>
-                Agregar Insumo
-              </Button>
-            </Grid>
-
-            {/* Tabla para listar los insumos agregados */}
             <Grid item xs={12}>
               <TableContainer component={Paper} sx={{ marginTop: 2 }}>
                 <Table size="small">
@@ -838,114 +719,6 @@ const OrderForm = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Nombre del Producto"
-                fullWidth
-                value={currentProducto.nombre_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "nombre_producto")
-                }
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Cantidad"
-                type="number"
-                fullWidth
-                value={currentProducto.cantidad_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "cantidad_producto")
-                }
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Unitario"
-                type="number"
-                fullWidth
-                value={currentProducto.precio_unitario}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "precio_unitario")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Descuento (%)"
-                type="number"
-                fullWidth
-                value={currentProducto.descuento_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "descuento_producto")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Recargo"
-                type="number"
-                fullWidth
-                value={currentProducto.recargo_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "recargo_producto")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="AF/EX"
-                type="text"
-                value={currentProducto.af_ex}
-                fullWidth
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Total"
-                value={currentProducto.precio_total}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddProducto}
-              >
-                Agregar Producto
-              </Button>
             </Grid>
             <Grid item xs={12}>
               <TableContainer component={Paper} sx={{ marginTop: 2 }}>
@@ -1089,24 +862,24 @@ const OrderForm = () => {
         </Box>
       </form>
       <Snackbar
-  open={openSnackbar}
-  autoHideDuration={6000}
-  onClose={handleSnackbarClose}
-  anchorOrigin={{
-    vertical: 'top', // Posición vertical: arriba
-    horizontal: 'right', // Posición horizontal: derecha
-  }}
->
-  <SnackbarContent
-    message={errors.generales || "Orden de trabajo creada exitosamente!"}
-    sx={{
-      backgroundColor: errors.generales ? 'red' : 'green', // Color rojo para error, verde para éxito
-      color: 'white', // Texto blanco para mayor contraste
-    }}
-  />
-</Snackbar>
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{
+          vertical: "top", // Posición vertical: arriba
+          horizontal: "right", // Posición horizontal: derecha
+        }}
+      >
+        <SnackbarContent
+          message={errors.generales || "Orden de trabajo creada exitosamente!"}
+          sx={{
+            backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
+            color: "white", // Texto blanco para mayor contraste
+          }}
+        />
+      </Snackbar>
     </UserLayout>
   );
 };
 
-export default OrderForm;
+export default OrderUForm;

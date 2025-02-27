@@ -44,7 +44,7 @@ const newInsumo = async (req, res) => {
     }
 
     // Calcular los valores automáticos
-    const stock_disponible = cantidad; // Asumimos que 'cantidad' es el total disponible
+    const stock_disponible = cantidad;
     if (isNaN(sub_total) || isNaN(ajuste_actual)) {
       return res
         .status(400)
@@ -99,7 +99,9 @@ const updateInsumo = async (req, res) => {
     id_categoria,
   } = req.body;
 
-  const existingInsumo = await insumo.findOne({ where: { id_insumo: id_insumo } });
+  const existingInsumo = await insumo.findOne({
+    where: { id_insumo: id_insumo },
+  });
   if (!existingInsumo) {
     return res.status(404).json({
       msg: "No existe un insumo con id: " + id_insumo,
@@ -108,7 +110,11 @@ const updateInsumo = async (req, res) => {
 
   try {
     // Calcular los valores automáticos
-    const stock_disponible = cantidad; // Asumimos que 'cantidad' es el total disponible
+    const stock_disponible =
+      existingInsumo.stock_disponible !== cantidad
+        ? cantidad
+        : existingInsumo.stock_disponible;
+
     if (isNaN(sub_total) || isNaN(ajuste_actual)) {
       return res
         .status(400)
@@ -164,7 +170,9 @@ const deleteInsumo = async (req, res) => {
       console.log(
         `No se encontró ningún insumo con id ${id_insumo} para eliminar.`
       );
-      return res.status(404).json({ msg: "No se encontró ningún insumo para eliminar." });
+      return res
+        .status(404)
+        .json({ msg: "No se encontró ningún insumo para eliminar." });
     }
   } catch (error) {
     console.error(`Error al eliminar el insumo con id ${id_insumo}:`, error);
@@ -234,12 +242,15 @@ const activarInsumo = async (req, res) => {
         { where: { id_insumo: id_insumo } }
       );
       return res.json({
-        msg: "Se ha desactivado el insumo con id " + id_insumo + " correctamente.",
+        msg:
+          "Se ha desactivado el insumo con id " + id_insumo + " correctamente.",
       });
     }
   } catch (error) {
     return res.status(400).json({
-      msg: "Ha ocurrido un error al activar/desactivar el insumo con id: " + id_insumo,
+      msg:
+        "Ha ocurrido un error al activar/desactivar el insumo con id: " +
+        id_insumo,
       error,
     });
   }

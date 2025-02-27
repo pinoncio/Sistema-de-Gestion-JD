@@ -16,6 +16,7 @@ import InsumoProfilePage from "./Pages/InsumoVerPage";
 import OtPage from "./Pages/OtPage";
 import OTProfilePage from "./Pages/OtVerPage";
 import OrderForm from "./Components/OrderForm";
+import OrderUForm from "./Components/OrderUForm";
 
 const App = () => {
   return (
@@ -131,6 +132,14 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <OrderForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/update-ot/:id_ot"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <OrderUForm />
               </PrivateRoute>
             }
           />

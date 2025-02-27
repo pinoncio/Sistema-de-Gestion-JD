@@ -212,8 +212,11 @@ const newOt = async (req, res) => {
       // Restar cantidad del stock en la tabla insumo
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+        stock_disponible:
+          insumoEncontrado.cantidad - insumoData.cantidad_insumo, // Igualar stock_disponible
       });
 
+      // Crear la relación entre OT e insumo
       await otinsumo.create({
         id_ot: nuevaOt.id_ot,
         id_insumo: insumoData.id_insumo,
@@ -349,6 +352,8 @@ const updateOt = async (req, res) => {
       // **Restar la nueva cantidad del insumo en la tabla insumo**
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+        stock_disponible:
+          insumoEncontrado.cantidad - insumoData.cantidad_insumo, // Igualar stock_disponible
       });
 
       // **Crear la relación entre OT e insumo**

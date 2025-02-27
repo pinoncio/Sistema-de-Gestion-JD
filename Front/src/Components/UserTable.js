@@ -79,7 +79,9 @@ const UserTable = ({
           <TableCell>Rol</TableCell>
           <TableCell>Estado</TableCell>
           <TableCell>
-            <IconButton onClick={() => {}}>{/* Placeholder for sorting indicator */}</IconButton>
+            <IconButton onClick={() => {}}>
+              {/* Placeholder for sorting indicator */}
+            </IconButton>
           </TableCell>
         </TableRow>
       </TableHead>
@@ -106,17 +108,19 @@ const UserTable = ({
             </TableCell>
             <TableCell>
               <Link to={`/perfil/${usuario.id_usuario}`}>
-                <IconButton>
+                <IconButton color="success">
                   <VisibilityIcon />
                 </IconButton>
               </Link>
               <IconButton
+                color="warning"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onEdit(usuario)}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
+                color="error"
                 style={{ marginLeft: "10px" }}
                 onClick={() => onDelete(usuario.id_usuario)}
               >
