@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getClientes,
   deleteCliente,
@@ -20,6 +21,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import "../Styles/User.css";
 import UserLayout from "../Components/Layout/UserLayout";
 
@@ -32,6 +34,7 @@ const ClientePage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClientes();
@@ -51,12 +54,12 @@ const ClientePage = () => {
 
   const filteredClientes = clientes.filter(
     (cliente) =>
-      cliente.nombre_razon_social.toLowerCase().includes(
-        searchQuery.toLowerCase()
-      ) ||
-      cliente.nombre_fantasia.toLowerCase().includes(
-        searchQuery.toLowerCase()
-      ) ||
+      cliente.nombre_razon_social
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      cliente.nombre_fantasia
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       cliente.rut.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -202,7 +205,28 @@ const ClientePage = () => {
         />
       </div>
 
-      <div className="cliente-actions">
+      <div
+        className="cliente-actions"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <Button
+          onClick={() => navigate("/user")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
         <Button
           onClick={() => handleOpenModal()}
           startIcon={<AddIcon />}

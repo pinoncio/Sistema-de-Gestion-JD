@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getCategorias,
   deleteCategoria,
@@ -9,11 +10,13 @@ import CategoriaTable from "../Components/CategoriaTable";
 import CategoriaFormModal from "../Components/CategoriaFormModal";
 import { Button, Card, CardContent, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Swal from "sweetalert2";
 import UserLayout from "../Components/Layout/UserLayout";
 import "../Styles/Categoria.css";
 
 const CategoriaPage = () => {
+  const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -121,10 +124,29 @@ const CategoriaPage = () => {
   return (
     <UserLayout>
       <h1>Lista completa de categorías</h1>
-
-      <div className="categoria-actions">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
         <Button
-          onClick={() => handleOpenModal()}
+          onClick={() => navigate("/user")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
+        <Button
+          onClick={() => setOpen(true)}
           startIcon={<AddIcon />}
           style={{
             backgroundColor: "#f0f0f1",

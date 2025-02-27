@@ -6,6 +6,7 @@ import {
   deleteInsumo,
   toggleInsumoStatus,
 } from "../Services/insumoService";
+import { useNavigate } from "react-router-dom";
 import { getCategorias } from "../Services/categoriaService";
 import InsumoTable from "../Components/InsumoTable";
 import InsumoFormModal from "../Components/InsumoFormModal";
@@ -22,6 +23,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
 import UserLayout from "../Components/Layout/UserLayout";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import "../Styles/User.css";
 
 const InsumoPage = () => {
@@ -34,6 +36,7 @@ const InsumoPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchInsumos();
@@ -217,7 +220,28 @@ const InsumoPage = () => {
         />
       </div>
 
-      <div className="insumo-actions">
+      <div
+        className="insumo-actions"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <Button
+          onClick={() => navigate("/user")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
         <Button
           onClick={() => handleOpenModal()}
           startIcon={<AddIcon />}

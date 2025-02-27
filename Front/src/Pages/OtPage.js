@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOts, deleteOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import OtTable from "../Components/OtTable";
 import {
   Button,
@@ -57,10 +58,11 @@ const OtPage = () => {
   };
 
   // Filtrar las órdenes por el nombre del cliente
-  const filteredOrdenes = ordenes.filter((orden) =>
-    getClienteName(orden.id_cliente)
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()) // Filtra por nombre_razon_social
+  const filteredOrdenes = ordenes.filter(
+    (orden) =>
+      getClienteName(orden.id_cliente)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) // Filtra por nombre_razon_social
   );
 
   const handleDelete = async (id) => {
@@ -116,7 +118,28 @@ const OtPage = () => {
         />
       </div>
 
-      <div className="ot-actions">
+      <div
+        className="ot-actions"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <Button
+          onClick={() => navigate("/user")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
         <Button
           onClick={() => navigate("/create-ot")}
           startIcon={<AddIcon />}

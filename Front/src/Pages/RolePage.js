@@ -5,12 +5,14 @@ import {
   createRole,
   updateRole,
 } from "../Services/roleService";
+import { useNavigate } from "react-router-dom";
 import RoleTable from "../Components/RoleTable";
 import RoleFormModal from "../Components/RoleFormModal";
 import { Button, Card, CardContent, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import AdminLayout from "../Components/Layout/AdminLayout";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import "../Styles/Role.css";
 
 const RolePage = () => {
@@ -20,6 +22,7 @@ const RolePage = () => {
   const [editId, setEditId] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoles();
@@ -120,7 +123,28 @@ const RolePage = () => {
     <AdminLayout>
       <h1>Lista completa de roles</h1>
 
-      <div className="role-actions">
+      <div
+        className="role-actions"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <Button
+          onClick={() => navigate("/admin")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
         <Button
           onClick={() => handleOpenModal()}
           startIcon={<AddIcon />}

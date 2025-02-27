@@ -67,7 +67,7 @@ const InsumoProfilePage = () => {
         <Typography variant="body1" color="error">
           {error}
         </Typography>
-        <Button onClick={() => navigate("/insumos")}>
+        <Button onClick={() => navigate("/insumo")}>
           Volver a la lista de insumos
         </Button>
       </div>

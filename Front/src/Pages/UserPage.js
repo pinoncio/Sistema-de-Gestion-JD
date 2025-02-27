@@ -7,6 +7,7 @@ import {
   updateUsuario,
 } from "../Services/userService";
 import { getRoles } from "../Services/roleService";
+import { useNavigate } from "react-router-dom";
 import UserTable from "../Components/UserTable";
 import UserFormModal from "../Components/UserFormModal";
 import {
@@ -21,6 +22,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AdminLayout from "../Components/Layout/AdminLayout";
 import "../Styles/User.css";
 
@@ -34,6 +36,7 @@ const UserPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsuarios();
@@ -68,11 +71,16 @@ const UserPage = () => {
 
   const filteredUsuarios = usuarios.filter(
     (user) =>
-      (user.nombre_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (user.apellido_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (user.email_usuario?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+      (user.nombre_usuario?.toLowerCase() || "").includes(
+        searchQuery.toLowerCase()
+      ) ||
+      (user.apellido_usuario?.toLowerCase() || "").includes(
+        searchQuery.toLowerCase()
+      ) ||
+      (user.email_usuario?.toLowerCase() || "").includes(
+        searchQuery.toLowerCase()
+      )
   );
-  
 
   const HandleCreateUsuario = async (formData) => {
     try {
@@ -220,7 +228,28 @@ const UserPage = () => {
         />
       </div>
 
-      <div className="user-actions">
+      <div
+        className="user-actions"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <Button
+          onClick={() => navigate("/admin")}
+          startIcon={<ExitToAppIcon />}
+          style={{
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "4px",
+            padding: "8px 16px",
+          }}
+        >
+          Volver
+        </Button>
+
         <Button
           onClick={() => handleOpenModal()}
           startIcon={<AddIcon />}

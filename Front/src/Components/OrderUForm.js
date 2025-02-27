@@ -5,6 +5,7 @@ import {
   MenuItem,
   Button,
   Grid,
+  InputAdornment,
   Box,
   Table,
   TableBody,
@@ -21,7 +22,6 @@ import {
 import { getOt, updateOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
 import { getInsumos } from "../Services/insumoService";
-import { getInsumosByOT } from "../Services/otInsumoService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "./Layout/UserLayout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,7 +31,6 @@ const OrderUForm = () => {
   const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
-  const [ot_insumos, setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -53,7 +52,7 @@ const OrderUForm = () => {
     monto_exento: "1",
     iva: "19",
     total: "0",
-    ot_insumos: [],
+    insumos: [],
     productos: [],
   });
 
@@ -80,7 +79,7 @@ const OrderUForm = () => {
     fetchClientes();
     fetchInsumos();
     if (id_ot) {
-      fetchOt(id_ot);
+      fetchOt(id_ot); 
     }
   }, [id_ot]);
 
@@ -88,17 +87,7 @@ const OrderUForm = () => {
     try {
       const otData = await getOt(id_ot); 
       setFormData({
-        ...otData, 
-      });
-    } catch (error) {
-      console.error("Error al obtener la OT:", error);
-    }
-  };
-
-  const fetchOtInsumo = async (id_ot) => {
-    try {
-      const oInsumoData = await getInsumosByOT(id_ot); 
-      setOtInsumos({oInsumoData
+        ...otData,
       });
     } catch (error) {
       console.error("Error al obtener la OT:", error);
@@ -107,17 +96,14 @@ const OrderUForm = () => {
 
   const fetchClientes = async () => {
     try {
-      const clientesData = await getClientes();
-      setClientes(clientesData);
+      setClientes(await getClientes());
     } catch (error) {
       console.error("Error al obtener los clientes:", error);
     }
   };
-
   const fetchInsumos = async () => {
     try {
-      const insumosData = await getInsumos();
-      setInsumos(insumosData);
+      setInsumos(await getInsumos());
     } catch (error) {
       console.error("Error al obtener los insumos:", error);
     }
@@ -678,6 +664,118 @@ const OrderUForm = () => {
               />
             </Grid>
 
+            {/* Fila para seleccionar el Insumo */}
+            <Grid item xs={12}>
+              <TextField
+                label="Insumo Fijo"
+                select
+                value={currentInsumo.id_insumo}
+                onChange={(e) => handleCurrentInsumoChange(e, "id_insumo")}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true, // Hace que el label siempre esté visible
+                }}
+              >
+                <MenuItem value="">Seleccionar</MenuItem>
+                {insumos.map((i) => (
+                  <MenuItem key={i.id_insumo} value={i.id_insumo}>
+                    {i.nombre_insumo}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            {/* Campos del insumo */}
+            <Grid item xs={2}>
+              <TextField
+                label="Cantidad"
+                type="number"
+                value={currentInsumo.cantidad_insumo}
+                onChange={(e) =>
+                  handleCurrentInsumoChange(e, "cantidad_insumo")
+                }
+                fullWidth
+                InputLabelProps={{
+                  shrink: true, // Hace que el label siempre esté visible
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Precio Unitario"
+                type="number"
+                value={currentInsumo.precio_unitario}
+                onChange={(e) =>
+                  handleCurrentInsumoChange(e, "precio_unitario")
+                }
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Desc. %"
+                type="number"
+                value={currentInsumo.descuento_insumo}
+                onChange={(e) =>
+                  handleCurrentInsumoChange(e, "descuento_insumo")
+                }
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">%</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Recargo"
+                type="number"
+                value={currentInsumo.recargo_insumo}
+                onChange={(e) => handleCurrentInsumoChange(e, "recargo_insumo")}
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="AF/EX"
+                type="text"
+                value={currentInsumo.af_ex_insumo}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Precio Total"
+                value={currentInsumo.precio_total}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Button variant="contained" onClick={handleAddInsumo}>
+                Agregar Insumo
+              </Button>
+            </Grid>
+
+            {/* Tabla para listar los insumos agregados */}
             <Grid item xs={12}>
               <TableContainer component={Paper} sx={{ marginTop: 2 }}>
                 <Table size="small">
@@ -719,6 +817,114 @@ const OrderUForm = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Nombre del Producto"
+                fullWidth
+                value={currentProducto.nombre_producto}
+                onChange={(e) =>
+                  handleCurrentProductoChange(e, "nombre_producto")
+                }
+                InputLabelProps={{
+                  shrink: true, // Hace que el label siempre esté visible
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Cantidad"
+                type="number"
+                fullWidth
+                value={currentProducto.cantidad_producto}
+                onChange={(e) =>
+                  handleCurrentProductoChange(e, "cantidad_producto")
+                }
+                InputLabelProps={{
+                  shrink: true, // Hace que el label siempre esté visible
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Precio Unitario"
+                type="number"
+                fullWidth
+                value={currentProducto.precio_unitario}
+                onChange={(e) =>
+                  handleCurrentProductoChange(e, "precio_unitario")
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Descuento (%)"
+                type="number"
+                fullWidth
+                value={currentProducto.descuento_producto}
+                onChange={(e) =>
+                  handleCurrentProductoChange(e, "descuento_producto")
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">%</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Recargo"
+                type="number"
+                fullWidth
+                value={currentProducto.recargo_producto}
+                onChange={(e) =>
+                  handleCurrentProductoChange(e, "recargo_producto")
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="AF/EX"
+                type="text"
+                value={currentProducto.af_ex}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                label="Precio Total"
+                value={currentProducto.precio_total}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddProducto}
+              >
+                Agregar Producto
+              </Button>
             </Grid>
             <Grid item xs={12}>
               <TableContainer component={Paper} sx={{ marginTop: 2 }}>

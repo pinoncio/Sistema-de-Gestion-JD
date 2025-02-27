@@ -96,16 +96,35 @@ const OrderForm = () => {
   const [errors, setErrors] = useState({});
   const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
+
   const handleChange = (e, field) => {
     const { value } = e.target;
-    if (validateNumber(value) || value === "") {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else
+
+    // Validar que solo sean números y puntos
+    if (!validateNumber(value) && value !== "") {
       setErrors({
         ...errors,
         [field]: "Solo se permiten números y puntos, con hasta dos decimales.",
       });
+      return;
+    }
+
+    let numericValue = parseFloat(value);
+
+    // Validar que descuento_global esté entre 0 y 99
+    if (
+      field === "descuento_global" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      setErrors({
+        ...errors,
+        [field]: "El descuento debe estar entre 0 y 99.",
+      });
+      return;
+    }
+
+    setFormData({ ...formData, [field]: value });
+    setErrors({ ...errors, [field]: "" });
   };
 
   const handleNameChange = (e, field) => {
@@ -204,14 +223,26 @@ const OrderForm = () => {
     // Validación del valor para asegurarse de que solo contenga números y un punto
     if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
 
+    let numericValue = parseFloat(value);
+
+    // Si es un campo de descuento, restringir entre 0 y 99
+    if (
+      field === "descuento_insumo" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      return; // No actualiza si está fuera de rango
+    }
+
     setCurrentInsumo((prev) => {
       const updated = { ...prev, [field]: value };
+
       updated.precio_total = (
         parseFloat(updated.cantidad_insumo || 0) *
           parseFloat(updated.precio_unitario || 0) *
           (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
         parseFloat(updated.recargo_insumo || 0)
       ).toFixed(2);
+
       return updated;
     });
   };
@@ -219,7 +250,7 @@ const OrderForm = () => {
   const handleCurrentProductoChange = (e, field) => {
     const { value } = e.target;
 
-    // Si el campo es 'nombre_producto', no se valida el valor, se permite cualquier cosa
+    // Si el campo es 'nombre_producto', no se valida el valor
     if (field === "nombre_producto") {
       setCurrentProducto((prev) => {
         const updated = { ...prev, [field]: value };
@@ -235,7 +266,17 @@ const OrderForm = () => {
     }
 
     // Validación para los demás campos (solo números y punto)
-    if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
+    if (!validateNumber(value) && value !== "") return;
+
+    let numericValue = parseFloat(value);
+
+    // Restringir descuento_producto entre 0 y 99
+    if (
+      field === "descuento_producto" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      return; // No actualiza si está fuera de rango
+    }
 
     setCurrentProducto((prev) => {
       const updated = { ...prev, [field]: value };
@@ -739,7 +780,7 @@ const OrderForm = () => {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="Desc. %"
+                label="Descuento %"
                 type="number"
                 value={currentInsumo.descuento_insumo}
                 onChange={(e) =>
@@ -751,8 +792,10 @@ const OrderForm = () => {
                     <InputAdornment position="start">%</InputAdornment>
                   ),
                 }}
+                inputProps={{ min: 0, max: 99 }}
               />
             </Grid>
+
             <Grid item xs={2}>
               <TextField
                 label="Recargo"
@@ -802,7 +845,7 @@ const OrderForm = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Insumo</TableCell>
+                      <TableCell>Insumo Fijo</TableCell>
                       <TableCell>Cantidad</TableCell>
                       <TableCell>Precio Unitario</TableCell>
                       <TableCell>Desc. (%)</TableCell>
@@ -842,7 +885,7 @@ const OrderForm = () => {
 
             <Grid item xs={12}>
               <TextField
-                label="Nombre del Producto"
+                label="Insumo"
                 fullWidth
                 value={currentProducto.nombre_producto}
                 onChange={(e) =>
@@ -897,8 +940,10 @@ const OrderForm = () => {
                     <InputAdornment position="start">%</InputAdornment>
                   ),
                 }}
+                inputProps={{ min: 0, max: 99 }}
               />
             </Grid>
+
             <Grid item xs={2}>
               <TextField
                 label="Recargo"
@@ -952,7 +997,7 @@ const OrderForm = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Producto</TableCell>
+                      <TableCell>Insumo</TableCell>
                       <TableCell>Cantidad</TableCell>
                       <TableCell>Precio Unitario</TableCell>
                       <TableCell>Desc. (%)</TableCell>
@@ -993,6 +1038,11 @@ const OrderForm = () => {
                 value={formData.sub_total}
                 fullWidth
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1005,15 +1055,22 @@ const OrderForm = () => {
                 required
                 helperText={
                   errors.descuento_global ||
-                  (!formData.descuento_global ? "Campó obligatorio" : "")
+                  (!formData.descuento_global ? "Campo obligatorio" : "")
                 }
-                error={!!errors.DESCUENTO_GLOBAL}
+                error={!!errors.descuento_global}
                 type="number"
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">%</InputAdornment>
+                  ),
                 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                inputProps={{ min: 0, max: 99 }}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Monto Neto"
@@ -1021,6 +1078,11 @@ const OrderForm = () => {
                 value={formData.monto_neto}
                 fullWidth
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1030,6 +1092,11 @@ const OrderForm = () => {
                 value={formData.monto_exento}
                 fullWidth
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1039,6 +1106,11 @@ const OrderForm = () => {
                 value={formData.iva}
                 fullWidth
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1048,6 +1120,11 @@ const OrderForm = () => {
                 value={formData.total}
                 fullWidth
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -1089,22 +1166,22 @@ const OrderForm = () => {
         </Box>
       </form>
       <Snackbar
-  open={openSnackbar}
-  autoHideDuration={6000}
-  onClose={handleSnackbarClose}
-  anchorOrigin={{
-    vertical: 'top', // Posición vertical: arriba
-    horizontal: 'right', // Posición horizontal: derecha
-  }}
->
-  <SnackbarContent
-    message={errors.generales || "Orden de trabajo creada exitosamente!"}
-    sx={{
-      backgroundColor: errors.generales ? 'red' : 'green', // Color rojo para error, verde para éxito
-      color: 'white', // Texto blanco para mayor contraste
-    }}
-  />
-</Snackbar>
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{
+          vertical: "top", // Posición vertical: arriba
+          horizontal: "right", // Posición horizontal: derecha
+        }}
+      >
+        <SnackbarContent
+          message={errors.generales || "Orden de trabajo creada exitosamente!"}
+          sx={{
+            backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
+            color: "white", // Texto blanco para mayor contraste
+          }}
+        />
+      </Snackbar>
     </UserLayout>
   );
 };

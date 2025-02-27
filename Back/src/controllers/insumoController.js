@@ -19,6 +19,39 @@ const getInsumos = async (req, res) => {
   }
 };
 
+// Obtener un insumo por id
+const getInsumo = async (req, res) => {
+  const id = parseInt(req.params.id_insumo, 10); // Convertir a número
+
+  if (isNaN(id)) {
+    return res.status(400).json({ msg: "ID de insumo inválido." });
+  }
+
+  try {
+    const insumoEncontrado = await insumo.findOne({
+      where: { id_insumo: id },
+      include: {
+        model: categoria,
+        attributes: ["nombre_categoria"],
+      },
+    });
+
+    if (!insumoEncontrado) {
+      return res.status(404).json({
+        msg: `El insumo con id ${id} no existe.`,
+      });
+    }
+
+    res.json(insumoEncontrado);
+  } catch (error) {
+    console.error("Error en getInsumo:", error);
+    res.status(500).json({
+      msg: `Ha ocurrido un error al encontrar el insumo con id: ${id}`,
+      error: error.message || error,
+    });
+  }
+};
+
 // Crear un nuevo insumo
 const newInsumo = async (req, res) => {
   const {
@@ -179,31 +212,6 @@ const deleteInsumo = async (req, res) => {
     return res.status(500).json({
       msg: "Ha ocurrido un error al eliminar el insumo.",
       error: error.message,
-    });
-  }
-};
-
-// Obtener un insumo por id
-const getInsumo = async (req, res) => {
-  const { id_insumo } = req.params;
-  try {
-    const insumo = await insumo.findOne({
-      where: { id_insumo: id_insumo },
-      include: {
-        model: categoria, // Incluir la categoría relacionada
-        attributes: ["nombre_categoria"], // Obtener solo el nombre de la categoría
-      },
-    });
-    if (!insumo) {
-      return res.status(404).json({
-        msg: "El insumo con id: " + id_insumo + " no existe.",
-      });
-    }
-    res.json(insumo);
-  } catch (error) {
-    return res.status(400).json({
-      msg: "Ha ocurrido un error al encontrar el insumo con id: " + id_insumo,
-      error,
     });
   }
 };
