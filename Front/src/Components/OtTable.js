@@ -14,7 +14,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
-const OtTable = ({ ordenes, onDelete, onEdit, getClienteName }) => {
+const OtTable = ({ ordenes, onDelete, getClienteName }) => {
   const [order, setOrder] = useState("asc"); // El estado del orden (asc o desc)
   const [orderBy, setOrderBy] = useState("fecha_solicitud"); // El estado de la columna por la cual ordenar
 
@@ -95,7 +95,7 @@ const OtTable = ({ ordenes, onDelete, onEdit, getClienteName }) => {
             </TableCell>
             <TableCell>
               <Link to={`/otProfile/${orden.id_ot}`}>
-                <IconButton color="success">
+                <IconButton >
                   <VisibilityIcon />
                 </IconButton>
               </Link>

@@ -102,7 +102,7 @@ const InsumoTable = ({
 
             <TableCell>
               <Link to={`/insumoProfile/${insumo.id_insumo}`}>
-                <IconButton color="success" >
+                <IconButton  >
                   <VisibilityIcon />
                 </IconButton>
               </Link>

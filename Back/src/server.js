@@ -14,6 +14,7 @@ const insumoroutes = require("./routes/insumoroute");
 //const emailroutes = require("./routes/emailroute");
 const otroutes = require("./routes/otroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
+const productoroutes = require("./routes/productoroute");
 
 // importar modelos
 const { usuario } = require("./models/usermodel");
@@ -57,6 +58,7 @@ class server {
     //this.app.use("/api/email", emailroutes);
     this.app.use("/api/ots", otroutes);
     this.app.use("/api/otinsumo", otinsumoroutes);
+    this.app.use("/api/producto", productoroutes);
   }
 
   middlewares() {

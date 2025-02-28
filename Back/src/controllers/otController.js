@@ -268,7 +268,7 @@ const updateOt = async (req, res) => {
     total,
     comentario,
     productos,
-    insumos,
+    ot_insumo, // Cambié insumos por ot_insumo
   } = req.body;
 
   try {
@@ -280,16 +280,19 @@ const updateOt = async (req, res) => {
     }
 
     // 1️⃣ **Devolver los insumos al stock antes de eliminarlos**
-    const insumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
+    const otInsumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
 
-    for (const insumoAntiguo of insumosAntiguos) {
+    for (const otInsumoAntiguo of otInsumosAntiguos) {
+      // Obtener la información del insumo desde la tabla insumo
       const insumoEncontrado = await insumo.findOne({
-        where: { id_insumo: insumoAntiguo.id_insumo },
+        where: { id_insumo: otInsumoAntiguo.id_insumo },
       });
 
       if (insumoEncontrado) {
+        // Igualar el stock disponible en la tabla insumo
         await insumoEncontrado.update({
-          cantidad: insumoEncontrado.cantidad + insumoAntiguo.cantidad_insumo,
+          cantidad: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
+          stock_disponible: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, // Igualar stock_disponible
         });
       }
     }
@@ -334,38 +337,38 @@ const updateOt = async (req, res) => {
     await producto.bulkCreate(productosData);
 
     // 5️⃣ **Crear los nuevos insumos**
-    for (const insumoData of insumos) {
+    for (const otInsumoData of ot_insumo) {  // Cambié insumos por ot_insumo
+      // Obtener el insumo desde la tabla insumo
       const insumoEncontrado = await insumo.findOne({
-        where: { id_insumo: insumoData.id_insumo },
+        where: { id_insumo: otInsumoData.id_insumo },
       });
 
       // **Verificar stock en la tabla insumo**
       if (
         !insumoEncontrado ||
-        insumoEncontrado.cantidad < insumoData.cantidad_insumo
+        insumoEncontrado.stock_disponible < otInsumoData.cantidad_insumo
       ) {
         return res.status(400).json({
-          msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}`,
+          msg: `No hay suficiente cantidad del insumo ${otInsumoData.id_insumo}`,
         });
       }
 
-      // **Restar la nueva cantidad del insumo en la tabla insumo**
+      // **Igualar el stock disponible en la tabla insumo**
       await insumoEncontrado.update({
-        cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
-        stock_disponible:
-          insumoEncontrado.cantidad - insumoData.cantidad_insumo, // Igualar stock_disponible
+        cantidad: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
+        stock_disponible: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo, // Igualar stock_disponible
       });
 
-      // **Crear la relación entre OT e insumo**
+      // **Crear la relación entre OT e insumo en la tabla ot_insumo**
       await otinsumo.create({
         id_ot,
-        id_insumo: insumoData.id_insumo,
-        cantidad_insumo: insumoData.cantidad_insumo,
-        precio_unitario: insumoData.precio_unitario,
-        descuento_insumo: insumoData.descuento_insumo,
-        recargo_insumo: insumoData.recargo_insumo,
-        af_ex_insumo: insumoData.af_ex_insumo,
-        precio_total: insumoData.precio_total,
+        id_insumo: otInsumoData.id_insumo,
+        cantidad_insumo: otInsumoData.cantidad_insumo,
+        precio_unitario: otInsumoData.precio_unitario,
+        descuento_insumo: otInsumoData.descuento_insumo,
+        recargo_insumo: otInsumoData.recargo_insumo,
+        af_ex_insumo: otInsumoData.af_ex_insumo,
+        precio_total: otInsumoData.precio_total,
       });
     }
 

@@ -22,6 +22,7 @@ import {
 import { getOt, updateOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
 import { getInsumos } from "../Services/insumoService";
+import { getInsumosByOT } from "../Services/otInsumoService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "./Layout/UserLayout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,6 +32,7 @@ const OrderUForm = () => {
   const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
+  const [otInsumos, setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -52,11 +54,11 @@ const OrderUForm = () => {
     monto_exento: "1",
     iva: "19",
     total: "0",
-    insumos: [],
+    ot_insumo: [],
     productos: [],
   });
 
-  const [currentInsumo, setCurrentInsumo] = useState({
+  const [currentOtInsumo, setCurrentOtInsumo] = useState({
     id_insumo: "",
     cantidad_insumo: "",
     precio_unitario: "",
@@ -65,6 +67,7 @@ const OrderUForm = () => {
     af_ex_insumo: "Afecto",
     precio_total: "",
   });
+
   const [currentProducto, setCurrentProducto] = useState({
     nombre_producto: "",
     cantidad_producto: "",
@@ -79,13 +82,14 @@ const OrderUForm = () => {
     fetchClientes();
     fetchInsumos();
     if (id_ot) {
-      fetchOt(id_ot); 
+      fetchOt(id_ot);
+      fetchOtInsumos(id_ot);
     }
   }, [id_ot]);
 
   const fetchOt = async (id_ot) => {
     try {
-      const otData = await getOt(id_ot); 
+      const otData = await getOt(id_ot);
       setFormData({
         ...otData,
       });
@@ -107,6 +111,19 @@ const OrderUForm = () => {
     } catch (error) {
       console.error("Error al obtener los insumos:", error);
     }
+  };
+
+  const fetchOtInsumos = async (id_ot) => {
+    try {
+      setOtInsumos(await getInsumosByOT(id_ot));
+    } catch (error) {
+      console.error("Error al obtener los insumos de la OT:", error);
+    }
+  };
+
+  const getInsumoName = (id_insumo) => {
+    const insumo = insumos.find((i) => i.id_insumo === id_insumo);
+    return insumo ? insumo.nombre_insumo : "Sin Insumo";
   };
 
   const [errors, setErrors] = useState({});
@@ -183,7 +200,7 @@ const OrderUForm = () => {
     // Validación del valor para asegurarse de que solo contenga números y un punto
     if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
 
-    setCurrentInsumo((prev) => {
+    setCurrentOtInsumo((prev) => {
       const updated = { ...prev, [field]: value };
       updated.precio_total = (
         parseFloat(updated.cantidad_insumo || 0) *
@@ -230,16 +247,16 @@ const OrderUForm = () => {
 
   const handleAddInsumo = () => {
     if (
-      !currentInsumo.id_insumo ||
-      !currentInsumo.cantidad_insumo ||
-      !currentInsumo.precio_unitario
+      !currentOtInsumo.id_insumo ||
+      !currentOtInsumo.cantidad_insumo ||
+      !currentOtInsumo.precio_unitario
     )
       return;
     setFormData((prevData) => ({
       ...prevData,
-      insumos: [...prevData.insumos, currentInsumo],
+      otInsumos: [...prevData.ot_insumo, currentOtInsumo],
     }));
-    setCurrentInsumo({
+    setCurrentOtInsumo({
       id_insumo: "",
       cantidad_insumo: "",
       precio_unitario: "",
@@ -275,7 +292,7 @@ const OrderUForm = () => {
   const handleRemoveInsumo = (index) =>
     setFormData((prevData) => ({
       ...prevData,
-      insumos: prevData.insumos.filter((_, i) => i !== index),
+      otInsumos: prevData.ot_insumo.filter((_, i) => i !== index),
     }));
   const handleRemoveProducto = (index) =>
     setFormData((prevData) => ({
@@ -284,9 +301,9 @@ const OrderUForm = () => {
     }));
 
   useEffect(() => {
-    const { descuento_global, monto_exento, insumos, productos } = formData;
+    const { descuento_global, monto_exento, ot_insumo, productos } = formData;
     const subtotal =
-      insumos.reduce(
+      ot_insumo.reduce(
         (acc, { precio_total }) => acc + (parseFloat(precio_total) || 0),
         0
       ) +
@@ -319,9 +336,9 @@ const OrderUForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const allInsumos = currentInsumo.id_insumo
-      ? [...formData.insumos, currentInsumo]
-      : formData.insumos;
+    const allOtInsumos = currentOtInsumo.id_insumo
+      ? [...formData.ot_insumo, currentOtInsumo]
+      : formData.ot_insumo;
     const allProductos = currentProducto.nombre_producto
       ? [...formData.productos, currentProducto]
       : formData.productos;
@@ -337,21 +354,21 @@ const OrderUForm = () => {
     }));
 
     // Transformar los insumos al formato esperado
-    const insumosFormateados = allInsumos.map((insumo) => ({
-      id_insumo: parseInt(insumo.id_insumo),
-      cantidad_insumo: parseFloat(insumo.cantidad_insumo),
-      precio_unitario: parseFloat(insumo.precio_unitario),
-      descuento_insumo: parseFloat(insumo.descuento_insumo),
-      recargo_insumo: parseFloat(insumo.recargo_insumo),
-      af_ex_insumo: insumo.af_ex_insumo,
-      precio_total: parseFloat(insumo.precio_total),
+    const otInsumosFormateados = allOtInsumos.map((otInsumo) => ({
+      id_insumo: parseInt(otInsumo.id_insumo),
+      cantidad_insumo: parseFloat(otInsumo.cantidad_insumo),
+      precio_unitario: parseFloat(otInsumo.precio_unitario),
+      descuento_insumo: parseFloat(otInsumo.descuento_insumo),
+      recargo_insumo: parseFloat(otInsumo.recargo_insumo),
+      af_ex_insumo: otInsumo.af_ex_insumo,
+      precio_total: parseFloat(otInsumo.precio_total),
     }));
 
     // Estructura final a enviar
     const dataToSubmit = {
       ...formData,
       productos: productosFormateados,
-      insumos: insumosFormateados,
+      ot_insumo: otInsumosFormateados,
     };
 
     const lowerCaseFormData = Object.fromEntries(
@@ -391,10 +408,10 @@ const OrderUForm = () => {
         monto_exento: "1",
         iva: "19",
         total: "0",
-        insumos: [],
+        ot_insumo: [],
         productos: [],
       });
-      setCurrentInsumo({
+      setCurrentOtInsumo({
         id_insumo: "",
         cantidad_insumo: "",
         precio_unitario: "",
@@ -664,12 +681,11 @@ const OrderUForm = () => {
               />
             </Grid>
 
-            {/* Fila para seleccionar el Insumo */}
             <Grid item xs={12}>
               <TextField
                 label="Insumo Fijo"
                 select
-                value={currentInsumo.id_insumo}
+                value={currentOtInsumo.id_insumo}
                 onChange={(e) => handleCurrentInsumoChange(e, "id_insumo")}
                 fullWidth
                 InputLabelProps={{
@@ -677,9 +693,10 @@ const OrderUForm = () => {
                 }}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
-                {insumos.map((i) => (
+                {otInsumos.map((i) => (
                   <MenuItem key={i.id_insumo} value={i.id_insumo}>
-                    {i.nombre_insumo}
+                    {getInsumoName(i.id_insumo)}{" "}
+                    {/* Usando la función para obtener el nombre */}
                   </MenuItem>
                 ))}
               </TextField>
@@ -690,7 +707,7 @@ const OrderUForm = () => {
               <TextField
                 label="Cantidad"
                 type="number"
-                value={currentInsumo.cantidad_insumo}
+                value={currentOtInsumo.cantidad_insumo}
                 onChange={(e) =>
                   handleCurrentInsumoChange(e, "cantidad_insumo")
                 }
@@ -704,7 +721,7 @@ const OrderUForm = () => {
               <TextField
                 label="Precio Unitario"
                 type="number"
-                value={currentInsumo.precio_unitario}
+                value={currentOtInsumo.precio_unitario}
                 onChange={(e) =>
                   handleCurrentInsumoChange(e, "precio_unitario")
                 }
@@ -720,7 +737,7 @@ const OrderUForm = () => {
               <TextField
                 label="Desc. %"
                 type="number"
-                value={currentInsumo.descuento_insumo}
+                value={currentOtInsumo.descuento_insumo}
                 onChange={(e) =>
                   handleCurrentInsumoChange(e, "descuento_insumo")
                 }
@@ -736,7 +753,7 @@ const OrderUForm = () => {
               <TextField
                 label="Recargo"
                 type="number"
-                value={currentInsumo.recargo_insumo}
+                value={currentOtInsumo.recargo_insumo}
                 onChange={(e) => handleCurrentInsumoChange(e, "recargo_insumo")}
                 fullWidth
                 InputProps={{
@@ -750,7 +767,7 @@ const OrderUForm = () => {
               <TextField
                 label="AF/EX"
                 type="text"
-                value={currentInsumo.af_ex_insumo}
+                value={currentOtInsumo.af_ex_insumo}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
@@ -758,7 +775,7 @@ const OrderUForm = () => {
             <Grid item xs={2}>
               <TextField
                 label="Precio Total"
-                value={currentInsumo.precio_total}
+                value={currentOtInsumo.precio_total}
                 fullWidth
                 InputProps={{
                   readOnly: true,
@@ -792,18 +809,15 @@ const OrderUForm = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {formData.insumos.map((insumo, index) => (
+                    {formData.ot_insumo.map((otInsumo, index) => (
                       <TableRow key={index}>
-                        <TableCell>
-                          {insumos.find((i) => i.id_insumo === insumo.id_insumo)
-                            ?.nombre_insumo || ""}
-                        </TableCell>
-                        <TableCell>{insumo.cantidad_insumo}</TableCell>
-                        <TableCell>${insumo.precio_unitario}</TableCell>
-                        <TableCell>{insumo.descuento_insumo}%</TableCell>
-                        <TableCell>${insumo.recargo_insumo}</TableCell>
-                        <TableCell>{insumo.af_ex_insumo}</TableCell>
-                        <TableCell>${insumo.precio_total}</TableCell>
+                        <TableCell>{otInsumo.id_insumo}</TableCell>
+                        <TableCell>{otInsumo.cantidad_insumo}</TableCell>
+                        <TableCell>${otInsumo.precio_unitario}</TableCell>
+                        <TableCell>{otInsumo.descuento_insumo}%</TableCell>
+                        <TableCell>${otInsumo.recargo_insumo}</TableCell>
+                        <TableCell>{otInsumo.af_ex_insumo}</TableCell>
+                        <TableCell>${otInsumo.precio_total}</TableCell>
                         <TableCell>
                           <IconButton
                             color="error"
@@ -1062,7 +1076,7 @@ const OrderUForm = () => {
               color="primary" // Azul
               sx={{ flex: 1 }} // Ocupa el 50% del espacio disponible
             >
-              Crear OT
+              Actualizar OT
             </Button>
           </Box>
         </Box>
@@ -1077,7 +1091,7 @@ const OrderUForm = () => {
         }}
       >
         <SnackbarContent
-          message={errors.generales || "Orden de trabajo creada exitosamente!"}
+          message={errors.generales || "Orden de trabajo Actualizada exitosamente!"}
           sx={{
             backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
             color: "white", // Texto blanco para mayor contraste
