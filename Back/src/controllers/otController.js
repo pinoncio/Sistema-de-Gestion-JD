@@ -14,6 +14,7 @@ const getOts = async (req, res) => {
           model: otinsumo,
           as: "ot_insumo",
           attributes: [
+            "id_insumo",
             "cantidad_insumo",
             "precio_unitario",
             "descuento_insumo",
@@ -69,6 +70,7 @@ const getOt = async (req, res) => {
           model: otinsumo,
           as: "ot_insumo",
           attributes: [
+            "id_insumo",
             "cantidad_insumo",
             "precio_unitario",
             "descuento_insumo",
@@ -268,7 +270,7 @@ const updateOt = async (req, res) => {
     total,
     comentario,
     productos,
-    ot_insumo, // Cambié insumos por ot_insumo
+    ot_insumo,
   } = req.body;
 
   try {

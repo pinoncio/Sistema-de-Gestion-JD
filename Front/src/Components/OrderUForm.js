@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import {
   TextField,
@@ -24,6 +24,9 @@ import { getClientes } from "../Services/clienteService";
 import { getInsumos } from "../Services/insumoService";
 import { getInsumosByOT } from "../Services/otInsumoService";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import EditIcon from "@mui/icons-material/Edit";
 import UserLayout from "./Layout/UserLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -32,10 +35,14 @@ const OrderUForm = () => {
   const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
-  const [otInsumos, setOtInsumos] = useState([]);
+  const [setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedInsumo, setEditedInsumo] = useState({});
+  const [editingIndexProducto, setEditingIndexProducto] = useState(null);
+  const [editedProducto, setEditedProducto] = useState({});
   const [formData, setFormData] = useState({
     id_cliente: "",
     tipo_documento: "Orden de Trabajo",
@@ -78,6 +85,17 @@ const OrderUForm = () => {
     precio_total: "",
   });
 
+  const fetchOtInsumos = useCallback(
+    async (id_ot) => {
+      try {
+        setOtInsumos(await getInsumosByOT(id_ot));
+      } catch (error) {
+        console.error("Error al obtener los insumos de la OT:", error);
+      }
+    },
+    [setOtInsumos]
+  );
+
   useEffect(() => {
     fetchClientes();
     fetchInsumos();
@@ -85,7 +103,7 @@ const OrderUForm = () => {
       fetchOt(id_ot);
       fetchOtInsumos(id_ot);
     }
-  }, [id_ot]);
+  }, [id_ot, fetchOtInsumos]);
 
   const fetchOt = async (id_ot) => {
     try {
@@ -110,14 +128,6 @@ const OrderUForm = () => {
       setInsumos(await getInsumos());
     } catch (error) {
       console.error("Error al obtener los insumos:", error);
-    }
-  };
-
-  const fetchOtInsumos = async (id_ot) => {
-    try {
-      setOtInsumos(await getInsumosByOT(id_ot));
-    } catch (error) {
-      console.error("Error al obtener los insumos de la OT:", error);
     }
   };
 
@@ -254,7 +264,7 @@ const OrderUForm = () => {
       return;
     setFormData((prevData) => ({
       ...prevData,
-      otInsumos: [...prevData.ot_insumo, currentOtInsumo],
+      ot_insumo: [...prevData.ot_insumo, currentOtInsumo],
     }));
     setCurrentOtInsumo({
       id_insumo: "",
@@ -292,13 +302,89 @@ const OrderUForm = () => {
   const handleRemoveInsumo = (index) =>
     setFormData((prevData) => ({
       ...prevData,
-      otInsumos: prevData.ot_insumo.filter((_, i) => i !== index),
+      ot_insumo: prevData.ot_insumo.filter((_, i) => i !== index),
     }));
   const handleRemoveProducto = (index) =>
     setFormData((prevData) => ({
       ...prevData,
       productos: prevData.productos.filter((_, i) => i !== index),
     }));
+
+  const handleEditInsumo = (index) => {
+    const insumoToEdit = formData.ot_insumo[index];
+    setEditingIndex(index); // Marca la fila como editada
+    setEditedInsumo(insumoToEdit); // Carga los datos actuales en el estado para editarlos
+  };
+
+  const handleSaveInsumo = (index) => {
+    const updatedInsumo = {
+      ...editedInsumo,
+      precio_total: calculateTotal(editedInsumo),
+    };
+    setFormData((prevData) => ({
+      ...prevData,
+      ot_insumo: prevData.ot_insumo.map((item, i) =>
+        i === index ? updatedInsumo : item
+      ),
+    }));
+    setEditingIndex(null); // Sale del modo de edición
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null); // Sale del modo de edición sin guardar
+  };
+
+  const handleInputChange = (e, field) => {
+    const { value } = e.target;
+    setEditedInsumo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const calculateTotal = (insumo) => {
+    const cantidad = parseFloat(insumo.cantidad_insumo) || 0;
+    const precioUnitario = parseFloat(insumo.precio_unitario) || 0;
+    const descuento = parseFloat(insumo.descuento_insumo) || 0;
+    const recargo = parseFloat(insumo.recargo_insumo) || 0;
+    const afEx = insumo.af_ex_insumo === "Exento" ? 0 : 1;
+    return (cantidad * precioUnitario * (1 - descuento / 100) + recargo) * afEx;
+  };
+
+  const handleEditProducto = (index) => {
+    const productoToEdit = formData.productos[index];
+    setEditingIndexProducto(index); // Marca la fila como editada
+    setEditedProducto(productoToEdit); // Carga los datos actuales en el estado para editarlos
+  };
+
+  const handleSaveProducto = (index) => {
+    const updatedProducto = {
+      ...editedProducto,
+      precio_total: calculateTotalProducto(editedProducto),
+    };
+    setFormData((prevData) => ({
+      ...prevData,
+      productos: prevData.productos.map((item, i) =>
+        i === index ? updatedProducto : item
+      ),
+    }));
+    setEditingIndexProducto(null); // Sale del modo de edición
+  };
+
+  const handleCancelEditProducto = () => {
+    setEditingIndexProducto(null); // Sale del modo de edición sin guardar
+  };
+
+  const handleInputChangeProducto = (e, field) => {
+    const { value } = e.target;
+    setEditedProducto((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const calculateTotalProducto = (producto) => {
+    const cantidad = parseFloat(producto.cantidad_producto) || 0;
+    const precioUnitario = parseFloat(producto.precio_unitario) || 0;
+    const descuento = parseFloat(producto.descuento_producto) || 0;
+    const recargo = parseFloat(producto.recargo_producto) || 0;
+    const afEx = producto.af_ex_producto === "Exento" ? 0 : 1;
+    return (cantidad * precioUnitario * (1 - descuento / 100) + recargo) * afEx;
+  };
 
   useEffect(() => {
     const { descuento_global, monto_exento, ot_insumo, productos } = formData;
@@ -336,6 +422,8 @@ const OrderUForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("Inicio de handleSubmit");
+
     const allOtInsumos = currentOtInsumo.id_insumo
       ? [...formData.ot_insumo, currentOtInsumo]
       : formData.ot_insumo;
@@ -353,7 +441,6 @@ const OrderUForm = () => {
       precio_total: parseFloat(producto.precio_total),
     }));
 
-    // Transformar los insumos al formato esperado
     const otInsumosFormateados = allOtInsumos.map((otInsumo) => ({
       id_insumo: parseInt(otInsumo.id_insumo),
       cantidad_insumo: parseFloat(otInsumo.cantidad_insumo),
@@ -364,7 +451,6 @@ const OrderUForm = () => {
       precio_total: parseFloat(otInsumo.precio_total),
     }));
 
-    // Estructura final a enviar
     const dataToSubmit = {
       ...formData,
       productos: productosFormateados,
@@ -378,8 +464,14 @@ const OrderUForm = () => {
       ])
     );
 
-    // Validación de los campos obligatorios
-    if (Object.values(lowerCaseFormData).some((val) => !val)) {
+    console.log("Datos formateados a enviar:", lowerCaseFormData);
+
+    if (
+      Object.values(lowerCaseFormData).some(
+        (val) => val === "" || val === null || val === undefined
+      )
+    ) {
+      console.warn("Error: Hay campos vacíos o nulos");
       setErrors({
         ...errors,
         generales: "Todos los campos obligatorios deben ser llenados.",
@@ -388,8 +480,10 @@ const OrderUForm = () => {
     }
 
     try {
-      await handleUpdateOt(lowerCaseFormData); // Llamada a la función para crear la OT
-      // Limpiar formulario después de la creación
+      console.log("Enviando datos a handleUpdateOt...");
+      await handleUpdateOt(lowerCaseFormData);
+      console.log("Actualización exitosa");
+
       setFormData({
         id_cliente: "",
         tipo_documento: "Orden de Trabajo",
@@ -411,6 +505,7 @@ const OrderUForm = () => {
         ot_insumo: [],
         productos: [],
       });
+
       setCurrentOtInsumo({
         id_insumo: "",
         cantidad_insumo: "",
@@ -429,15 +524,15 @@ const OrderUForm = () => {
         af_ex: "Afecto",
         precio_total: "",
       });
-      setErrors({});
-      console.log(lowerCaseFormData);
 
-      // Redirigir después de 3 segundos
+      setErrors({});
+
       setTimeout(() => {
-        navigate("/ots");
-      }, 2000); // Redirige a /ots después de 3 segundos
+        console.log("Redirigiendo a /ots");
+        navigate("/ots", { replace: true });
+      }, 2000);
     } catch (error) {
-      console.error("Error al crear/actualizar OT:", error);
+      console.error("Error al crear/actualizar OT:", error?.response || error);
       setErrors({
         ...errors,
         generales:
@@ -693,10 +788,9 @@ const OrderUForm = () => {
                 }}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
-                {otInsumos.map((i) => (
+                {insumos.map((i) => (
                   <MenuItem key={i.id_insumo} value={i.id_insumo}>
                     {getInsumoName(i.id_insumo)}{" "}
-                    {/* Usando la función para obtener el nombre */}
                   </MenuItem>
                 ))}
               </TextField>
@@ -811,14 +905,95 @@ const OrderUForm = () => {
                   <TableBody>
                     {formData.ot_insumo.map((otInsumo, index) => (
                       <TableRow key={index}>
-                        <TableCell>{otInsumo.id_insumo}</TableCell>
-                        <TableCell>{otInsumo.cantidad_insumo}</TableCell>
-                        <TableCell>${otInsumo.precio_unitario}</TableCell>
-                        <TableCell>{otInsumo.descuento_insumo}%</TableCell>
-                        <TableCell>${otInsumo.recargo_insumo}</TableCell>
-                        <TableCell>{otInsumo.af_ex_insumo}</TableCell>
-                        <TableCell>${otInsumo.precio_total}</TableCell>
                         <TableCell>
+                          {getInsumoName(otInsumo.id_insumo)}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndex === index ? (
+                            <TextField
+                              value={editedInsumo.cantidad_insumo || ""}
+                              onChange={(e) =>
+                                handleInputChange(e, "cantidad_insumo")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            otInsumo.cantidad_insumo
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndex === index ? (
+                            <TextField
+                              value={editedInsumo.precio_unitario || ""}
+                              onChange={(e) =>
+                                handleInputChange(e, "precio_unitario")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `$${otInsumo.precio_unitario}`
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndex === index ? (
+                            <TextField
+                              value={editedInsumo.descuento_insumo || ""}
+                              onChange={(e) =>
+                                handleInputChange(e, "descuento_insumo")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `${otInsumo.descuento_insumo}%`
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndex === index ? (
+                            <TextField
+                              value={editedInsumo.recargo_insumo || ""}
+                              onChange={(e) =>
+                                handleInputChange(e, "recargo_insumo")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `$${otInsumo.recargo_insumo}`
+                          )}
+                        </TableCell>
+                        <TableCell>{otInsumo.af_ex_insumo}</TableCell>
+                        <TableCell>
+                          {editingIndex === index
+                            ? `$${calculateTotal(editedInsumo)}`
+                            : `$${otInsumo.precio_total}`}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndex === index ? (
+                            <>
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleSaveInsumo(index)}
+                              >
+                                <SaveIcon />
+                              </IconButton>
+                              <IconButton
+                                color="secondary"
+                                onClick={handleCancelEdit}
+                              >
+                                <CancelIcon />
+                              </IconButton>
+                            </>
+                          ) : (
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleEditInsumo(index)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           <IconButton
                             color="error"
                             onClick={() => handleRemoveInsumo(index)}
@@ -959,13 +1134,98 @@ const OrderUForm = () => {
                     {formData.productos.map((producto, index) => (
                       <TableRow key={index}>
                         <TableCell>{producto.nombre_producto}</TableCell>
-                        <TableCell>{producto.cantidad_producto}</TableCell>
-                        <TableCell>${producto.precio_unitario}</TableCell>
-                        <TableCell>{producto.descuento_producto}%</TableCell>
-                        <TableCell>${producto.recargo_producto}</TableCell>
-                        <TableCell>{producto.af_ex_producto}</TableCell>
-                        <TableCell>${producto.precio_total}</TableCell>
                         <TableCell>
+                          {editingIndexProducto === index ? (
+                            <TextField
+                              value={editedProducto.cantidad_producto || ""}
+                              onChange={(e) =>
+                                handleInputChangeProducto(
+                                  e,
+                                  "cantidad_producto"
+                                )
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            producto.cantidad_producto
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexProducto === index ? (
+                            <TextField
+                              value={editedProducto.precio_unitario || ""}
+                              onChange={(e) =>
+                                handleInputChangeProducto(e, "precio_unitario")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `$${producto.precio_unitario}`
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexProducto === index ? (
+                            <TextField
+                              value={editedProducto.descuento_producto || ""}
+                              onChange={(e) =>
+                                handleInputChangeProducto(
+                                  e,
+                                  "descuento_producto"
+                                )
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `${producto.descuento_producto}%`
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexProducto === index ? (
+                            <TextField
+                              value={editedProducto.recargo_producto || ""}
+                              onChange={(e) =>
+                                handleInputChangeProducto(e, "recargo_producto")
+                              }
+                              type="number"
+                              size="small"
+                            />
+                          ) : (
+                            `$${producto.recargo_producto}`
+                          )}
+                        </TableCell>
+                        <TableCell>{producto.af_ex_producto}</TableCell>
+                        <TableCell>
+                          {editingIndexProducto === index
+                            ? `$${calculateTotalProducto(editedProducto)}`
+                            : `$${producto.precio_total}`}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexProducto === index ? (
+                            <>
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleSaveProducto(index)}
+                              >
+                                <SaveIcon />
+                              </IconButton>
+                              <IconButton
+                                color="secondary"
+                                onClick={handleCancelEditProducto}
+                              >
+                                <CancelIcon />
+                              </IconButton>
+                            </>
+                          ) : (
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleEditProducto(index)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           <IconButton
                             color="error"
                             onClick={() => handleRemoveProducto(index)}
@@ -1091,7 +1351,9 @@ const OrderUForm = () => {
         }}
       >
         <SnackbarContent
-          message={errors.generales || "Orden de trabajo Actualizada exitosamente!"}
+          message={
+            errors.generales || "Orden de trabajo Actualizada exitosamente!"
+          }
           sx={{
             backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
             color: "white", // Texto blanco para mayor contraste
