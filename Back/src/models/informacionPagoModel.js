@@ -38,7 +38,8 @@ const informaciondepago = db.define(
 );
 
 // Relación entre cliente e informaciondepago
-cliente.hasMany(informaciondepago, { foreignKey: "id_cliente", as: "informacionesdepago" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
-informaciondepago.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+cliente.hasOne(informaciondepago, { foreignKey: "id_cliente", as: 'informacionesdepago' });
+informaciondepago.belongsTo(cliente, { foreignKey: "id_cliente", as: 'cliente' });
+
 
 module.exports = { informaciondepago };

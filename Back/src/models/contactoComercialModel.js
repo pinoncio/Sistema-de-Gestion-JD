@@ -42,7 +42,7 @@ const contactocomercial = db.define(
 );
 
 // Relación entre cliente y contactocomercial
-cliente.hasMany(contactocomercial, { foreignKey: "id_cliente", as: "contacto_comercial" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+cliente.hasOne(contactocomercial, { foreignKey: "id_cliente", as: "contacto_comercial" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 contactocomercial.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
 
 module.exports = { contactocomercial };

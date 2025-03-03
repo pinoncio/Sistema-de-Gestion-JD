@@ -17,6 +17,7 @@ import OtPage from "./Pages/OtPage";
 import OTProfilePage from "./Pages/OtVerPage";
 import OrderForm from "./Components/OrderForm";
 import OrderUForm from "./Components/OrderUForm";
+import { GeneratePdf } from "./Components/GenerateOt";
 
 const App = () => {
   return (
@@ -38,7 +39,7 @@ const App = () => {
             path="/users"
             element={
               <PrivateRoute rolPermitido={1}>
-                <UserPage  />
+                <UserPage />
               </PrivateRoute>
             }
           />
@@ -46,7 +47,7 @@ const App = () => {
             path="/role"
             element={
               <PrivateRoute rolPermitido={1}>
-                <RolePage  />
+                <RolePage />
               </PrivateRoute>
             }
           />
@@ -54,7 +55,7 @@ const App = () => {
             path="/perfil/:id_usuario"
             element={
               <PrivateRoute rolPermitido={1}>
-                <UserProfilePage  />
+                <UserProfilePage />
               </PrivateRoute>
             }
           />
@@ -140,6 +141,14 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <OrderUForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/generate-pdf/:id_ot"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <GeneratePdf />
               </PrivateRoute>
             }
           />

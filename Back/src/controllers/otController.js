@@ -3,6 +3,10 @@ const { cliente } = require("../models/clientemodel");
 const { otinsumo } = require("../models/otinsumomodel");
 const { insumo } = require("../models/insumomodel");
 const { producto } = require("../models/productomodel");
+const { clientemetodopago } = require("../models/clientemetodopagomodel");
+const { metodopago } = require("../models/metodopagomodel");
+const { contactocomercial } = require("../models/contactocomercialmodel");
+const { informaciondepago } = require("../models/informacionpagomodel");
 
 // Obtener todas las órdenes de trabajo
 const getOts = async (req, res) => {
@@ -10,6 +14,7 @@ const getOts = async (req, res) => {
     const ots = await ot.findAll({
       include: [
         { model: cliente, attributes: ["nombre_razon_social", "rut"] },
+
         {
           model: otinsumo,
           as: "ot_insumo",
@@ -115,6 +120,101 @@ const getOt = async (req, res) => {
     );
     res.status(500).json({
       msg: `Error al obtener la orden de trabajo con id ${id_ot}`,
+      error: error.message || error,
+    });
+  }
+};
+
+const getPdfOt = async (req, res) => {
+  try {
+    const otData = await ot.findOne({
+      where: { id_ot: req.params.id_ot },
+      include: [
+        {
+          model: cliente,
+          attributes: [
+            "nombre_razon_social",
+            "rut",
+            "direccion",
+            "comuna",
+            "giro",
+            "ciudad",
+          ],
+          include: [
+            {
+              model: clientemetodopago,
+              as: "clientemetodospago", // Correcto
+              attributes: ["id_metodo_pago"],
+              include: [
+                {
+                  model: metodopago,
+                  as: "metodopago",
+                  attributes: ["nombre_metodo"],
+                },
+              ],
+            },
+            {
+              model: contactocomercial,
+              as: "contacto_comercial", 
+              attributes: ["telefono_fijo", "telefono_celular"],
+            },
+            {
+              model: informaciondepago,
+              as: "informacionesdepago", 
+              attributes: ["telefono_responsable"],
+            },
+          ],
+        },
+        {
+          model: otinsumo,
+          as: "ot_insumo",
+          attributes: [
+            "id_insumo",
+            "cantidad_insumo",
+            "precio_unitario",
+            "descuento_insumo",
+            "recargo_insumo",
+            "af_ex_insumo",
+            "precio_total",
+          ],
+          include: [
+            {
+              model: insumo,
+              as: "insumo",
+              attributes: ["nombre_insumo"],
+            },
+          ],
+        },
+        {
+          model: producto,
+          as: "productos",
+          attributes: [
+            "id_producto",
+            "nombre_producto",
+            "cantidad_producto",
+            "precio_unitario",
+            "recargo_producto",
+            "descuento_producto",
+            "af_ex",
+            "precio_total",
+          ],
+        },
+      ],
+    });
+
+    // Si no se encuentra la OT, retornar un error 404
+    if (!otData) {
+      return res.status(404).json({
+        msg: "Orden de trabajo no encontrada.",
+      });
+    }
+
+    // Devolver los datos obtenidos en formato JSON
+    res.json(otData);
+  } catch (error) {
+    console.error("Error al obtener la orden de trabajo:", error);
+    res.status(500).json({
+      msg: "Error al obtener la orden de trabajo.",
       error: error.message || error,
     });
   }
@@ -294,7 +394,8 @@ const updateOt = async (req, res) => {
         // Igualar el stock disponible en la tabla insumo
         await insumoEncontrado.update({
           cantidad: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
-          stock_disponible: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, // Igualar stock_disponible
+          stock_disponible:
+            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, // Igualar stock_disponible
         });
       }
     }
@@ -339,7 +440,8 @@ const updateOt = async (req, res) => {
     await producto.bulkCreate(productosData);
 
     // 5️⃣ **Crear los nuevos insumos**
-    for (const otInsumoData of ot_insumo) {  // Cambié insumos por ot_insumo
+    for (const otInsumoData of ot_insumo) {
+      // Cambié insumos por ot_insumo
       // Obtener el insumo desde la tabla insumo
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: otInsumoData.id_insumo },
@@ -358,7 +460,8 @@ const updateOt = async (req, res) => {
       // **Igualar el stock disponible en la tabla insumo**
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
-        stock_disponible: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo, // Igualar stock_disponible
+        stock_disponible:
+          insumoEncontrado.cantidad - otInsumoData.cantidad_insumo, // Igualar stock_disponible
       });
 
       // **Crear la relación entre OT e insumo en la tabla ot_insumo**
@@ -412,4 +515,4 @@ const deleteOt = async (req, res) => {
   }
 };
 
-module.exports = { getOts, getOt, newOt, updateOt, deleteOt };
+module.exports = { getOts, getOt, newOt, updateOt, deleteOt, getPdfOt };
