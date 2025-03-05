@@ -17,7 +17,6 @@ import OtPage from "./Pages/OtPage";
 import OTProfilePage from "./Pages/OtVerPage";
 import OrderForm from "./Components/OrderForm";
 import OrderUForm from "./Components/OrderUForm";
-import { GeneratePdf } from "./Components/GenerateOt";
 
 const App = () => {
   return (
@@ -141,14 +140,6 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <OrderUForm />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/generate-pdf/:id_ot"
-            element={
-              <PrivateRoute rolPermitido={2}>
-                <GeneratePdf />
               </PrivateRoute>
             }
           />

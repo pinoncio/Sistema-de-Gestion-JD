@@ -226,26 +226,31 @@ const OrderForm = () => {
     let numericValue = parseFloat(value);
 
     // Si es un campo de descuento, restringir entre 0 y 99
-    if (
-      field === "descuento_insumo" &&
-      (numericValue < 0 || numericValue > 99)
-    ) {
-      return; // No actualiza si está fuera de rango
+    if (field === "descuento_insumo" && (numericValue < 0 || numericValue > 99)) {
+        return; // No actualiza si está fuera de rango
     }
 
     setCurrentInsumo((prev) => {
-      const updated = { ...prev, [field]: value };
+        const updated = { ...prev, [field]: value };
 
-      updated.precio_total = (
-        parseFloat(updated.cantidad_insumo || 0) *
-          parseFloat(updated.precio_unitario || 0) *
-          (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
-        parseFloat(updated.recargo_insumo || 0)
-      ).toFixed(2);
+        // Si se selecciona un insumo, actualizar el precio_unitario con el costo_unidad del insumo seleccionado
+        if (field === "id_insumo") {
+            const selectedInsumo = insumos.find((i) => i.id_insumo === value);
+            updated.precio_unitario = selectedInsumo ? selectedInsumo.costo_unidad : "";
+        }
 
-      return updated;
+        // Calcular el precio total con los valores actualizados
+        updated.precio_total = (
+            parseFloat(updated.cantidad_insumo || 0) *
+            parseFloat(updated.precio_unitario || 0) *
+            (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
+            parseFloat(updated.recargo_insumo || 0)
+        ).toFixed(2);
+
+        return updated;
     });
-  };
+};
+
 
   const handleCurrentProductoChange = (e, field) => {
     const { value } = e.target;

@@ -212,12 +212,23 @@ const OrderUForm = () => {
 
     setCurrentOtInsumo((prev) => {
       const updated = { ...prev, [field]: value };
+
+      // Si se selecciona un insumo, actualizar el precio_unitario con el costo_unidad del insumo seleccionado
+      if (field === "id_insumo") {
+        const selectedInsumo = insumos.find((i) => i.id_insumo === value);
+        updated.precio_unitario = selectedInsumo
+          ? selectedInsumo.costo_unidad
+          : "";
+      }
+
+      // Calcular el precio total con los valores actualizados
       updated.precio_total = (
         parseFloat(updated.cantidad_insumo || 0) *
           parseFloat(updated.precio_unitario || 0) *
           (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
         parseFloat(updated.recargo_insumo || 0)
       ).toFixed(2);
+
       return updated;
     });
   };

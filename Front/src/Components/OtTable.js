@@ -15,8 +15,8 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 
 const OtTable = ({ ordenes, onDelete, getClienteName }) => {
-  const [order, setOrder] = useState("asc"); // El estado del orden (asc o desc)
-  const [orderBy, setOrderBy] = useState("fecha_solicitud"); // El estado de la columna por la cual ordenar
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("fecha_solicitud");
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -95,7 +95,7 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
             </TableCell>
             <TableCell>
               <Link to={`/otProfile/${orden.id_ot}`}>
-                <IconButton >
+                <IconButton>
                   <VisibilityIcon />
                 </IconButton>
               </Link>
