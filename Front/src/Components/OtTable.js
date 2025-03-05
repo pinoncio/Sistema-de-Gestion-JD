@@ -11,8 +11,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { generatePdf } from "../Services/GenerateOt";
 
 const OtTable = ({ ordenes, onDelete, getClienteName }) => {
   const [order, setOrder] = useState("asc");
@@ -110,6 +112,13 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
                 onClick={() => onDelete(orden.id_ot)}
               >
                 <DeleteIcon />
+              </IconButton>
+              <IconButton
+                color="primary"
+                sx={{ ml: 1 }}
+                onClick={() => generatePdf(orden.id_ot)}
+              >
+                <PictureAsPdfIcon />
               </IconButton>
             </TableCell>
           </TableRow>
