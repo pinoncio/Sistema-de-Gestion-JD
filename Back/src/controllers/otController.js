@@ -155,12 +155,12 @@ const getPdfOt = async (req, res) => {
             },
             {
               model: contactocomercial,
-              as: "contacto_comercial", 
+              as: "contacto_comercial",
               attributes: ["telefono_fijo", "telefono_celular"],
             },
             {
               model: informaciondepago,
-              as: "informacionesdepago", 
+              as: "informacionesdepago",
               attributes: ["telefono_responsable"],
             },
           ],
@@ -307,7 +307,11 @@ const newOt = async (req, res) => {
         insumoEncontrado.cantidad < insumoData.cantidad_insumo
       ) {
         return res.status(400).json({
-          msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}`,
+          msg: `No hay suficiente stock para el insumo ${insumoData.id_insumo}. 
+                Disponible: ${
+                  insumoEncontrado ? insumoEncontrado.cantidad : 0
+                }, 
+                Solicitado: ${insumoData.cantidad_insumo}`,
         });
       }
 

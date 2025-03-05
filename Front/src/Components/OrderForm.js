@@ -17,7 +17,6 @@ import {
   IconButton,
   Typography,
   Snackbar,
-  SnackbarContent,
 } from "@mui/material";
 import { createOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
@@ -33,6 +32,7 @@ const OrderForm = () => {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [formData, setFormData] = useState({
     id_cliente: "",
     tipo_documento: "Orden de Trabajo",
@@ -163,9 +163,9 @@ const OrderForm = () => {
   const handleCreateOt = async (data) => {
     try {
       await createOt(data);
-      setOpenSnackbar(true); // Muestra el Snackbar en caso de éxito
+      setSnackbarMessage("OT creada correctamente.");
+      setOpenSnackbar(true);
       setFormData({
-        // Limpiar formulario
         id_cliente: "",
         tipo_documento: "Orden de Trabajo",
         fecha_solicitud: "",
@@ -206,13 +206,13 @@ const OrderForm = () => {
       });
       setErrors({});
     } catch (error) {
-      console.error("Error al crear la orden de trabajo:", error);
       setErrors({
         ...errors,
         generales:
           error.response?.data?.message ||
           "Ha ocurrido un error al crear la orden de trabajo.",
       });
+      setSnackbarMessage("Error al crear la OT");
       setOpenSnackbar(true);
     }
   };
@@ -220,37 +220,37 @@ const OrderForm = () => {
   const handleCurrentInsumoChange = (e, field) => {
     const { value } = e.target;
 
-    // Validación del valor para asegurarse de que solo contenga números y un punto
-    if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
+    if (!validateNumber(value) && value !== "") return;
 
     let numericValue = parseFloat(value);
 
-    // Si es un campo de descuento, restringir entre 0 y 99
-    if (field === "descuento_insumo" && (numericValue < 0 || numericValue > 99)) {
-        return; // No actualiza si está fuera de rango
+    if (
+      field === "descuento_insumo" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      return;
     }
 
     setCurrentInsumo((prev) => {
-        const updated = { ...prev, [field]: value };
+      const updated = { ...prev, [field]: value };
 
-        // Si se selecciona un insumo, actualizar el precio_unitario con el costo_unidad del insumo seleccionado
-        if (field === "id_insumo") {
-            const selectedInsumo = insumos.find((i) => i.id_insumo === value);
-            updated.precio_unitario = selectedInsumo ? selectedInsumo.costo_unidad : "";
-        }
+      if (field === "id_insumo") {
+        const selectedInsumo = insumos.find((i) => i.id_insumo === value);
+        updated.precio_unitario = selectedInsumo
+          ? selectedInsumo.costo_unidad
+          : "";
+      }
 
-        // Calcular el precio total con los valores actualizados
-        updated.precio_total = (
-            parseFloat(updated.cantidad_insumo || 0) *
-            parseFloat(updated.precio_unitario || 0) *
-            (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
-            parseFloat(updated.recargo_insumo || 0)
-        ).toFixed(2);
+      updated.precio_total = (
+        parseFloat(updated.cantidad_insumo || 0) *
+          parseFloat(updated.precio_unitario || 0) *
+          (1 - parseFloat(updated.descuento_insumo || 0) / 100) +
+        parseFloat(updated.recargo_insumo || 0)
+      ).toFixed(2);
 
-        return updated;
+      return updated;
     });
-};
-
+  };
 
   const handleCurrentProductoChange = (e, field) => {
     const { value } = e.target;
@@ -300,12 +300,37 @@ const OrderForm = () => {
       !currentInsumo.id_insumo ||
       !currentInsumo.cantidad_insumo ||
       !currentInsumo.precio_unitario
-    )
+    ) {
+      setOpenSnackbar(true);
       return;
+    }
+
+    const selectedInsumo = insumos.find(
+      (i) => i.id_insumo === currentInsumo.id_insumo
+    );
+
+    if (!selectedInsumo) {
+      setSnackbarMessage("Insumo no encontrado.");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    const stockDisponible = selectedInsumo.cantidad;
+    const cantidadSolicitada = parseFloat(currentInsumo.cantidad_insumo);
+
+    if (cantidadSolicitada > stockDisponible) {
+      setSnackbarMessage(
+        `Stock insuficiente. Disponible: ${stockDisponible}, Solicitado: ${cantidadSolicitada}`
+      );
+      setOpenSnackbar(true);
+      return;
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       insumos: [...prevData.insumos, currentInsumo],
     }));
+
     setCurrentInsumo({
       id_insumo: "",
       cantidad_insumo: "",
@@ -315,6 +340,9 @@ const OrderForm = () => {
       af_ex_insumo: "Afecto",
       precio_total: "",
     });
+
+    setSnackbarMessage("Insumo agregado correctamente.");
+    setOpenSnackbar(true);
   };
 
   const handleAddProducto = () => {
@@ -403,7 +431,6 @@ const OrderForm = () => {
       precio_total: parseFloat(producto.precio_total),
     }));
 
-    // Transformar los insumos al formato esperado
     const insumosFormateados = allInsumos.map((insumo) => ({
       id_insumo: parseInt(insumo.id_insumo),
       cantidad_insumo: parseFloat(insumo.cantidad_insumo),
@@ -414,7 +441,6 @@ const OrderForm = () => {
       precio_total: parseFloat(insumo.precio_total),
     }));
 
-    // Estructura final a enviar
     const dataToSubmit = {
       ...formData,
       productos: productosFormateados,
@@ -438,7 +464,7 @@ const OrderForm = () => {
     }
 
     try {
-      await handleCreateOt(lowerCaseFormData); // Llamada a la función para crear la OT
+      await handleCreateOt(lowerCaseFormData);
       // Limpiar formulario después de la creación
       setFormData({
         id_cliente: "",
@@ -482,7 +508,6 @@ const OrderForm = () => {
       setErrors({});
       console.log(lowerCaseFormData);
 
-      // Redirigir después de 3 segundos
       setTimeout(() => {
         navigate("/ots");
       }, 2000); // Redirige a /ots después de 3 segundos
@@ -1153,17 +1178,17 @@ const OrderForm = () => {
 
           <Box
             sx={{
-              display: "flex", // Para poner los botones en una fila
-              justifyContent: "space-between", // Distribuye el espacio entre los botones
-              gap: 2, // Espacio entre los botones
-              marginTop: 4, // Espacio superior para los botones
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 2,
+              marginTop: 4,
             }}
           >
             <Button
               type="submit"
               variant="contained"
-              color="primary" // Azul
-              sx={{ flex: 1 }} // Ocupa el 50% del espacio disponible
+              color="primary"
+              sx={{ flex: 1 }}
             >
               Crear OT
             </Button>
@@ -1174,19 +1199,12 @@ const OrderForm = () => {
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
+        message={snackbarMessage}
         anchorOrigin={{
-          vertical: "top", // Posición vertical: arriba
-          horizontal: "right", // Posición horizontal: derecha
+          vertical: "top",
+          horizontal: "right",
         }}
-      >
-        <SnackbarContent
-          message={errors.generales || "Orden de trabajo creada exitosamente!"}
-          sx={{
-            backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
-            color: "white", // Texto blanco para mayor contraste
-          }}
-        />
-      </Snackbar>
+      ></Snackbar>
     </UserLayout>
   );
 };
