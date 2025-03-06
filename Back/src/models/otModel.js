@@ -25,6 +25,8 @@ const ot = db.define(
     equipo: { type: DataTypes.STRING(100) },
     numero_serie: { type: DataTypes.STRING(100) },
     horas_trabajo: { type: DataTypes.INTEGER },
+    prioridad: { type: DataTypes.STRING(50)},
+    observacion_inicial: { type: DataTypes.STRING(50)},
     observacion_final: { type: DataTypes.TEXT },
     descripcion: { type: DataTypes.TEXT },
     sub_total: { type: DataTypes.FLOAT },
@@ -36,7 +38,7 @@ const ot = db.define(
     total: { type: DataTypes.FLOAT },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );

@@ -42,6 +42,8 @@ const OrderForm = () => {
     equipo: "",
     numero_serie: "",
     horas_trabajo: "",
+    prioridad: "",
+    observacion_inicial: "",
     observacion_final: "",
     descripcion: "",
     comentario: "",
@@ -174,6 +176,8 @@ const OrderForm = () => {
         equipo: "",
         numero_serie: "",
         horas_trabajo: "",
+        prioridad: "",
+        observacion_inicial: "",
         observacion_final: "",
         descripcion: "",
         comentario: "",
@@ -275,7 +279,6 @@ const OrderForm = () => {
 
     let numericValue = parseFloat(value);
 
-    // Restringir descuento_producto entre 0 y 99
     if (
       field === "descuento_producto" &&
       (numericValue < 0 || numericValue > 99)
@@ -475,6 +478,8 @@ const OrderForm = () => {
         equipo: "",
         numero_serie: "",
         horas_trabajo: "",
+        prioridad: "",
+        observacion_inicial: "",
         observacion_final: "",
         descripcion: "",
         comentario: "",
@@ -703,7 +708,6 @@ const OrderForm = () => {
                 value={formData.horas_trabajo}
                 onChange={(e) => handleChange(e, "horas_trabajo")}
                 fullWidth
-                type="number"
                 required
                 helperText={
                   errors.horas_trabajo ||
@@ -712,6 +716,48 @@ const OrderForm = () => {
                 error={!!errors.horas_trabajo}
                 InputLabelProps={{
                   shrink: true, // Hace que el label siempre esté visible
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Prioridad"
+                name="prioridad"
+                value={formData.prioridad}
+                onChange={(e) => handleNameChange(e, "prioridad")}
+                fullWidth
+                required
+                error={!!errors.prioridad}
+                helperText={errors.prioridad}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                select
+              >
+                <MenuItem value="">Seleccionar</MenuItem>
+                <MenuItem value="Alta">Alta</MenuItem>
+                <MenuItem value="Media">Media</MenuItem>
+                <MenuItem value="Baja">Baja</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Observación Inicial"
+                name="observacion_inicial"
+                value={formData.observacion_inicial}
+                onChange={(e) => handleNameChange(e, "observacion_inicial")}
+                fullWidth
+                multiline
+                rows={4}
+                required
+                helperText={
+                  errors.observacion_inicial ||
+                  (!formData.observacion_inicial ? "Campó obligatorio" : "")
+                }
+                error={!!errors.observacion_inicial}
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -732,7 +778,7 @@ const OrderForm = () => {
                 }
                 error={!!errors.observacion_final}
                 InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
+                  shrink: true,
                 }}
               />
             </Grid>

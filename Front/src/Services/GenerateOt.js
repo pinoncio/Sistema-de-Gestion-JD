@@ -160,13 +160,28 @@ export const generatePdf = async (id_ot) => {
     doc.line(xDiv, yObservaciones, xDiv, yObservaciones + obsHeight);
     doc.setFont("helvetica", "bold");
     doc.text("Observación Inicial:", x + 5, yObservaciones + 8);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      otData.observacion_inicial || "No disponible",
+      x + 5,
+      yObservaciones + 16
+    );
+
+    doc.setFont("helvetica", "bold");
     doc.text("Observación Final:", x + obsWidth + 5, yObservaciones + 8);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      otData.observacion_final || "No disponible",
+      x + obsWidth + 5,
+      yObservaciones + 16
+    );
+
     doc.setFont("helvetica", "normal");
     const finalY = yObservaciones + obsHeight + 1;
     autoTable(doc, {
       startY: finalY + 10,
       tableWidth: "auto",
-      margin: { left: x - 1, right: x - 2 },
+      margin: { left: x, right: x - 2 },
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
@@ -239,20 +254,36 @@ export const generatePdf = async (id_ot) => {
 
     const newFinalY = doc.lastAutoTable.finalY;
     doc.text(
-      `Nº líneas: ${otData.ot_insumo.length} / Cant: ${otData.ot_insumo.reduce(
-        (acc, item) => acc + item.cantidad_insumo,
-        0
-      )}`,
+      `Nº líneas: ${
+        otData.ot_insumo.length + otData.productos.length
+      } / Cant: ${
+        otData.ot_insumo.reduce((acc, item) => acc + item.cantidad_insumo, 0) +
+        otData.productos.reduce((acc, item) => acc + item.cantidad_producto, 0)
+      }`,
       15,
       newFinalY + 10
     );
+
     doc.text("Observaciones generales:", 15, newFinalY + 15);
     doc.text(otData.observaciones || "Sin observaciones", 15, newFinalY + 20);
-    doc.text(`Subtotal: $ ${otData.sub_total}`, 140, newFinalY + 10);
-    doc.text(`Monto neto: $ ${otData.monto_neto}`, 140, newFinalY + 15);
-    doc.text(`IVA (%): $ ${otData.iva}`, 140, newFinalY + 20);
-    doc.text(`Total: $ ${otData.total}`, 140, newFinalY + 25);
-    doc.text("Desarrollado por relBase.cl 2024", 15, newFinalY + 35);
+    const xLabel = 160; // Posición X para las etiquetas
+    const xData = 185; // Posición X para los valores (segunda columna)
+    const yBase = newFinalY + 10; // Posición Y base
+
+    const formatNumber = (num) => num.toLocaleString("es-CL"); // Formato con separador de miles
+
+    doc.text("Subtotal:", xLabel, yBase);
+    doc.text(`$ ${formatNumber(otData.sub_total)}`, xData, yBase);
+
+    doc.text("Monto neto:", xLabel, yBase + 5);
+    doc.text(`$ ${formatNumber(otData.monto_neto)}`, xData, yBase + 5);
+
+    doc.text("IVA (%):", xLabel, yBase + 10);
+    doc.text(`$ ${formatNumber(otData.iva)}`, xData, yBase + 10);
+
+    doc.text("Total:", xLabel, yBase + 15);
+    doc.text(`$ ${formatNumber(otData.total)}`, xData, yBase + 15);
+
     doc.save(`Orden_Trabajo_${otData.id_ot}.pdf`);
   } catch (error) {
     console.error("Error al generar el PDF:", error);

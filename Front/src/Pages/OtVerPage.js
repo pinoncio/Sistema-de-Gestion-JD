@@ -240,6 +240,16 @@ const OtProfilePage = () => {
                   borderRadius: "4px",
                 }}
               />
+              <TextField
+                label="Prioridad"
+                value={ot?.prioridad || ""}
+                fullWidth
+                readOnly
+                sx={{
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "4px",
+                }}
+              />
             </Box>
 
             {/* Nueva sección */}
@@ -253,6 +263,20 @@ const OtProfilePage = () => {
                 mb: 3,
               }}
             >
+              <TextField
+                label="Observación Inicial"
+                value={ot?.observacion_inicial || ""}
+                fullWidth
+                readOnly
+                multiline
+                rows={4}
+                sx={{
+                  gridColumn: "span 2",
+                  height: 125,
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "4px",
+                }}
+              />
               <TextField
                 label="Observación Final"
                 value={ot?.observacion_final || ""}
@@ -430,6 +454,32 @@ const OtProfilePage = () => {
                 }}
               />
             </Box>
+            <Divider sx={{ marginBottom: 3 }} />
+            <Box
+              component="form"
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 2,
+                mb: 3,
+              }}
+            >
+              <TextField
+                label="Comentario"
+                value={ot?.comentario || ""}
+                fullWidth
+                readOnly
+                multiline
+                rows={4}
+                sx={{
+                  gridColumn: "span 2",
+                  height: 125,
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "4px",
+                }}
+              />
+            </Box>
+
           </CardContent>
         </Card>
         <div className="profile-button">

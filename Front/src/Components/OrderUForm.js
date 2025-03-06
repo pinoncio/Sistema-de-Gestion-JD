@@ -17,7 +17,6 @@ import {
   IconButton,
   Typography,
   Snackbar,
-  SnackbarContent,
 } from "@mui/material";
 import { getOt, updateOt } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
@@ -39,6 +38,7 @@ const OrderUForm = () => {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedInsumo, setEditedInsumo] = useState({});
   const [editingIndexProducto, setEditingIndexProducto] = useState(null);
@@ -52,6 +52,8 @@ const OrderUForm = () => {
     equipo: "",
     numero_serie: "",
     horas_trabajo: "",
+    prioridad: "",
+    observacion_inicial: "",
     observacion_final: "",
     descripcion: "",
     comentario: "",
@@ -186,20 +188,58 @@ const OrderUForm = () => {
 
   const handleUpdateOt = async (data) => {
     try {
-      await updateOt(id_ot, data); // Actualizar la OT
-      setOpenSnackbar(true); // Muestra el Snackbar en caso de éxito
-      setErrors({});
-      setTimeout(() => {
-        navigate("/ots");
-      }, 2000); // Redirige a /ots después de 2 segundos
+      await updateOt(id_ot, data);
+      setSnackbarMessage("OT actualizada correctamente.");
+      setOpenSnackbar(true);
+      setFormData({
+        id_cliente: "",
+        tipo_documento: "Orden de Trabajo",
+        fecha_solicitud: "",
+        fecha_entrega: "",
+        tipo_ot: "",
+        equipo: "",
+        numero_serie: "",
+        horas_trabajo: "",
+        prioridad: "",
+        observacion_inicial: "",
+        observacion_final: "",
+        descripcion: "",
+        comentario: "",
+        descuento_global: "",
+        sub_total: "0",
+        monto_neto: "0",
+        monto_exento: "1",
+        iva: "19",
+        total: "0",
+        insumos: [],
+        productos: [],
+      });
+      setCurrentOtInsumo({
+        id_insumo: "",
+        cantidad_insumo: "",
+        precio_unitario: "",
+        descuento_insumo: "",
+        recargo_insumo: "",
+        af_ex_insumo: "Afecto",
+        precio_total: "",
+      });
+      setCurrentProducto({
+        nombre_producto: "",
+        cantidad_producto: "",
+        precio_unitario: "",
+        descuento_producto: "",
+        recargo_producto: "",
+        af_ex: "Afecto",
+        precio_total: "",
+      });
     } catch (error) {
-      console.error("Error al actualizar la orden de trabajo:", error);
       setErrors({
         ...errors,
         generales:
           error.response?.data?.message ||
           "Ha ocurrido un error al actualizar la orden de trabajo.",
       });
+      setSnackbarMessage("Error al actualizar la OT");
       setOpenSnackbar(true);
     }
   };
@@ -207,13 +247,20 @@ const OrderUForm = () => {
   const handleCurrentInsumoChange = (e, field) => {
     const { value } = e.target;
 
-    // Validación del valor para asegurarse de que solo contenga números y un punto
-    if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
+    if (!validateNumber(value) && value !== "") return;
+
+    let numericValue = parseFloat(value);
+
+    if (
+      field === "descuento_insumo" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      return;
+    }
 
     setCurrentOtInsumo((prev) => {
       const updated = { ...prev, [field]: value };
 
-      // Si se selecciona un insumo, actualizar el precio_unitario con el costo_unidad del insumo seleccionado
       if (field === "id_insumo") {
         const selectedInsumo = insumos.find((i) => i.id_insumo === value);
         updated.precio_unitario = selectedInsumo
@@ -221,7 +268,6 @@ const OrderUForm = () => {
           : "";
       }
 
-      // Calcular el precio total con los valores actualizados
       updated.precio_total = (
         parseFloat(updated.cantidad_insumo || 0) *
           parseFloat(updated.precio_unitario || 0) *
@@ -236,7 +282,7 @@ const OrderUForm = () => {
   const handleCurrentProductoChange = (e, field) => {
     const { value } = e.target;
 
-    // Si el campo es 'nombre_producto', no se valida el valor, se permite cualquier cosa
+    // Si el campo es 'nombre_producto', no se valida el valor
     if (field === "nombre_producto") {
       setCurrentProducto((prev) => {
         const updated = { ...prev, [field]: value };
@@ -252,7 +298,16 @@ const OrderUForm = () => {
     }
 
     // Validación para los demás campos (solo números y punto)
-    if (!validateNumber(value) && value !== "") return; // Si no es válido, no actualiza
+    if (!validateNumber(value) && value !== "") return;
+
+    let numericValue = parseFloat(value);
+
+    if (
+      field === "descuento_producto" &&
+      (numericValue < 0 || numericValue > 99)
+    ) {
+      return; // No actualiza si está fuera de rango
+    }
 
     setCurrentProducto((prev) => {
       const updated = { ...prev, [field]: value };
@@ -271,12 +326,38 @@ const OrderUForm = () => {
       !currentOtInsumo.id_insumo ||
       !currentOtInsumo.cantidad_insumo ||
       !currentOtInsumo.precio_unitario
-    )
+    ) {
+      setOpenSnackbar(true);
       return;
+    }
+
+    const selectedInsumo = insumos.find(
+      (i) => i.id_insumo === currentOtInsumo.id_insumo
+    );
+
+    if (!selectedInsumo) {
+      setSnackbarMessage("Insumo no encontrado.");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    const stockDisponible = selectedInsumo.cantidad;
+    const cantidadSolicitada = parseFloat(currentOtInsumo.cantidad_insumo);
+
+    if (cantidadSolicitada > stockDisponible) {
+      setSnackbarMessage(
+        `Stock insuficiente. Disponible: ${stockDisponible}, Solicitado: ${cantidadSolicitada}`
+      );
+
+      setOpenSnackbar(true);
+      return;
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      ot_insumo: [...prevData.ot_insumo, currentOtInsumo],
+      insumos: [...prevData.insumos, currentOtInsumo],
     }));
+
     setCurrentOtInsumo({
       id_insumo: "",
       cantidad_insumo: "",
@@ -286,6 +367,9 @@ const OrderUForm = () => {
       af_ex_insumo: "Afecto",
       precio_total: "",
     });
+
+    setSnackbarMessage("Insumo agregado correctamente.");
+    setOpenSnackbar(true);
   };
 
   const handleAddProducto = () => {
@@ -338,11 +422,11 @@ const OrderUForm = () => {
         i === index ? updatedInsumo : item
       ),
     }));
-    setEditingIndex(null); // Sale del modo de edición
+    setEditingIndex(null);
   };
 
   const handleCancelEdit = () => {
-    setEditingIndex(null); // Sale del modo de edición sin guardar
+    setEditingIndex(null);
   };
 
   const handleInputChange = (e, field) => {
@@ -361,15 +445,23 @@ const OrderUForm = () => {
 
   const handleEditProducto = (index) => {
     const productoToEdit = formData.productos[index];
-    setEditingIndexProducto(index); // Marca la fila como editada
-    setEditedProducto(productoToEdit); // Carga los datos actuales en el estado para editarlos
+    console.log("Editando producto:", productoToEdit);
+    
+    setEditingIndexProducto(index); 
+    setEditedProducto({
+      ...productoToEdit, 
+    });
   };
+  
 
   const handleSaveProducto = (index) => {
     const updatedProducto = {
       ...editedProducto,
+      descuento_producto: parseFloat(editedProducto.descuento_producto) || 0, // Asegura que sea un número
       precio_total: calculateTotalProducto(editedProducto),
     };
+    console.log("Guardando producto actualizado:", updatedProducto);
+    
     setFormData((prevData) => ({
       ...prevData,
       productos: prevData.productos.map((item, i) =>
@@ -378,6 +470,7 @@ const OrderUForm = () => {
     }));
     setEditingIndexProducto(null); // Sale del modo de edición
   };
+  
 
   const handleCancelEditProducto = () => {
     setEditingIndexProducto(null); // Sale del modo de edición sin guardar
@@ -385,17 +478,22 @@ const OrderUForm = () => {
 
   const handleInputChangeProducto = (e, field) => {
     const { value } = e.target;
-    setEditedProducto((prev) => ({ ...prev, [field]: value }));
+    // Convierte el valor de descuento_producto a número (si es un número válido) o a 0 si es un string vacío
+    const numericValue = field === "descuento_producto" ? parseFloat(value) || 0 : value;
+  
+    setEditedProducto((prev) => ({ ...prev, [field]: numericValue }));
   };
+  
 
   const calculateTotalProducto = (producto) => {
     const cantidad = parseFloat(producto.cantidad_producto) || 0;
     const precioUnitario = parseFloat(producto.precio_unitario) || 0;
-    const descuento = parseFloat(producto.descuento_producto) || 0;
+    const descuento = parseFloat(producto.descuento_producto) || 0; // Asegúrate de que descuento_producto es número
     const recargo = parseFloat(producto.recargo_producto) || 0;
     const afEx = producto.af_ex_producto === "Exento" ? 0 : 1;
     return (cantidad * precioUnitario * (1 - descuento / 100) + recargo) * afEx;
   };
+  
 
   useEffect(() => {
     const { descuento_global, monto_exento, ot_insumo, productos } = formData;
@@ -432,8 +530,6 @@ const OrderUForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Inicio de handleSubmit");
 
     const allOtInsumos = currentOtInsumo.id_insumo
       ? [...formData.ot_insumo, currentOtInsumo]
@@ -475,8 +571,6 @@ const OrderUForm = () => {
       ])
     );
 
-    console.log("Datos formateados a enviar:", lowerCaseFormData);
-
     if (
       Object.values(lowerCaseFormData).some(
         (val) => val === "" || val === null || val === undefined
@@ -491,9 +585,7 @@ const OrderUForm = () => {
     }
 
     try {
-      console.log("Enviando datos a handleUpdateOt...");
       await handleUpdateOt(lowerCaseFormData);
-      console.log("Actualización exitosa");
 
       setFormData({
         id_cliente: "",
@@ -504,6 +596,8 @@ const OrderUForm = () => {
         equipo: "",
         numero_serie: "",
         horas_trabajo: "",
+        prioridad: "",
+        observacion_inicial: "",
         observacion_final: "",
         descripcion: "",
         comentario: "",
@@ -743,6 +837,48 @@ const OrderUForm = () => {
                 error={!!errors.horas_trabajo}
                 InputLabelProps={{
                   shrink: true, // Hace que el label siempre esté visible
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Prioridad"
+                name="prioridad"
+                value={formData.prioridad}
+                onChange={(e) => handleNameChange(e, "prioridad")}
+                fullWidth
+                required
+                error={!!errors.prioridad}
+                helperText={errors.prioridad}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                select
+              >
+                <MenuItem value="">Seleccionar</MenuItem>
+                <MenuItem value="Alta">Alta</MenuItem>
+                <MenuItem value="Media">Media</MenuItem>
+                <MenuItem value="Baja">Baja</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Observación Inicial"
+                name="observacion_inicial"
+                value={formData.observacion_inicial}
+                onChange={(e) => handleNameChange(e, "observacion_inicial")}
+                fullWidth
+                multiline
+                rows={4}
+                required
+                helperText={
+                  errors.observacion_inicial ||
+                  (!formData.observacion_inicial ? "Campó obligatorio" : "")
+                }
+                error={!!errors.observacion_inicial}
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -1271,7 +1407,7 @@ const OrderUForm = () => {
                   errors.descuento_global ||
                   (!formData.descuento_global ? "Campó obligatorio" : "")
                 }
-                error={!!errors.DESCUENTO_GLOBAL}
+                error={!!errors.descuento_global}
                 type="number"
                 InputLabelProps={{
                   shrink: true, // Hace que el label siempre esté visible
@@ -1356,21 +1492,12 @@ const OrderUForm = () => {
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
+        message={snackbarMessage}
         anchorOrigin={{
-          vertical: "top", // Posición vertical: arriba
-          horizontal: "right", // Posición horizontal: derecha
+          vertical: "top",
+          horizontal: "right",
         }}
-      >
-        <SnackbarContent
-          message={
-            errors.generales || "Orden de trabajo Actualizada exitosamente!"
-          }
-          sx={{
-            backgroundColor: errors.generales ? "red" : "green", // Color rojo para error, verde para éxito
-            color: "white", // Texto blanco para mayor contraste
-          }}
-        />
-      </Snackbar>
+      ></Snackbar>
     </UserLayout>
   );
 };

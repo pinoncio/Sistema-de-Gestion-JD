@@ -22,7 +22,7 @@ const producto = db.define(
     cantidad_producto: { type: DataTypes.INTEGER },
     precio_unitario: { type: DataTypes.FLOAT },
     recargo_producto: { type: DataTypes.FLOAT },
-    descuento_producto: { type: DataTypes.INTEGER },
+    descuento_producto: { type: DataTypes.FLOAT },
     af_ex: { type: DataTypes.STRING },
     precio_total: { type: DataTypes.FLOAT },
   },
