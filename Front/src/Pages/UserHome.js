@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Grid2, Paper, Typography, Container } from "@mui/material";
-import { People, Category, Inventory, Assignment } from "@mui/icons-material"; // Añadimos más iconos
+import { People, Category, Inventory, Assignment, Description, MonetizationOn } from "@mui/icons-material"; // Añadimos más iconos
 import { useNavigate } from "react-router-dom";
 import UserLayout from "../Components/Layout/UserLayout";
 
@@ -31,12 +31,14 @@ const UserHome = () => {
     }
     ,
     {
-      title: "Proximamente",
-      route: "",
+      icon: <Description sx={{ fontSize: "6rem" }} />,
+      title: "Informes de Trabajo",
+      route: "/ots",
     },
     {
-      title: "Proximamente",
-      route: "",
+      icon: <MonetizationOn sx={{ fontSize: "6rem" }} />, 
+      title: "Gastos",
+      route: "/gastos",
     },
   ];
 
@@ -46,13 +48,12 @@ const UserHome = () => {
 
   return (
     <UserLayout>
-      {/* Fondo de la página */}
       <Box
         sx={{
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          bgcolor: "#fafafa",
+          bgcolor: "#ffff",
         }}
       >
         <Container>
@@ -60,13 +61,12 @@ const UserHome = () => {
             Bienvenido, al Sistema de Gestion JD
           </Typography>
 
-          {/* Box que envuelve los stats */}
           <Box
             sx={{
               bgcolor: "#f4f4f4",
               padding: 6,
               borderRadius: 3,
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
               mb: 4,
             }}
           >

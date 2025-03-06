@@ -61,7 +61,6 @@ const newInsumo = async (req, res) => {
     cantidad,
     costo_unidad,
     sub_total,
-    ajuste_actual,
     id_categoria,
   } = req.body;
 
@@ -78,13 +77,13 @@ const newInsumo = async (req, res) => {
 
     // Calcular los valores automáticos
     const stock_disponible = cantidad;
-    if (isNaN(sub_total) || isNaN(ajuste_actual)) {
+    if (isNaN(sub_total)) {
       return res
         .status(400)
-        .json({ msg: "sub_total y ajuste_actual deben ser números válidos." });
+        .json({ msg: "sub_total debe ser números válidos." });
     }
     const precio_venta = (
-      parseFloat(sub_total) + parseFloat(ajuste_actual)
+      parseFloat(sub_total)
     ).toFixed(2);
 
     const precio_neto = sub_total;
@@ -98,7 +97,6 @@ const newInsumo = async (req, res) => {
       cantidad: cantidad,
       costo_unidad: costo_unidad,
       sub_total: sub_total,
-      ajuste_actual: ajuste_actual,
       stock_disponible: stock_disponible,
       precio_venta: precio_venta,
       precio_neto: precio_neto,
@@ -128,7 +126,6 @@ const updateInsumo = async (req, res) => {
     cantidad,
     costo_unidad,
     sub_total,
-    ajuste_actual,
     id_categoria,
   } = req.body;
 
@@ -148,13 +145,13 @@ const updateInsumo = async (req, res) => {
         ? cantidad
         : existingInsumo.stock_disponible;
 
-    if (isNaN(sub_total) || isNaN(ajuste_actual)) {
+    if (isNaN(sub_total)) {
       return res
         .status(400)
-        .json({ msg: "sub_total y ajuste_actual deben ser números válidos." });
+        .json({ msg: "sub_total deben ser números válidos." });
     }
     const precio_venta = (
-      parseFloat(sub_total) + parseFloat(ajuste_actual)
+      parseFloat(sub_total)
     ).toFixed(2);
 
     const precio_neto = sub_total;
@@ -168,7 +165,6 @@ const updateInsumo = async (req, res) => {
         cantidad: cantidad,
         costo_unidad: costo_unidad,
         sub_total: sub_total,
-        ajuste_actual: ajuste_actual,
         stock_disponible: stock_disponible,
         precio_venta: precio_venta,
         precio_neto: precio_neto,

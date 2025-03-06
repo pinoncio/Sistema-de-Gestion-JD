@@ -162,17 +162,6 @@ const InsumoProfilePage = () => {
                 readOnly
               />
               <TextField
-                label="Ajuste Actual"
-                value={
-                  insumo.ajuste_actual
-                    ? `$${insumo.ajuste_actual.toLocaleString()}`
-                    : ""
-                }
-                variant="outlined"
-                fullWidth
-                readOnly
-              />
-              <TextField
                 label="Stock Disponible"
                 value={insumo.stock_disponible || ""}
                 variant="outlined"

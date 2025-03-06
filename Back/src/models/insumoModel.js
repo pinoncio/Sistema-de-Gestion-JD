@@ -16,7 +16,6 @@ const insumo = db.define(
     cantidad: { type: DataTypes.INTEGER },
     costo_unidad: { type: DataTypes.FLOAT },
     sub_total: { type: DataTypes.FLOAT },
-    ajuste_actual: { type: DataTypes.FLOAT },
     stock_disponible: { type: DataTypes.INTEGER },
     precio_venta: { type: DataTypes.FLOAT },
     precio_neto: { type: DataTypes.FLOAT },

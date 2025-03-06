@@ -29,7 +29,6 @@ const InsumoFormModal = ({
     cantidad: "",
     costo_unidad: "",
     sub_total: "",
-    ajuste_actual: "",
     id_categoria: "",
   });
 
@@ -46,7 +45,6 @@ const InsumoFormModal = ({
           cantidad: insumoData.cantidad || "",
           costo_unidad: insumoData.costo_unidad || "",
           sub_total: insumoData.sub_total || "",
-          ajuste_actual: insumoData.ajuste_actual || "",
           id_categoria: insumoData.id_categoria || "",
         });
       } else {
@@ -63,7 +61,6 @@ const InsumoFormModal = ({
       cantidad: "",
       costo_unidad: "",
       sub_total: "",
-      ajuste_actual: "",
       id_categoria: "",
     });
     setErrors({});
@@ -132,7 +129,6 @@ const InsumoFormModal = ({
       !lowerCaseFormData.ubicacion ||
       !lowerCaseFormData.cantidad ||
       !lowerCaseFormData.costo_unidad ||
-      !lowerCaseFormData.ajuste_actual ||
       !lowerCaseFormData.sub_total
     ) {
       setErrors({
@@ -273,21 +269,7 @@ const InsumoFormModal = ({
                 }
                 error={!!errors.costo_unidad}
               />
-              <TextField
-                label="Ajuste Actual"
-                value={formData.ajuste_actual}
-                onChange={(e) => handleChange(e, "ajuste_actual")}
-                fullWidth
-                margin="normal"
-                required
-                helperText={
-                  errors.ajuste_actual ||
-                  (!formData.ajuste_actual
-                    ? "El ajuste actual es obligatorio."
-                    : "")
-                }
-                error={!!errors.ajuste_actual}
-              />
+              
               <TextField
                 label="Sub Total"
                 value={formData.sub_total}
