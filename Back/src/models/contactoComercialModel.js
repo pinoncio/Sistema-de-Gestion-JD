@@ -7,42 +7,41 @@ const contactocomercial = db.define(
   {
     id_contacto_comercial: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
+      primaryKey: true, 
+      autoIncrement: true, 
     },
     id_cliente: {
       type: DataTypes.INTEGER,
       references: {
-        model: cliente, // hace referencia al modelo cliente
+        model: cliente, 
         key: "id_cliente",
       },
-      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: false, 
     },
     contacto_comercial: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
     correo_electronico_comercial: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
     telefono_fijo: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
     telefono_celular: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-// Relación entre cliente y contactocomercial
-cliente.hasOne(contactocomercial, { foreignKey: "id_cliente", as: "contacto_comercial" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
-contactocomercial.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+cliente.hasOne(contactocomercial, { foreignKey: "id_cliente", as: "contacto_comercial" }); 
+contactocomercial.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" }); 
 
 module.exports = { contactocomercial };

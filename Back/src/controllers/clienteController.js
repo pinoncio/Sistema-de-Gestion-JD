@@ -13,7 +13,7 @@ const getClientes = async (req, res) => {
         {
           model: clientemetodopago,
           as: "clientemetodospago",
-          attributes: ["id_metodo_pago", "referencia"],
+          attributes: ["id_metodo_pago"],
           include: [
             {
               model: metodopago,
@@ -47,7 +47,7 @@ const getCliente = async (req, res) => {
         {
           model: clientemetodopago,
           as: "clientemetodospago",
-          attributes: ["id_metodo_pago", "referencia"],
+          attributes: ["id_metodo_pago"],
           include: [
             {
               model: metodopago,

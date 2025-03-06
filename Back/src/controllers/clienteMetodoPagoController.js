@@ -7,7 +7,7 @@ const { metodopago } = require("../models/metodopagomodel");
 // Agregar método de pago a un cliente
 const agregarMetodoPagoCliente = async (req, res) => {
   try {
-    const { id_cliente, id_metodo_pago, referencia } = req.body;
+    const { id_cliente, id_metodo_pago } = req.body;
 
     // Buscar al cliente por su id
     const clienteData = await cliente.findOne({ where: { id_cliente } });
@@ -25,7 +25,6 @@ const agregarMetodoPagoCliente = async (req, res) => {
     await clientemetodopago.create({
       id_cliente: id_cliente,
       id_metodo_pago: id_metodo_pago,
-      referencia: referencia,
     });
 
     res.status(200).json({ msg: "Método de pago agregado correctamente al cliente" });
@@ -45,7 +44,7 @@ const obtenerMetodosPagoCliente = async (req, res) => {
         {
           model: clientemetodopago,
           as: "clientemetodospago", // Alias de la relación cliente -> clientemetodopago
-          attributes: ["id_metodo_pago", "referencia"], // Columnas específicas de clientemetodopago
+          attributes: ["id_metodo_pago"], // Columnas específicas de clientemetodopago
           include: [
             {
               model: metodopago,
@@ -116,10 +115,8 @@ const obtenerMetodoPagoClienteporId = async (req, res) => {
   }
 };
 
-// Actualizar la referencia de un método de pago de un cliente
 const actualizarMetodoPagoCliente = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
-  const { referencia } = req.body;
 
   try {
     const clienteData = await cliente.findByPk(id_cliente);
@@ -142,7 +139,6 @@ const actualizarMetodoPagoCliente = async (req, res) => {
       });
     }
 
-    metodoPagoData.referencia = referencia;
     await metodoPagoData.save();
 
     return res.status(200).json({

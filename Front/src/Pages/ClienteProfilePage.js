@@ -31,9 +31,8 @@ import "../Styles/UserProfilePage.css";
 const ClientProfilePage = () => {
   const { id_cliente } = useParams();
   const [client, setClient] = useState(null);
-  const [metodosPago, setMetodosPago] = useState([]); // Estado para los métodos de pago
-  const [selectedMetodoPago, setSelectedMetodoPago] = useState(""); // Estado para el método de pago seleccionado
-  const [reference, setReference] = useState(""); // Estado para la referencia
+  const [metodosPago, setMetodosPago] = useState([]);
+  const [selectedMetodoPago, setSelectedMetodoPago] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -119,14 +118,11 @@ const ClientProfilePage = () => {
     setSelectedMetodoPago(event.target.value);
   };
 
-  const handleReferenceChange = (event) => {
-    setReference(event.target.value);
-  };
 
   const handleAddMetodoPago = async () => {
-    if (!selectedMetodoPago || !reference) {
+    if (!selectedMetodoPago) {
       setError(
-        "Por favor selecciona un método de pago y proporciona una referencia."
+        "Por favor selecciona un método de pago."
       );
       setOpenSnackbar(true);
       return;
@@ -134,21 +130,16 @@ const ClientProfilePage = () => {
 
     const metodoPagoData = {
       id_cliente,
-      id_metodo_pago: selectedMetodoPago,
-      referencia: reference,
+      id_metodo_pago: selectedMetodoPago
     };
 
     try {
-      // Llamar al servicio para agregar el método de pago
+
       await addMetodoPagoCliente(metodoPagoData);
 
-      // Limpiar el estado del formulario y restablecer el select
-      setReference("");
-      setSelectedMetodoPago(""); // Restablecer el select
-      setSuccessMessage("Método de pago agregado correctamente."); // Mostrar mensaje de éxito
-
-      // Actualizar el cliente para reflejar el nuevo método de pago
-      fetchClient(); // Llamar a fetchClient para obtener el cliente actualizado
+      setSelectedMetodoPago("");
+      setSuccessMessage("Método de pago agregado correctamente."); 
+      fetchClient();
 
       setOpenSnackbar(true);
     } catch (error) {
@@ -435,13 +426,6 @@ const ClientProfilePage = () => {
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />
-                    <TextField
-                      label="Referencia"
-                      value={metodo.referencia}
-                      fullWidth
-                      sx={{ marginBottom: 2 }}
-                    />
-                    {/* Botones para editar y eliminar */}
                     <Box sx={{ display: "flex", gap: 2 }}>
                       <IconButton
                         variant="outlined"
@@ -487,14 +471,6 @@ const ClientProfilePage = () => {
                 ))}
               </Select>
             </FormControl>
-
-            <TextField
-              label="Referencia"
-              value={reference}
-              onChange={handleReferenceChange}
-              variant="outlined"
-              fullWidth
-            />
 
             <Button
               variant="contained"
