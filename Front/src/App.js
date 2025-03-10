@@ -15,8 +15,9 @@ import UserHome from "./Pages/UserHome";
 import InsumoProfilePage from "./Pages/InsumoVerPage";
 import OtPage from "./Pages/OtPage";
 import OTProfilePage from "./Pages/OtVerPage";
-import OrderForm from "./Components/OrderForm";
-import OrderUForm from "./Components/OrderUForm";
+import OrderForm from "./Components/OtForm";
+import OrderUForm from "./Components/OtUForm";
+import ItPage from "./Pages/ItPage";
 
 const App = () => {
   return (
@@ -143,7 +144,14 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          
+          <Route
+            path="/its"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <ItPage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>

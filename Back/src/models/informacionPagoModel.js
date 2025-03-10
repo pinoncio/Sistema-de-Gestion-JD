@@ -7,32 +7,32 @@ const informaciondepago = db.define(
   {
     id_informacion: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
+      primaryKey: true, 
+      autoIncrement: true, 
     },
     id_cliente: {
       type: DataTypes.INTEGER,
       references: {
-        model: cliente, // hace referencia al modelo cliente
+        model: cliente,
         key: "id_cliente",
       },
-      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: false, 
     },
     nombre_responsable: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
     correo_electronico: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
     telefono_responsable: { 
       type: DataTypes.STRING,
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: true, 
     },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );

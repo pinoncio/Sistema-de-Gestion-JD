@@ -36,7 +36,7 @@ const getOts = async (req, res) => {
           ],
         },
         {
-          model: producto, // Incluir los productos asociados a la OT
+          model: producto, 
           as: "productos",
           attributes: [
             "nombre_producto",
@@ -61,7 +61,7 @@ const getOts = async (req, res) => {
   }
 };
 
-// Obtener una orden de trabajo por id
+
 const getOt = async (req, res) => {
   const { id_ot } = req.params;
   try {
@@ -94,7 +94,7 @@ const getOt = async (req, res) => {
         },
         {
           model: producto,
-          as: "productos", // Alias para la relación
+          as: "productos", 
           attributes: [
             "nombre_producto",
             "cantidad_producto",
@@ -222,7 +222,7 @@ const getPdfOt = async (req, res) => {
   }
 };
 
-// Crear una nueva orden de trabajo
+
 const newOt = async (req, res) => {
   const {
     id_cliente,
@@ -249,7 +249,6 @@ const newOt = async (req, res) => {
   } = req.body;
 
   try {
-    // Validar campos obligatorios
     if (
       !id_cliente ||
       !tipo_documento ||
@@ -263,7 +262,6 @@ const newOt = async (req, res) => {
       return res.status(400).json({ msg: "Faltan campos obligatorios" });
     }
 
-    // Crear la OT
     const nuevaOt = await ot.create({
       id_cliente,
       tipo_documento,
@@ -286,11 +284,10 @@ const newOt = async (req, res) => {
       total,
     });
 
-    // Asociar los productos a la OT
     const productosData = productos.map((producto) => ({
       id_ot: nuevaOt.id_ot,
       nombre_producto: producto.nombre_producto,
-      cantidad_producto: producto.cantidad_producto, // Cambio aquí
+      cantidad_producto: producto.cantidad_producto, 
       precio_unitario: producto.precio_unitario,
       descuento_producto: producto.descuento_producto,
       recargo_producto: producto.recargo_producto,
@@ -300,14 +297,12 @@ const newOt = async (req, res) => {
 
     await producto.bulkCreate(productosData);
 
-    // Asociar los insumos a la OT y actualizar la cantidad en la tabla de insumos
     for (const insumoData of insumos) {
-      // Buscar el insumo por id_insumo
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: insumoData.id_insumo },
       });
 
-      // Verificar stock y restar cantidad
+
       if (
         !insumoEncontrado ||
         insumoEncontrado.cantidad < insumoData.cantidad_insumo
@@ -321,14 +316,13 @@ const newOt = async (req, res) => {
         });
       }
 
-      // Restar cantidad del stock en la tabla insumo
+
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
         stock_disponible:
-          insumoEncontrado.cantidad - insumoData.cantidad_insumo, // Igualar stock_disponible
+          insumoEncontrado.cantidad - insumoData.cantidad_insumo, 
       });
 
-      // Crear la relación entre OT e insumo
       await otinsumo.create({
         id_ot: nuevaOt.id_ot,
         id_insumo: insumoData.id_insumo,
@@ -358,7 +352,7 @@ const newOt = async (req, res) => {
   }
 };
 
-// Actualizar una orden de trabajo
+
 const updateOt = async (req, res) => {
   const { id_ot } = req.params;
   const {
@@ -393,30 +387,30 @@ const updateOt = async (req, res) => {
       });
     }
 
-    // 1️⃣ **Devolver los insumos al stock antes de eliminarlos**
+
     const otInsumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
 
     for (const otInsumoAntiguo of otInsumosAntiguos) {
-      // Obtener la información del insumo desde la tabla insumo
+
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: otInsumoAntiguo.id_insumo },
       });
 
       if (insumoEncontrado) {
-        // Igualar el stock disponible en la tabla insumo
+
         await insumoEncontrado.update({
           cantidad: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
           stock_disponible:
-            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, // Igualar stock_disponible
+            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, 
         });
       }
     }
 
-    // 2️⃣ **Eliminar productos e insumos antiguos**
+
     await producto.destroy({ where: { id_ot } });
     await otinsumo.destroy({ where: { id_ot } });
 
-    // 3️⃣ **Actualizar la OT**
+
     await otData.update({
       id_cliente,
       tipo_documento,
@@ -439,7 +433,6 @@ const updateOt = async (req, res) => {
       total,
     });
 
-    // 4️⃣ **Crear los nuevos productos**
     const productosData = productos.map((producto) => ({
       id_ot,
       nombre_producto: producto.nombre_producto,
@@ -453,15 +446,13 @@ const updateOt = async (req, res) => {
 
     await producto.bulkCreate(productosData);
 
-    // 5️⃣ **Crear los nuevos insumos**
     for (const otInsumoData of ot_insumo) {
-      // Cambié insumos por ot_insumo
-      // Obtener el insumo desde la tabla insumo
+
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: otInsumoData.id_insumo },
       });
 
-      // **Verificar stock en la tabla insumo**
+
       if (
         !insumoEncontrado ||
         insumoEncontrado.stock_disponible < otInsumoData.cantidad_insumo
@@ -471,14 +462,14 @@ const updateOt = async (req, res) => {
         });
       }
 
-      // **Igualar el stock disponible en la tabla insumo**
+
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
         stock_disponible:
-          insumoEncontrado.cantidad - otInsumoData.cantidad_insumo, // Igualar stock_disponible
+          insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
       });
 
-      // **Crear la relación entre OT e insumo en la tabla ot_insumo**
+
       await otinsumo.create({
         id_ot,
         id_insumo: otInsumoData.id_insumo,
@@ -501,7 +492,7 @@ const updateOt = async (req, res) => {
   }
 };
 
-// Eliminar una orden de trabajo
+
 const deleteOt = async (req, res) => {
   const { id_ot } = req.params;
 
@@ -513,11 +504,10 @@ const deleteOt = async (req, res) => {
       });
     }
 
-    // Eliminar productos e insumos relacionados
+
     await producto.destroy({ where: { id_ot } });
     await otinsumo.destroy({ where: { id_ot } });
 
-    // Eliminar la OT
     await otData.destroy();
 
     res.json({ msg: "Orden de trabajo eliminada correctamente" });

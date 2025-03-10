@@ -7,12 +7,12 @@ const ot = db.define(
   {
     id_ot: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
+      primaryKey: true, 
+      autoIncrement: true, 
     },
     id_cliente: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: false, 
       references: {
         model: cliente,
         key: "id_cliente",
@@ -44,7 +44,7 @@ const ot = db.define(
 );
 
 // Definir relaciones con cliente
-ot.belongsTo(cliente, { foreignKey: "id_cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
-cliente.hasMany(ot, { foreignKey: "id_cliente" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+ot.belongsTo(cliente, { foreignKey: "id_cliente" }); 
+cliente.hasMany(ot, { foreignKey: "id_cliente" });
 
 module.exports = { ot };

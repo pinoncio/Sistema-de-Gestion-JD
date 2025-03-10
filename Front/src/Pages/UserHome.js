@@ -33,7 +33,7 @@ const UserHome = () => {
     {
       icon: <Description sx={{ fontSize: "6rem" }} />,
       title: "Informes de Trabajo",
-      route: "/ots",
+      route: "/its",
     },
     {
       icon: <MonetizationOn sx={{ fontSize: "6rem" }} />, 

@@ -11,8 +11,10 @@ const contactocomercialroutes = require("./routes/contactocomercialroute");
 const informaciondepagoroutes = require("./routes/informacionpagoroute");
 const categoriaroutes = require("./routes/categoriaroute");
 const insumoroutes = require("./routes/insumoroute");
+const tiemporoutes = require("./routes/controltiemporoute");
 //const emailroutes = require("./routes/emailroute");
 const otroutes = require("./routes/otroute");
+const itroutes = require("./routes/informeroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
 const productoroutes = require("./routes/productoroute");
 
@@ -24,12 +26,14 @@ const { cliente } = require("./models/clientemodel");
 const { metodopago } = require("./models/metodopagomodel");
 const { contactocomercial } = require("./models/contactocomercialmodel");
 const { informaciondepago } = require("./models/informacionpagomodel");
-const { categoria } = require("./models/categoriamodel")
+const { categoria } = require("./models/categoriamodel");
 const { insumo } = require("./models/insumomodel");
 const { ot } = require("./models/otmodel");
 const { otinsumo } = require("./models/otinsumomodel");
 const { producto } = require("./models/productomodel");
-   
+const { it } = require("./models/informemodel");
+const { controltiempo } = require("./models/controltiempomodel");
+
 class server {
   constructor() {
     this.app = express();
@@ -59,6 +63,8 @@ class server {
     this.app.use("/api/ots", otroutes);
     this.app.use("/api/otinsumo", otinsumoroutes);
     this.app.use("/api/producto", productoroutes);
+    this.app.use("/api/its", itroutes);
+    this.app.use("/api/tiempo", tiemporoutes);
   }
 
   middlewares() {
@@ -78,8 +84,10 @@ class server {
       await categoria.sync({ alter: true });
       await insumo.sync({ alter: true });
       await ot.sync({ alter: true });
-      await otinsumo.sync({ alter:true });
-      await producto.sync({ alter:true });
+      await otinsumo.sync({ alter: true });
+      await producto.sync({ alter: true });
+      await it.sync({ alter: true });
+      await controltiempo.sync({ alter: true });
       console.log("base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(
