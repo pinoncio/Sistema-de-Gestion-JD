@@ -2,7 +2,7 @@ import api from "./apiService";
 
 export const getAllTiempos = async () => {
   try {
-    const response = await api.get("/tiempo");
+    const response = await api.get("/tiempo/lista");
     return response.data;
   } catch (error) {
     console.error(

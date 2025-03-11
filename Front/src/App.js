@@ -18,6 +18,7 @@ import OTProfilePage from "./Pages/OtVerPage";
 import OrderForm from "./Components/OtForm";
 import OrderUForm from "./Components/OtUForm";
 import ItPage from "./Pages/ItPage";
+import ItForm from "./Components/ItForm";
 
 const App = () => {
   return (
@@ -149,6 +150,14 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <ItPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create-it"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <ItForm />
               </PrivateRoute>
             }
           />

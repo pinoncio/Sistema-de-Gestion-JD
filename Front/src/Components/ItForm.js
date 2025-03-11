@@ -5,7 +5,6 @@ import {
   MenuItem,
   Button,
   Grid,
-  InputAdornment,
   Box,
   Table,
   TableBody,
@@ -27,9 +26,9 @@ import UserLayout from "./Layout/UserLayout";
 import { useNavigate } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-const OrderForm = () => {
+const ItForm = () => {
   const [clientes, setClientes] = useState([]);
-  const [tiempos, setTiempos] = useState([]);
+  const [control_tiempo, setTiempos] = useState([]);
   const [ot, setOt] = useState([]);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -83,6 +82,7 @@ const OrderForm = () => {
     fetchTiempos();
     fetchOt();
   }, []);
+
   const fetchClientes = async () => {
     try {
       setClientes(await getClientes());
@@ -114,6 +114,7 @@ const OrderForm = () => {
   const handleChange = (e, field) => {
     const { value } = e.target;
 
+    // Validación numérica para campos que lo requieran
     if (!validateNumber(value) && value !== "") {
       setErrors({
         ...errors,
@@ -122,18 +123,25 @@ const OrderForm = () => {
       return;
     }
 
-    let numericValue = parseFloat(value);
+    if (field === "id_cliente") {
+      const selectedCliente = clientes.find((c) => c.id_cliente === value);
 
-    // Validar que descuento_global esté entre 0 y 99
-    if (
-      field === "descuento_global" &&
-      (numericValue < 0 || numericValue > 99)
-    ) {
-      setErrors({
-        ...errors,
-        [field]: "El descuento debe estar entre 0 y 99.",
-      });
-      return;
+      if (selectedCliente) {
+        // Aquí es donde accedes a informacionesdepago correctamente
+        setCurrentCliente({
+          cliente: {
+            nombre_razon_social: selectedCliente.nombre_razon_social || "",
+            rut: selectedCliente.rut || "",
+            direccion: selectedCliente.direccion || "",
+            informacionesdepago: {
+              correo_electronico:
+                selectedCliente.informacionesdepago?.correo_electronico || "", 
+              telefono_responsable:
+                selectedCliente.informacionesdepago?.telefono_responsable || "", 
+            },
+          },
+        });
+      }
     }
 
     setFormData({ ...formData, [field]: value });
@@ -158,18 +166,6 @@ const OrderForm = () => {
       setErrors({
         ...errors,
         [field]: "Solo se permiten letras, números y guiones.",
-      });
-  };
-
-  const handleDateChange = (e, field) => {
-    const { value } = e.target;
-    if (!isNaN(Date.parse(value))) {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else
-      setErrors({
-        ...errors,
-        [field]: "Ingrese una fecha válida en formato YYYY-MM-DD.",
       });
   };
 
@@ -250,44 +246,6 @@ const OrderForm = () => {
     });
   };
 
-  const handleCurrentClienteChange = (e, field) => {
-    const { value } = e.target;
-
-    setCurrentCliente((prev) => {
-      const updatedCliente = { ...prev, [field]: value };
-      return updatedCliente;
-    });
-  };
-
-  const handleAddCliente = () => {
-    if (
-      !currentCliente.nombre_razon_social ||
-      !currentCliente.rut ||
-      !currentCliente.direccion
-    ) {
-      setOpenSnackbar(true);
-      return;
-    }
-
-    setFormData((prevData) => ({
-      ...prevData,
-      clientes: [...prevData.clientes, currentCliente], // Agrega el cliente
-    }));
-
-    setCurrentCliente({
-      nombre_razon_social: "",
-      rut: "",
-      direccion: "",
-      informacionesdepago: {
-        correo_electronico: "",
-        telefono_responsable: "",
-      },
-    });
-
-    setSnackbarMessage("Cliente agregado correctamente.");
-    setOpenSnackbar(true);
-  };
-
   const handleAddTiempo = () => {
     if (
       !currentTiempo.dia ||
@@ -302,7 +260,7 @@ const OrderForm = () => {
 
     setFormData((prevData) => ({
       ...prevData,
-      control_tiempo: [...prevData.control_tiempo, currentTiempo], // Agrega el control de tiempo
+      control_tiempo: [...prevData.control_tiempo, currentTiempo], 
     }));
 
     setCurrentTiempo({
@@ -318,12 +276,6 @@ const OrderForm = () => {
     setSnackbarMessage("Control de tiempo agregado correctamente.");
     setOpenSnackbar(true);
   };
-
-  const handleRemoveCliente = (index) =>
-    setFormData((prevData) => ({
-      ...prevData,
-      clientes: prevData.clientes.filter((_, i) => i !== index), // Elimina el cliente
-    }));
 
   const handleRemoveTiempo = (index) =>
     setFormData((prevData) => ({
@@ -415,7 +367,7 @@ const OrderForm = () => {
     }
   };
 
-  const handleGoBack = () => navigate("/ots");
+  const handleGoBack = () => navigate("/its");
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
@@ -460,9 +412,9 @@ const OrderForm = () => {
               textAlign: "center",
             }}
           >
-            Formulario Informe de Trabajo (OT)
+            Formulario Informe de Trabajo (IT)
           </Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2.5}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Tecnico"
@@ -498,6 +450,60 @@ const OrderForm = () => {
                 ))}
               </TextField>
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Nombre / Razón Social"
+                type="text"
+                value={currentCliente.cliente.nombre_razon_social}
+                fullWidth
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="RUT"
+                type="text"
+                value={currentCliente.cliente.rut}
+                fullWidth
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Dirección"
+                type="text"
+                value={currentCliente.cliente.direccion}
+                fullWidth
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Correo Electrónico"
+                type="text"
+                value={
+                  currentCliente.cliente.informacionesdepago.correo_electronico
+                }
+                fullWidth
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Teléfono Responsable"
+                type="text"
+                value={
+                  currentCliente.cliente.informacionesdepago
+                    .telefono_responsable
+                }
+                fullWidth
+                disabled
+              />
+            </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
@@ -517,7 +523,7 @@ const OrderForm = () => {
                 <MenuItem value="">Seleccionar</MenuItem>
                 {ot.map((ot) => (
                   <MenuItem key={ot.id_ot} value={ot.id_ot}>
-                    {ot.id_ot}
+                    N°{ot.id_ot}
                   </MenuItem>
                 ))}
               </TextField>
@@ -555,7 +561,7 @@ const OrderForm = () => {
                 }
                 error={!!errors.modelo}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -574,7 +580,7 @@ const OrderForm = () => {
                 }
                 error={!!errors.horometro}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -593,7 +599,7 @@ const OrderForm = () => {
                 }
                 error={!!errors.numero_serie}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -609,20 +615,17 @@ const OrderForm = () => {
                 helperText={errors.numero_motor}
                 InputLabelProps={{
                   shrink: true,
-                }} 
-              >
-              </TextField>
+                }}
+              ></TextField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="km_salida"
                 name="km_salida"
                 value={formData.km_salida}
                 onChange={(e) => handleChange(e, "km_salida")}
                 fullWidth
-                multiline
-                rows={4}
                 required
                 helperText={
                   errors.km_salida ||
@@ -635,15 +638,13 @@ const OrderForm = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="km_retorno"
                 name="km_retorno"
                 value={formData.km_retorno}
                 onChange={(e) => handleChange(e, "km_retorno")}
                 fullWidth
-                multiline
-                rows={4}
                 required
                 helperText={
                   errors.km_retorno ||
@@ -656,7 +657,7 @@ const OrderForm = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="queja_sintoma"
                 name="queja_sintoma"
@@ -670,11 +671,11 @@ const OrderForm = () => {
                 }
                 error={!!errors.queja_sintoma}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="diagnostico"
                 name="diagnostico"
@@ -688,11 +689,11 @@ const OrderForm = () => {
                 }
                 error={!!errors.diagnostico}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="pieza_falla"
                 name="pieza_falla"
@@ -706,11 +707,11 @@ const OrderForm = () => {
                 }
                 error={!!errors.pieza_falla}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="solucion"
                 name="solucion"
@@ -724,11 +725,11 @@ const OrderForm = () => {
                 }
                 error={!!errors.solucion}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="total_hh"
                 name="total_hh"
@@ -742,10 +743,11 @@ const OrderForm = () => {
                 }
                 error={!!errors.total_hh}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
-              <Grid item xs={12}>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="total_km"
                 name="total_km"
@@ -755,15 +757,15 @@ const OrderForm = () => {
                 required
                 helperText={
                   errors.total_km ||
-                  (!formData.total_km  ? "Campó obligatorio" : "")
+                  (!formData.total_km ? "Campó obligatorio" : "")
                 }
                 error={!!errors.total_km}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="insumo"
                 name="insumo"
@@ -772,268 +774,91 @@ const OrderForm = () => {
                 fullWidth
                 required
                 helperText={
-                  errors.insumo ||
-                  (!formData.insumo  ? "Campó obligatorio" : "")
+                  errors.insumo || (!formData.insumo ? "Campó obligatorio" : "")
                 }
                 error={!!errors.insumo}
                 InputLabelProps={{
-                  shrink: true, 
+                  shrink: true,
                 }}
               />
             </Grid>
-
-            <Grid item xs={12}>
+            <Grid item xs={2.4}>
               <TextField
-                label="Insumo Fijo"
-                select
-                value={currentInsumo.id_insumo}
-                onChange={(e) => handleCurrentInsumoChange(e, "id_insumo")}
+                label="dia"
                 fullWidth
+                value={currentTiempo.dia}
+                onChange={(e) => handleCurrentTiempoChange(e, "dia")}
                 InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
+                  shrink: true,
                 }}
-              >
-                <MenuItem value="">Seleccionar</MenuItem>
-                {insumos.map((i) => (
-                  <MenuItem key={i.id_insumo} value={i.id_insumo}>
-                    {i.nombre_insumo}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
             </Grid>
-
-            {/* Campos del insumo */}
-            <Grid item xs={2}>
+            <Grid item xs={2.4}>
               <TextField
-                label="Cantidad"
-                type="number"
-                value={currentInsumo.cantidad_insumo}
-                onChange={(e) =>
-                  handleCurrentInsumoChange(e, "cantidad_insumo")
-                }
+                label="fecha"
                 fullWidth
+                value={currentTiempo.fecha}
+                onChange={(e) => handleCurrentTiempoChange(e, "fecha")}
                 InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
+                  shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2.4}>
               <TextField
-                label="Precio Unitario"
-                type="number"
-                value={currentInsumo.precio_unitario}
+                label="viaje_ida"
+                fullWidth
+                value={currentTiempo.viaje_ida}
+                onChange={(e) => handleCurrentTiempoChange(e, "viaje_ida")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={2.4}>
+              <TextField
+                label="trabajo"
+                fullWidth
+                value={currentTiempo.trabajo}
+                onChange={(e) => handleCurrentTiempoChange(e, "trabajo")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={2.4}>
+              <TextField
+                label="viaje_vuelta"
+                fullWidth
+                value={currentTiempo.viaje_vuelta}
+                onChange={(e) => handleCurrentTiempoChange(e, "viaje_vuelta")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={2.4}>
+              <TextField
+                label="total_hh_viaje"
+                fullWidth
+                value={currentTiempo.total_hh_viaje}
+                onChange={(e) => handleCurrentTiempoChange(e, "total_hh_viaje")}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={2.4}>
+              <TextField
+                label="total_hh_trabajo"
+                fullWidth
+                value={currentTiempo.total_hh_trabajo}
                 onChange={(e) =>
-                  handleCurrentInsumoChange(e, "precio_unitario")
-                }
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Descuento %"
-                type="number"
-                value={currentInsumo.descuento_insumo}
-                onChange={(e) =>
-                  handleCurrentInsumoChange(e, "descuento_insumo")
-                }
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }}
-                inputProps={{ min: 0, max: 99 }}
-              />
-            </Grid>
-
-            <Grid item xs={2}>
-              <TextField
-                label="Recargo"
-                type="number"
-                value={currentInsumo.recargo_insumo}
-                onChange={(e) => handleCurrentInsumoChange(e, "recargo_insumo")}
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="AF/EX"
-                type="text"
-                value={currentInsumo.af_ex_insumo}
-                fullWidth
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Total"
-                value={currentInsumo.precio_total}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Button variant="contained" onClick={handleAddInsumo}>
-                Agregar Insumo
-              </Button>
-            </Grid>
-
-            {/* Tabla para listar los insumos agregados */}
-            <Grid item xs={12}>
-              <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Insumo Fijo</TableCell>
-                      <TableCell>Cantidad</TableCell>
-                      <TableCell>Precio Unitario</TableCell>
-                      <TableCell>Desc. (%)</TableCell>
-                      <TableCell>Rec. ($)</TableCell>
-                      <TableCell>AF/EX</TableCell>
-                      <TableCell>Precio Total</TableCell>
-                      <TableCell>Acciones</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {formData.insumos.map((insumo, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {insumos.find((i) => i.id_insumo === insumo.id_insumo)
-                            ?.nombre_insumo || ""}
-                        </TableCell>
-                        <TableCell>{insumo.cantidad_insumo}</TableCell>
-                        <TableCell>${insumo.precio_unitario}</TableCell>
-                        <TableCell>{insumo.descuento_insumo}%</TableCell>
-                        <TableCell>${insumo.recargo_insumo}</TableCell>
-                        <TableCell>{insumo.af_ex_insumo}</TableCell>
-                        <TableCell>${insumo.precio_total}</TableCell>
-                        <TableCell>
-                          <IconButton
-                            color="error"
-                            onClick={() => handleRemoveInsumo(index)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Insumo"
-                fullWidth
-                value={currentProducto.nombre_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "nombre_producto")
+                  handleCurrentTiempoChange(e, "total_hh_trabajo")
                 }
                 InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Cantidad"
-                type="number"
-                fullWidth
-                value={currentProducto.cantidad_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "cantidad_producto")
-                }
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Unitario"
-                type="number"
-                fullWidth
-                value={currentProducto.precio_unitario}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "precio_unitario")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Descuento (%)"
-                type="number"
-                fullWidth
-                value={currentProducto.descuento_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "descuento_producto")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }}
-                inputProps={{ min: 0, max: 99 }}
-              />
-            </Grid>
-
-            <Grid item xs={2}>
-              <TextField
-                label="Recargo"
-                type="number"
-                fullWidth
-                value={currentProducto.recargo_producto}
-                onChange={(e) =>
-                  handleCurrentProductoChange(e, "recargo_producto")
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="AF/EX"
-                type="text"
-                value={currentProducto.af_ex}
-                fullWidth
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Precio Total"
-                value={currentProducto.precio_total}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -1042,9 +867,9 @@ const OrderForm = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleAddProducto}
+                onClick={handleAddTiempo}
               >
-                Agregar Producto
+                Agregar Control de Tiempo
               </Button>
             </Grid>
             <Grid item xs={12}>
@@ -1052,30 +877,30 @@ const OrderForm = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Insumo</TableCell>
-                      <TableCell>Cantidad</TableCell>
-                      <TableCell>Precio Unitario</TableCell>
-                      <TableCell>Desc. (%)</TableCell>
-                      <TableCell>Rec. ($)</TableCell>
-                      <TableCell>AF/EX</TableCell>
-                      <TableCell>Precio Total</TableCell>
+                      <TableCell>Dia</TableCell>
+                      <TableCell>fecha</TableCell>
+                      <TableCell>viaje_ida</TableCell>
+                      <TableCell>trabajo</TableCell>
+                      <TableCell>viaje_vuelta</TableCell>
+                      <TableCell>total_hh_viaje</TableCell>
+                      <TableCell>total_hh_trabajo</TableCell>
                       <TableCell>Acciones</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {formData.productos.map((producto, index) => (
+                    {formData.control_tiempo.map((tiempo, index) => (
                       <TableRow key={index}>
-                        <TableCell>{producto.nombre_producto}</TableCell>
-                        <TableCell>{producto.cantidad_producto}</TableCell>
-                        <TableCell>${producto.precio_unitario}</TableCell>
-                        <TableCell>{producto.descuento_producto}%</TableCell>
-                        <TableCell>${producto.recargo_producto}</TableCell>
-                        <TableCell>{producto.af_ex_producto}</TableCell>
-                        <TableCell>${producto.precio_total}</TableCell>
+                        <TableCell>{tiempo.dia}</TableCell>
+                        <TableCell>{tiempo.fecha}</TableCell>
+                        <TableCell>${tiempo.viaje_ida}</TableCell>
+                        <TableCell>{tiempo.trabajo}%</TableCell>
+                        <TableCell>${tiempo.viaje_vuelta}</TableCell>
+                        <TableCell>{tiempo.total_hh_viaje}</TableCell>
+                        <TableCell>${tiempo.total_hh_trabajo}</TableCell>
                         <TableCell>
                           <IconButton
                             color="error"
-                            onClick={() => handleRemoveProducto(index)}
+                            onClick={() => handleRemoveTiempo(index)}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -1086,121 +911,7 @@ const OrderForm = () => {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Sub Total"
-                name="sub_total"
-                value={formData.sub_total}
-                fullWidth
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Descuento Global"
-                name="descuento_global"
-                value={formData.descuento_global}
-                onChange={(e) => handleChange(e, "descuento_global")}
-                fullWidth
-                required
-                helperText={
-                  errors.descuento_global ||
-                  (!formData.descuento_global ? "Campo obligatorio" : "")
-                }
-                error={!!errors.descuento_global}
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{ min: 0, max: 99 }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Monto Neto"
-                name="monto_neto"
-                value={formData.monto_neto}
-                fullWidth
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Monto Exento"
-                name="monto_exento"
-                value={formData.monto_exento}
-                fullWidth
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="IVA"
-                name="iva"
-                value={formData.iva}
-                fullWidth
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Total"
-                name="total"
-                value={formData.total}
-                fullWidth
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Comentario"
-                name="comentario"
-                value={formData.comentario}
-                onChange={(e) => handleNameChange(e, "comentario")}
-                fullWidth
-                multiline
-                rows={4}
-                required
-                helperText={
-                  errors.comentario ||
-                  (!formData.comentario ? "Campó obligatorio" : "")
-                }
-                error={!!errors.comentario}
-              />
-            </Grid>
           </Grid>
-
           <Box
             sx={{
               display: "flex",
@@ -1215,7 +926,7 @@ const OrderForm = () => {
               color="primary"
               sx={{ flex: 1 }}
             >
-              Crear OT
+              Crear IT
             </Button>
           </Box>
         </Box>
@@ -1234,4 +945,4 @@ const OrderForm = () => {
   );
 };
 
-export default OrderForm;
+export default ItForm;

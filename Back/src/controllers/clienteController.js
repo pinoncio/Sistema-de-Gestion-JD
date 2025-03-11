@@ -22,6 +22,11 @@ const getClientes = async (req, res) => {
             },
           ],
         },
+        {
+          model: informaciondepago,
+          as: "informacionesdepago",
+          attributes: ["correo_electronico", "telefono_responsable"],
+        },
       ],
     });
 
@@ -35,6 +40,7 @@ const getClientes = async (req, res) => {
     });
   }
 };
+
 
 
 // obtener un cliente por id
@@ -56,6 +62,11 @@ const getCliente = async (req, res) => {
             },
           ],
         },
+        {
+          model: informaciondepago,
+          as: "informacionesdepago",
+          attributes: ["correo_electronico", "telefono_responsable"],
+        },
       ],
     });
 
@@ -74,6 +85,7 @@ const getCliente = async (req, res) => {
     });
   }
 };
+
 
 // crear un nuevo cliente
 const newCliente = async (req, res) => {
