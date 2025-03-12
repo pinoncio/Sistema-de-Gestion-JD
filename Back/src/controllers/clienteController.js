@@ -24,7 +24,7 @@ const getClientes = async (req, res) => {
         },
         {
           model: informaciondepago,
-          as: "informacionesdepago",
+          as: "informacion_de_pago",
           attributes: ["correo_electronico", "telefono_responsable"],
         },
       ],
@@ -64,7 +64,7 @@ const getCliente = async (req, res) => {
         },
         {
           model: informaciondepago,
-          as: "informacionesdepago",
+          as: "informacion_de_pago",
           attributes: ["correo_electronico", "telefono_responsable"],
         },
       ],

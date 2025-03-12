@@ -37,7 +37,7 @@ const informaciondepago = db.define(
   }
 );
 
-cliente.hasOne(informaciondepago, { foreignKey: "id_cliente", as: 'informacionesdepago' });
+cliente.hasOne(informaciondepago, { foreignKey: "id_cliente", as: 'informacion_de_pago' });
 informaciondepago.belongsTo(cliente, { foreignKey: "id_cliente", as: 'cliente' });
 
 

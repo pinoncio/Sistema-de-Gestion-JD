@@ -11,7 +11,7 @@ const it = db.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    Tecnico: { type: DataTypes.STRING(255) },
+    tecnico: { type: DataTypes.STRING(50) },
     id_cliente: {
       type: DataTypes.INTEGER,
       references: {
@@ -26,7 +26,6 @@ const it = db.define(
         key: "id_ot",
       },
     },
-    tecnico: { type: DataTypes.STRING(255)},
     maquina: { type: DataTypes.STRING(255) },
     modelo: { type: DataTypes.STRING(255) },
     horometro: { type: DataTypes.INTEGER },
@@ -37,10 +36,10 @@ const it = db.define(
     queja_sintoma: { type: DataTypes.TEXT },
     diagnostico: { type: DataTypes.TEXT },
     pieza_falla: { type: DataTypes.TEXT },
-    solucion: { type: DataTypes.TEXT},
-    total_hh: { type: DataTypes.STRING(50)},
-    total_km: { type: DataTypes.STRING(50)},
-    insumo: { type: DataTypes.STRING(50)},
+    solucion: { type: DataTypes.TEXT },
+    total_hh: { type: DataTypes.STRING(50) },
+    total_km: { type: DataTypes.STRING(50) },
+    insumo: { type: DataTypes.STRING(50) },
     observacion: { type: DataTypes.TEXT },
   },
   {

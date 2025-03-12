@@ -162,7 +162,7 @@ const getPdfOt = async (req, res) => {
             },
             {
               model: informaciondepago,
-              as: "informacionesdepago",
+              as: "informacion_de_pago",
               attributes: ["telefono_responsable"],
             },
           ],
