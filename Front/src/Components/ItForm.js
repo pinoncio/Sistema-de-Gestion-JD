@@ -29,15 +29,20 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const ItForm = () => {
   const [clientes, setClientes] = useState([]);
-  const [control_tiempo, setTiempos] = useState([]);
+  const [setTiempos] = useState([]);
   const [ot, setOt] = useState([]);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [filteredOt, setFilteredOt] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    nombre: "",
+    apellido: "",
+  };
   const [formData, setFormData] = useState({
     id_cliente: "",
     id_ot: "",
-    tecnico: "",
+    tecnico: `${user.nombre} ${user.apellido}`,
     maquina: "",
     modelo: "",
     horometro: "",
@@ -58,7 +63,6 @@ const ItForm = () => {
   });
 
   const [currentTiempo, setCurrentTiempo] = useState({
-    dia: "",
     fecha: "",
     viaje_ida: "",
     trabajo: "",
@@ -82,6 +86,7 @@ const ItForm = () => {
     fetchClientes();
     fetchTiempos();
     fetchOt();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchClientes = async () => {
@@ -111,11 +116,8 @@ const ItForm = () => {
   const [errors, setErrors] = useState({});
   const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
-
   const handleChange = (e, field) => {
     const { value } = e.target;
-
-    // Validación numérica para campos que lo requieran
     if (!validateNumber(value) && value !== "") {
       setErrors({
         ...errors,
@@ -126,9 +128,7 @@ const ItForm = () => {
 
     if (field === "id_cliente") {
       const selectedCliente = clientes.find((c) => c.id_cliente === value);
-
       if (selectedCliente) {
-        // Aquí es donde accedes a informacion_de_pago correctamente
         setCurrentCliente({
           cliente: {
             nombre_razon_social: selectedCliente.nombre_razon_social || "",
@@ -142,16 +142,15 @@ const ItForm = () => {
             },
           },
         });
+        setFilteredOt(ot.filter((o) => o.id_cliente === value));
       }
     }
-
     setFormData({ ...formData, [field]: value });
     setErrors({ ...errors, [field]: "" });
   };
 
   const handleNameChange = (e, field) => {
     const { value } = e.target;
-
     if (validateName(value) || value === "") {
       setFormData((prev) => ({ ...prev, [field]: value }));
       setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -165,14 +164,16 @@ const ItForm = () => {
 
   const handleAlphanumericChange = (e, field) => {
     const { value } = e.target;
-    if (/^[A-Za-z0-9-]+$/.test(value) || value === "") {
+    const regex = /^[0-9]+([hm]{1})?$/;
+    if (regex.test(value) || value === "") {
       setFormData({ ...formData, [field]: value });
       setErrors({ ...errors, [field]: "" });
-    } else
+    } else {
       setErrors({
         ...errors,
-        [field]: "Solo se permiten letras, números y guiones.",
+        [field]: "Solo se permiten números seguidos de 'h' o 'm'.",
       });
+    }
   };
 
   const handleCreateIt = async (data) => {
@@ -202,9 +203,7 @@ const ItForm = () => {
         control_tiempo: [],
         cliente: [],
       });
-
       setCurrentTiempo({
-        dia: "",
         fecha: "",
         viaje_ida: "",
         trabajo: "",
@@ -212,7 +211,6 @@ const ItForm = () => {
         total_hh_viaje: "",
         total_hh_trabajo: "",
       });
-
       setCurrentCliente({
         cliente: {
           nombre_razon_social: "",
@@ -224,7 +222,6 @@ const ItForm = () => {
           },
         },
       });
-
       setErrors({});
     } catch (error) {
       setErrors({
@@ -238,18 +235,67 @@ const ItForm = () => {
     }
   };
 
+  const handleFechaChange = (e, field) => {
+    const { value } = e.target;
+    const currentDate = new Date().toISOString().split("T")[0];
+    if (value >= currentDate || value === "") {
+      setCurrentTiempo((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "",
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "La fecha no puede ser anterior a hoy.",
+      }));
+    }
+  };
+
   const handleCurrentTiempoChange = (e, field) => {
     const { value } = e.target;
-
-    setCurrentTiempo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    if (field === "fecha") {
+      handleFechaChange(e, field);
+      return; 
+    }
+    const regex = /^[0-9]+(h|m)?$/;
+    if (regex.test(value) || value === "") {
+      setCurrentTiempo((prev) => {
+        const updatedData = { ...prev, [field]: value };
+        if (field === "viaje_ida" || field === "viaje_vuelta") {
+          const viajeIda = updatedData.viaje_ida
+            ? parseInt(updatedData.viaje_ida)
+            : 0;
+          const viajeVuelta = updatedData.viaje_vuelta
+            ? parseInt(updatedData.viaje_vuelta)
+            : 0;
+          updatedData.total_hh_viaje = `${viajeIda + viajeVuelta}h`;
+        }
+        if (field === "trabajo") {
+          const trabajo = updatedData.trabajo
+            ? parseInt(updatedData.trabajo)
+            : 0;
+          updatedData.total_hh_trabajo = `${trabajo}h`; 
+        }
+        return updatedData;
+      });
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "",
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "Solo se permiten números seguidos de 'h' o 'm'.",
+      }));
+    }
   };
 
   const handleAddTiempo = () => {
     if (
-      !currentTiempo.dia ||
       !currentTiempo.fecha ||
       !currentTiempo.viaje_ida ||
       !currentTiempo.trabajo ||
@@ -265,7 +311,6 @@ const ItForm = () => {
     }));
 
     setCurrentTiempo({
-      dia: "",
       fecha: "",
       viaje_ida: "",
       trabajo: "",
@@ -273,7 +318,6 @@ const ItForm = () => {
       total_hh_viaje: "",
       total_hh_trabajo: "",
     });
-
     setSnackbarMessage("Control de tiempo agregado correctamente.");
     setOpenSnackbar(true);
   };
@@ -281,102 +325,90 @@ const ItForm = () => {
   const handleRemoveTiempo = (index) =>
     setFormData((prevData) => ({
       ...prevData,
-      control_tiempo: prevData.control_tiempo.filter((_, i) => i !== index), // Elimina el control de tiempo
+      control_tiempo: prevData.control_tiempo.filter((_, i) => i !== index), 
     }));
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      // Verifica que haya al menos un cliente y un control de tiempo
-      if (!formData.id_cliente) {
-        setSnackbarMessage("Debe seleccionar un cliente.");
-        setOpenSnackbar(true);
-        return;
-      }
-    
-      if (formData.control_tiempo.length === 0) {
-        setSnackbarMessage("Debe agregar al menos un control de tiempo.");
-        setOpenSnackbar(true);
-        return;
-      }
-    
-      // Encuentra los datos completos del cliente seleccionado
-      const clienteSeleccionado = clientes.find(
-        (c) => c.id_cliente === formData.id_cliente
-      );
-    
-      if (!clienteSeleccionado) {
-        setSnackbarMessage("Cliente no válido.");
-        setOpenSnackbar(true);
-        return;
-      }
-    
-      // Estructura final del cliente según lo esperado en handleCreateIt
-      const clienteEstructurado = {
-        cliente: {
-          nombre_razon_social: clienteSeleccionado.nombre_razon_social,
-          rut: clienteSeleccionado.rut,
-          direccion: clienteSeleccionado.direccion,
-          informacion_de_pago: {
-            correo_electronico: clienteSeleccionado.correo_electronico || "",
-            telefono_responsable: clienteSeleccionado.telefono_responsable || "",
-          },
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.id_cliente) {
+      setSnackbarMessage("Debe seleccionar un cliente.");
+      setOpenSnackbar(true);
+      return;
+    }
+    if (formData.control_tiempo.length === 0) {
+      setSnackbarMessage("Debe agregar al menos un control de tiempo.");
+      setOpenSnackbar(true);
+      return;
+    }
+    const clienteSeleccionado = clientes.find(
+      (c) => c.id_cliente === formData.id_cliente
+    );
+
+    if (!clienteSeleccionado) {
+      setSnackbarMessage("Cliente no válido.");
+      setOpenSnackbar(true);
+      return;
+    }
+    const clienteEstructurado = {
+      cliente: {
+        nombre_razon_social: clienteSeleccionado.nombre_razon_social,
+        rut: clienteSeleccionado.rut,
+        direccion: clienteSeleccionado.direccion,
+        informacion_de_pago: {
+          correo_electronico: clienteSeleccionado.correo_electronico || "",
+          telefono_responsable: clienteSeleccionado.telefono_responsable || "",
         },
-      };
-    
-      // Datos finales a enviar
-      const dataToSubmit = {
-        ...formData,
-        cliente: clienteEstructurado, 
-        control_tiempo: currentTiempo.dia
-          ? [...formData.control_tiempo, currentTiempo]
-          : formData.control_tiempo,
-      };
-    
-      // Imprimir los datos a enviar
-      console.log("Datos a enviar:", dataToSubmit);
-    
-      try {
-        await handleCreateIt(dataToSubmit);
-        setFormData({
-          id_cliente: "",
-          id_ot: "",
-          tecnico: "",
-          maquina: "",
-          modelo: "",
-          horometro: "",
-          numero_serie: "",
-          numero_motor: "",
-          km_salida: "",
-          km_retorno: "",
-          queja_sintoma: "",
-          diagnostico: "",
-          pieza_falla: "",
-          solucion: "",
-          total_hh: "",
-          total_km: "",
-          insumo: "",
-          observacion: "",
-          control_tiempo: [],
-          clientes: [],
-        });
-        setSnackbarMessage("IT creada correctamente.");
-        setOpenSnackbar(true);
-        setTimeout(() => {
-          navigate("/its");
-        }, 2000);
-      } catch (error) {
-        console.error("Error al crear/actualizar la IT:", error);
-        setErrors({
-          ...errors,
-          generales:
-            error.response?.data?.message ||
-            "Ha ocurrido un error al crear la IT. Intente nuevamente.",
-        });
-        setSnackbarMessage("Error al crear la IT.");
-        setOpenSnackbar(true);
-      }
+      },
     };
-    
+    const dataToSubmit = {
+      ...formData,
+      cliente: clienteEstructurado,
+      control_tiempo: currentTiempo.fecha
+        ? [...formData.control_tiempo, currentTiempo]
+        : formData.control_tiempo,
+    };
+    console.log("Datos a enviar:", dataToSubmit);
+    try {
+      await handleCreateIt(dataToSubmit);
+      setFormData({
+        id_cliente: "",
+        id_ot: "",
+        tecnico: "",
+        maquina: "",
+        modelo: "",
+        horometro: "",
+        numero_serie: "",
+        numero_motor: "",
+        km_salida: "",
+        km_retorno: "",
+        queja_sintoma: "",
+        diagnostico: "",
+        pieza_falla: "",
+        solucion: "",
+        total_hh: "",
+        total_km: "",
+        insumo: "",
+        observacion: "",
+        control_tiempo: [],
+        clientes: [],
+      });
+      setSnackbarMessage("IT creada correctamente.");
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        navigate("/its");
+      }, 2000);
+    } catch (error) {
+      console.error("Error al crear/actualizar la IT:", error);
+      setErrors({
+        ...errors,
+        generales:
+          error.response?.data?.message ||
+          "Ha ocurrido un error al crear la IT. Intente nuevamente.",
+      });
+      setSnackbarMessage("Error al crear la IT.");
+      setOpenSnackbar(true);
+    }
+  };
 
   const handleGoBack = () => navigate("/its");
 
@@ -425,14 +457,20 @@ const ItForm = () => {
           >
             Formulario Informe de Trabajo (IT)
           </Typography>
+          <Grid item xs={12} sx={{ textAlign: "center" }}>
+            <Divider sx={{ marginY: 2 }} />
+            <h2>Servicio de Atención</h2>
+          </Grid>
           <Grid container spacing={2.5}>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Tecnico"
+                label="Técnico"
                 name="tecnico"
                 value={formData.tecnico}
                 onChange={(e) => handleNameChange(e, "tecnico")}
                 fullWidth
+                error={!!errors.tecnico}
+                helperText={errors.tecnico}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -470,7 +508,6 @@ const ItForm = () => {
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="RUT"
@@ -483,7 +520,6 @@ const ItForm = () => {
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Dirección"
@@ -496,7 +532,6 @@ const ItForm = () => {
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Correo Electrónico"
@@ -511,7 +546,6 @@ const ItForm = () => {
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Teléfono Responsable"
@@ -527,10 +561,9 @@ const ItForm = () => {
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Orden de Trabajo (id_ot)"
+                label="Orden de Trabajo"
                 select
                 value={formData.id_ot}
                 onChange={(e) => handleChange(e, "id_ot")}
@@ -541,14 +574,13 @@ const ItForm = () => {
                 }}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
-                {ot.map((ot) => (
+                {filteredOt.map((ot) => (
                   <MenuItem key={ot.id_ot} value={ot.id_ot}>
                     N°{ot.id_ot}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Maquina"
@@ -556,25 +588,27 @@ const ItForm = () => {
                 value={formData.maquina}
                 onChange={(e) => handleNameChange(e, "maquina")}
                 fullWidth
+                error={!!errors.maquina}
+                helperText={errors.maquina}
                 InputLabelProps={{
                   shrink: true,
                 }}
               ></TextField>
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Modelo"
                 name="modelo"
                 value={formData.modelo}
-                onChange={(e) => handleNameChange(e, "modelo")}
+                onChange={(e) => handleAlphanumericChange(e, "modelo")}
                 fullWidth
+                error={!!errors.modelo}
+                helperText={errors.modelo}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Horometro"
@@ -582,12 +616,13 @@ const ItForm = () => {
                 value={formData.horometro}
                 onChange={(e) => handleChange(e, "horometro")}
                 fullWidth
+                error={!!errors.horometro}
+                helperText={errors.horometro}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Numero_serie"
@@ -595,6 +630,8 @@ const ItForm = () => {
                 value={formData.numero_serie}
                 onChange={(e) => handleAlphanumericChange(e, "numero_serie")}
                 fullWidth
+                error={!!errors.numero_serie}
+                helperText={errors.numero_serie}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -607,12 +644,13 @@ const ItForm = () => {
                 value={formData.numero_motor}
                 onChange={(e) => handleAlphanumericChange(e, "numero_motor")}
                 fullWidth
+                error={!!errors.numero_motor}
+                helperText={errors.numero_motor}
                 InputLabelProps={{
                   shrink: true,
                 }}
               ></TextField>
             </Grid>
-
             <Grid item xs={12} sm={3}>
               <TextField
                 label="km_salida"
@@ -620,12 +658,13 @@ const ItForm = () => {
                 value={formData.km_salida}
                 onChange={(e) => handleChange(e, "km_salida")}
                 fullWidth
+                error={!!errors.km_salida}
+                helperText={errors.km_salida}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-
             <Grid item xs={12} sm={3}>
               <TextField
                 label="km_retorno"
@@ -633,13 +672,16 @@ const ItForm = () => {
                 value={formData.km_retorno}
                 onChange={(e) => handleChange(e, "km_retorno")}
                 fullWidth
+                error={!!errors.km_retorno}
+                helperText={errors.km_retorno}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ textAlign: "center" }}>
               <Divider sx={{ marginY: 2 }} />
+              <h2>Informe Técnico</h2>
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
@@ -650,6 +692,8 @@ const ItForm = () => {
                 fullWidth
                 multiline
                 rows={3}
+                error={!!errors.queja_sintoma}
+                helperText={errors.queja_sintoma}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -664,6 +708,8 @@ const ItForm = () => {
                 fullWidth
                 multiline
                 rows={3}
+                error={!!errors.diagnostico}
+                helperText={errors.diagnostico}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -678,6 +724,8 @@ const ItForm = () => {
                 fullWidth
                 multiline
                 rows={3}
+                error={!!errors.pieza_falla}
+                helperText={errors.pieza_falla}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -692,21 +740,22 @@ const ItForm = () => {
                 fullWidth
                 multiline
                 rows={3}
+                error={!!errors.solucion}
+                helperText={errors.solucion}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Divider sx={{ marginY: 2 }} />
-            </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="total_hh"
+                label="total hh"
                 name="total_hh"
                 value={formData.total_hh}
                 onChange={(e) => handleAlphanumericChange(e, "total_hh")}
                 fullWidth
+                error={!!errors.total_hh}
+                helperText={errors.total_hh}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -714,11 +763,13 @@ const ItForm = () => {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="total_km"
+                label="total km"
                 name="total_km"
                 value={formData.total_km}
                 onChange={(e) => handleAlphanumericChange(e, "total_km")}
                 fullWidth
+                error={!!errors.total_km}
+                helperText={errors.total_km}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -731,84 +782,87 @@ const ItForm = () => {
                 value={formData.insumo}
                 onChange={(e) => handleNameChange(e, "insumo")}
                 fullWidth
+                error={!!errors.insumo}
+                helperText={errors.insumo}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ textAlign: "center" }}>
               <Divider sx={{ marginY: 2 }} />
+              <h2>Control Tiempo</h2>
             </Grid>
-            <Grid item xs={2.4}>
-              <TextField
-                label="dia"
-                fullWidth
-                value={currentTiempo.dia}
-                onChange={(e) => handleCurrentTiempoChange(e, "dia")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="Fecha"
                 type="date"
                 fullWidth
                 value={currentTiempo.fecha}
                 onChange={(e) => handleCurrentTiempoChange(e, "fecha")}
+                error={!!errors.fecha}
+                helperText={errors.fecha}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                inputProps={{
+                  min: new Date().toISOString().split("T")[0],
+                }}
               />
             </Grid>
-
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="viaje_ida"
                 fullWidth
                 value={currentTiempo.viaje_ida}
                 onChange={(e) => handleCurrentTiempoChange(e, "viaje_ida")}
+                error={!!errors.viaje_ida}
+                helperText={errors.viaje_ida}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="trabajo"
                 fullWidth
                 value={currentTiempo.trabajo}
                 onChange={(e) => handleCurrentTiempoChange(e, "trabajo")}
+                error={!!errors.trabajo}
+                helperText={errors.trabajo}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="viaje_vuelta"
                 fullWidth
                 value={currentTiempo.viaje_vuelta}
                 onChange={(e) => handleCurrentTiempoChange(e, "viaje_vuelta")}
+                error={!!errors.viaje_vuelta}
+                helperText={errors.viaje_vuelta}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="total_hh_viaje"
                 fullWidth
                 value={currentTiempo.total_hh_viaje}
-                onChange={(e) => handleCurrentTiempoChange(e, "total_hh_viaje")}
+                onChange={(e) => handleFechaChange(e, "total_hh_viaje")}
+                error={!!errors.total_hh_viaje}
+                helperText={errors.total_hh_viaje}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={2.4}>
+            <Grid item xs={2}>
               <TextField
                 label="total_hh_trabajo"
                 fullWidth
@@ -816,12 +870,13 @@ const ItForm = () => {
                 onChange={(e) =>
                   handleCurrentTiempoChange(e, "total_hh_trabajo")
                 }
+                error={!!errors.total_hh_trabajo}
+                helperText={errors.total_hh_trabajo}
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-
             <Grid item xs={12}>
               <Button
                 variant="contained"
@@ -836,20 +891,18 @@ const ItForm = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Dia</TableCell>
-                      <TableCell>fecha</TableCell>
-                      <TableCell>viaje_ida</TableCell>
-                      <TableCell>trabajo</TableCell>
-                      <TableCell>viaje_vuelta</TableCell>
-                      <TableCell>total_hh_viaje</TableCell>
-                      <TableCell>total_hh_trabajo</TableCell>
+                      <TableCell>Fecha</TableCell>
+                      <TableCell>Viaje ida</TableCell>
+                      <TableCell>Trabajo</TableCell>
+                      <TableCell>Viaje vuelta</TableCell>
+                      <TableCell>Total hh viaje</TableCell>
+                      <TableCell>Total hh trabajo</TableCell>
                       <TableCell>Acciones</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {formData.control_tiempo.map((tiempo, index) => (
                       <TableRow key={index}>
-                        <TableCell>{tiempo.dia}</TableCell>
                         <TableCell>{tiempo.fecha}</TableCell>
                         <TableCell>{tiempo.viaje_ida}</TableCell>
                         <TableCell>{tiempo.trabajo}</TableCell>

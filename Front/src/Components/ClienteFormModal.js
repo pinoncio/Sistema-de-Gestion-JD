@@ -645,6 +645,9 @@ const ClienteFormModal = ({
                   margin="normal"
                   helperText={errors.nombre_responsable}
                   error={!!errors.nombre_responsable}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
                 <TextField
                   label="Correo Electrónico"

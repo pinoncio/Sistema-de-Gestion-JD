@@ -104,7 +104,12 @@ const LoginPage = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem(
         "user",
-        JSON.stringify({ idUsuario: data.id_usuario, rol: data.rol })
+        JSON.stringify({
+          idUsuario: data.id_usuario,
+          rol: data.rol,
+          nombre: data.nombre_usuario, // Agregado
+          apellido: data.apellido_usuario, // Agregado
+        })
       );
 
       console.log(
@@ -114,7 +119,7 @@ const LoginPage = () => {
 
       // Redirige según el rol del usuario
       if (data.rol === 1) {
-        navigate("/admin"); // Verifica que la ruta /admin esté configurada correctamente
+        navigate("/admin");
       } else if (data.rol === 2) {
         navigate("/user");
       } else {

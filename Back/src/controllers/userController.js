@@ -129,6 +129,8 @@ const loginUser = async (req, res) => {
       token,
       rol: user_role,
       id_usuario: user_id,
+      nombre_usuario: user.nombre_usuario, // Agregado
+      apellido_usuario: user.apellido_usuario, // Agregado
     });
   } catch (error) {
     console.error("Error en el proceso de login:", error);
@@ -137,6 +139,7 @@ const loginUser = async (req, res) => {
     });
   }
 };
+
 
 const updateUsuario = async (req, res) => {
   const { id_usuario } = req.params;

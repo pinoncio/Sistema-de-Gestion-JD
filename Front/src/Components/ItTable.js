@@ -107,7 +107,7 @@ const ItTable = ({ informes, onDelete }) => {
               {informe.control_tiempo && informe.control_tiempo.length > 0 ? (
                 informe.control_tiempo.map((control, idx) => (
                   <div key={idx}>
-                    {control.dia}: {control.fecha}
+                    {control.fecha}
                   </div>
                 ))
               ) : (

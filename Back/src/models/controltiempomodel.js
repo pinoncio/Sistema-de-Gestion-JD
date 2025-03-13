@@ -17,7 +17,6 @@ const controltiempo = db.define(
         key: "id_it",
       },
     },
-    dia: { type: DataTypes.STRING(20) },
     fecha: { type: DataTypes.DATEONLY },
     viaje_ida: { type: DataTypes.STRING(10) },
     trabajo: { type: DataTypes.STRING(10) },
