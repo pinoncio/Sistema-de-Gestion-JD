@@ -30,8 +30,7 @@ const controltiempo = db.define(
   }
 );
 
-// Definir relación con InformeTrabajo
-controltiempo.belongsTo(it, { foreignKey: "id_it", as:"informe_trabajo" });
-it.hasMany(controltiempo, { foreignKey: "id_it", as:"control_tiempo" });
+controltiempo.belongsTo(it, { foreignKey: "id_it", as: "informe_trabajo" });
+it.hasMany(controltiempo, { foreignKey: "id_it", as: "control_tiempo" });
 
 module.exports = { controltiempo };

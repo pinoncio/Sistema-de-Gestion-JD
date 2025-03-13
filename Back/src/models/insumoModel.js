@@ -7,8 +7,8 @@ const insumo = db.define(
   {
     id_insumo: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
+      primaryKey: true,
+      autoIncrement: true,
     },
     tipo_insumo: { type: DataTypes.STRING },
     nombre_insumo: { type: DataTypes.STRING, unique: true },
@@ -19,7 +19,7 @@ const insumo = db.define(
     stock_disponible: { type: DataTypes.INTEGER },
     precio_venta: { type: DataTypes.FLOAT },
     precio_neto: { type: DataTypes.FLOAT },
-    estado_insumo: { type: DataTypes.BOOLEAN, defaultValue: true }, // Corregido: 'defaultValue' en lugar de 'defaultvalue'
+    estado_insumo: { type: DataTypes.BOOLEAN, defaultValue: true },
     id_categoria: {
       type: DataTypes.INTEGER,
       references: {
@@ -29,13 +29,12 @@ const insumo = db.define(
     },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-// Relación con categoria
-insumo.belongsTo(categoria, { foreignKey: "id_categoria" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
-categoria.hasMany(insumo, { foreignKey: "id_categoria" }); // Corregido: 'foreignKey' en lugar de 'foreignkey'
+insumo.belongsTo(categoria, { foreignKey: "id_categoria" });
+categoria.hasMany(insumo, { foreignKey: "id_categoria" });
 
 module.exports = { insumo };

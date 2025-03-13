@@ -137,48 +137,44 @@ const newInformeTrabajo = async (req, res) => {
       id_cliente,
       id_ot,
       tecnico: tecnico || null,
-      maquina: maquina || null, 
-      modelo: modelo || null, 
-      horometro: horometro || null, 
+      maquina: maquina || null,
+      modelo: modelo || null,
+      horometro: horometro || null,
       numero_serie: numero_serie || null,
-      numero_motor: numero_motor || null, 
-      km_salida: km_salida || null, 
-      km_retorno: km_retorno || null, 
-      queja_sintoma: queja_sintoma || null, 
-      diagnostico: diagnostico || null, 
-      pieza_falla: pieza_falla || null, 
+      numero_motor: numero_motor || null,
+      km_salida: km_salida || null,
+      km_retorno: km_retorno || null,
+      queja_sintoma: queja_sintoma || null,
+      diagnostico: diagnostico || null,
+      pieza_falla: pieza_falla || null,
       solucion: solucion || null,
-      total_hh: total_hh || null, 
-      total_km: total_km || null, 
-      insumo: insumo || null, 
-      observacion: observacion || null, 
+      total_hh: total_hh || null,
+      total_km: total_km || null,
+      insumo: insumo || null,
+      observacion: observacion || null,
     });
-
 
     const controlTiempoData = control_tiempo.map((control) => ({
       id_it: nuevaIt.id_it,
-      fecha: control.fecha || null, 
-      viaje_ida: control.viaje_ida || null, 
-      trabajo: control.trabajo || null, 
-      viaje_vuelta: control.viaje_vuelta || null, 
-      total_hh_viaje: control.total_hh_viaje || null, 
-      total_hh_trabajo: control.total_hh_trabajo || null, 
+      fecha: control.fecha || null,
+      viaje_ida: control.viaje_ida || null,
+      trabajo: control.trabajo || null,
+      viaje_vuelta: control.viaje_vuelta || null,
+      total_hh_viaje: control.total_hh_viaje || null,
+      total_hh_trabajo: control.total_hh_trabajo || null,
     }));
 
     await controltiempo.bulkCreate(controlTiempoData);
 
-
     let clienteCreado = await cliente.findOne({ where: { id_cliente } });
 
     if (!clienteCreado) {
-
       clienteCreado = await cliente.create({
-        nombre_razon_social: clienteData.nombre_razon_social || null, 
+        nombre_razon_social: clienteData.nombre_razon_social || null,
         rut: clienteData.rut || null,
-        direccion: clienteData.direccion || null, 
+        direccion: clienteData.direccion || null,
       });
     }
-
 
     if (clienteData && clienteData.informacion_de_pago) {
       const { correo_electronico, telefono_responsable } =
@@ -191,8 +187,8 @@ const newInformeTrabajo = async (req, res) => {
 
       await informaciondepago.create({
         id_cliente: clienteCreado.id_cliente,
-        correo_electronico: correo_electronico || null, 
-        telefono_responsable: telefono_responsable || null, 
+        correo_electronico: correo_electronico || null,
+        telefono_responsable: telefono_responsable || null,
       });
     } else {
       console.log("No se encontró información de pago para el cliente.");
@@ -249,40 +245,38 @@ const updateInformeTrabajo = async (req, res) => {
       id_cliente,
       id_ot,
       tecnico: tecnico || null,
-      maquina: maquina || null, 
+      maquina: maquina || null,
       modelo: modelo || null,
-      horometro: horometro || null, 
-      numero_serie: numero_serie || null, 
-      numero_motor: numero_motor || null, 
-      km_salida: km_salida || null, 
-      km_retorno: km_retorno || null, 
-      queja_sintoma: queja_sintoma || null, 
-      diagnostico: diagnostico || null, 
-      pieza_falla: pieza_falla || null, 
+      horometro: horometro || null,
+      numero_serie: numero_serie || null,
+      numero_motor: numero_motor || null,
+      km_salida: km_salida || null,
+      km_retorno: km_retorno || null,
+      queja_sintoma: queja_sintoma || null,
+      diagnostico: diagnostico || null,
+      pieza_falla: pieza_falla || null,
       solucion: solucion || null,
-      total_hh: total_hh || null, 
-      total_km: total_km || null, 
-      insumo: insumo || null, 
-      observacion: observacion || null, 
+      total_hh: total_hh || null,
+      total_km: total_km || null,
+      insumo: insumo || null,
+      observacion: observacion || null,
     });
-
 
     if (control_tiempo && control_tiempo.length > 0) {
       await controltiempo.destroy({ where: { id_it } });
 
       const controlTiempoData = control_tiempo.map((control) => ({
         id_it: informeExistente.id_it,
-        fecha: control.fecha || null, 
-        viaje_ida: control.viaje_ida || null, 
-        trabajo: control.trabajo || null, 
-        viaje_vuelta: control.viaje_vuelta || null, 
-        total_hh_viaje: control.total_hh_viaje || null, 
-        total_hh_trabajo: control.total_hh_trabajo || null, 
+        fecha: control.fecha || null,
+        viaje_ida: control.viaje_ida || null,
+        trabajo: control.trabajo || null,
+        viaje_vuelta: control.viaje_vuelta || null,
+        total_hh_viaje: control.total_hh_viaje || null,
+        total_hh_trabajo: control.total_hh_trabajo || null,
       }));
 
       await controltiempo.bulkCreate(controlTiempoData);
     }
-
 
     let clienteExistente = await cliente.findOne({ where: { id_cliente } });
 
@@ -292,34 +286,30 @@ const updateInformeTrabajo = async (req, res) => {
       });
     }
 
-
     await clienteExistente.update({
-      nombre_razon_social: clienteData.nombre_razon_social || null, 
-      rut: clienteData.rut || null, 
-      direccion: clienteData.direccion || null, 
+      nombre_razon_social: clienteData.nombre_razon_social || null,
+      rut: clienteData.rut || null,
+      direccion: clienteData.direccion || null,
     });
-
 
     const informacionPagoExistente = await informaciondepago.findOne({
       where: { id_cliente },
     });
 
     if (informacionPagoExistente) {
-
       await informacionPagoExistente.update({
         correo_electronico:
-          clienteData.informacion_de_pago.correo_electronico || null, 
+          clienteData.informacion_de_pago.correo_electronico || null,
         telefono_responsable:
           clienteData.informacion_de_pago.telefono_responsable || null,
       });
     } else {
-
       await informaciondepago.create({
         id_cliente: clienteExistente.id_cliente,
         correo_electronico:
-          clienteData.informacion_de_pago.correo_electronico || null, 
+          clienteData.informacion_de_pago.correo_electronico || null,
         telefono_responsable:
-          clienteData.informacion_de_pago.telefono_responsable || null, 
+          clienteData.informacion_de_pago.telefono_responsable || null,
       });
     }
 

@@ -14,7 +14,7 @@ const categoria = dbconnection.define(
     },
   },
   {
-    freezeTableName: true, // 'freezeTableName' debe estar en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );

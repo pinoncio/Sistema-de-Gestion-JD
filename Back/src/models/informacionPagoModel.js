@@ -7,8 +7,8 @@ const informaciondepago = db.define(
   {
     id_informacion: {
       type: DataTypes.INTEGER,
-      primaryKey: true, 
-      autoIncrement: true, 
+      primaryKey: true,
+      autoIncrement: true,
     },
     id_cliente: {
       type: DataTypes.INTEGER,
@@ -16,19 +16,19 @@ const informaciondepago = db.define(
         model: cliente,
         key: "id_cliente",
       },
-      allowNull: false, 
+      allowNull: false,
     },
-    nombre_responsable: { 
+    nombre_responsable: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
-    correo_electronico: { 
+    correo_electronico: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
-    telefono_responsable: { 
+    telefono_responsable: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
   },
   {
@@ -37,8 +37,13 @@ const informaciondepago = db.define(
   }
 );
 
-cliente.hasOne(informaciondepago, { foreignKey: "id_cliente", as: 'informacion_de_pago' });
-informaciondepago.belongsTo(cliente, { foreignKey: "id_cliente", as: 'cliente' });
-
+cliente.hasOne(informaciondepago, {
+  foreignKey: "id_cliente",
+  as: "informacion_de_pago",
+});
+informaciondepago.belongsTo(cliente, {
+  foreignKey: "id_cliente",
+  as: "cliente",
+});
 
 module.exports = { informaciondepago };

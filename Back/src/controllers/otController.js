@@ -8,7 +8,6 @@ const { metodopago } = require("../models/metodopagomodel");
 const { contactocomercial } = require("../models/contactocomercialmodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
 
-// Obtener todas las órdenes de trabajo
 const getOts = async (req, res) => {
   try {
     const ots = await ot.findAll({
@@ -36,7 +35,7 @@ const getOts = async (req, res) => {
           ],
         },
         {
-          model: producto, 
+          model: producto,
           as: "productos",
           attributes: [
             "nombre_producto",
@@ -60,7 +59,6 @@ const getOts = async (req, res) => {
     });
   }
 };
-
 
 const getOt = async (req, res) => {
   const { id_ot } = req.params;
@@ -94,7 +92,7 @@ const getOt = async (req, res) => {
         },
         {
           model: producto,
-          as: "productos", 
+          as: "productos",
           attributes: [
             "nombre_producto",
             "cantidad_producto",
@@ -145,7 +143,7 @@ const getPdfOt = async (req, res) => {
           include: [
             {
               model: clientemetodopago,
-              as: "clientemetodospago", // Correcto
+              as: "clientemetodospago",
               attributes: ["id_metodo_pago"],
               include: [
                 {
@@ -204,14 +202,11 @@ const getPdfOt = async (req, res) => {
       ],
     });
 
-    // Si no se encuentra la OT, retornar un error 404
     if (!otData) {
       return res.status(404).json({
         msg: "Orden de trabajo no encontrada.",
       });
     }
-
-    // Devolver los datos obtenidos en formato JSON
     res.json(otData);
   } catch (error) {
     console.error("Error al obtener la orden de trabajo:", error);
@@ -221,7 +216,6 @@ const getPdfOt = async (req, res) => {
     });
   }
 };
-
 
 const newOt = async (req, res) => {
   const {
@@ -287,7 +281,7 @@ const newOt = async (req, res) => {
     const productosData = productos.map((producto) => ({
       id_ot: nuevaOt.id_ot,
       nombre_producto: producto.nombre_producto,
-      cantidad_producto: producto.cantidad_producto, 
+      cantidad_producto: producto.cantidad_producto,
       precio_unitario: producto.precio_unitario,
       descuento_producto: producto.descuento_producto,
       recargo_producto: producto.recargo_producto,
@@ -302,7 +296,6 @@ const newOt = async (req, res) => {
         where: { id_insumo: insumoData.id_insumo },
       });
 
-
       if (
         !insumoEncontrado ||
         insumoEncontrado.cantidad < insumoData.cantidad_insumo
@@ -316,11 +309,10 @@ const newOt = async (req, res) => {
         });
       }
 
-
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
         stock_disponible:
-          insumoEncontrado.cantidad - insumoData.cantidad_insumo, 
+          insumoEncontrado.cantidad - insumoData.cantidad_insumo,
       });
 
       await otinsumo.create({
@@ -351,7 +343,6 @@ const newOt = async (req, res) => {
     });
   }
 };
-
 
 const updateOt = async (req, res) => {
   const { id_ot } = req.params;
@@ -387,29 +378,24 @@ const updateOt = async (req, res) => {
       });
     }
 
-
     const otInsumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
 
     for (const otInsumoAntiguo of otInsumosAntiguos) {
-
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: otInsumoAntiguo.id_insumo },
       });
 
       if (insumoEncontrado) {
-
         await insumoEncontrado.update({
           cantidad: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
           stock_disponible:
-            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo, 
+            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
         });
       }
     }
 
-
     await producto.destroy({ where: { id_ot } });
     await otinsumo.destroy({ where: { id_ot } });
-
 
     await otData.update({
       id_cliente,
@@ -447,11 +433,9 @@ const updateOt = async (req, res) => {
     await producto.bulkCreate(productosData);
 
     for (const otInsumoData of ot_insumo) {
-
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: otInsumoData.id_insumo },
       });
-
 
       if (
         !insumoEncontrado ||
@@ -462,13 +446,11 @@ const updateOt = async (req, res) => {
         });
       }
 
-
       await insumoEncontrado.update({
         cantidad: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
         stock_disponible:
           insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
       });
-
 
       await otinsumo.create({
         id_ot,
@@ -492,7 +474,6 @@ const updateOt = async (req, res) => {
   }
 };
 
-
 const deleteOt = async (req, res) => {
   const { id_ot } = req.params;
 
@@ -503,7 +484,6 @@ const deleteOt = async (req, res) => {
         msg: "No se encontró ninguna orden de trabajo para eliminar.",
       });
     }
-
 
     await producto.destroy({ where: { id_ot } });
     await otinsumo.destroy({ where: { id_ot } });

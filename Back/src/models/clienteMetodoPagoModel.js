@@ -9,32 +9,42 @@ const clientemetodopago = db.define(
     id_cliente: {
       type: DataTypes.INTEGER,
       references: {
-        model: cliente, 
+        model: cliente,
         key: "id_cliente",
       },
-      allowNull: false, 
+      allowNull: false,
     },
     id_metodo_pago: {
       type: DataTypes.INTEGER,
       references: {
-        model: metodopago, 
+        model: metodopago,
         key: "id_metodo_pago",
       },
-      allowNull: false, 
+      allowNull: false,
     },
   },
   {
-    freezeTableName: true, 
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-// Relación entre cliente y clientemetodopago
-cliente.hasMany(clientemetodopago, { foreignKey: "id_cliente", as: 'clientemetodospago' }); 
-clientemetodopago.belongsTo(cliente, { foreignKey: "id_cliente", as: 'cliente' }); 
+cliente.hasMany(clientemetodopago, {
+  foreignKey: "id_cliente",
+  as: "clientemetodospago",
+});
+clientemetodopago.belongsTo(cliente, {
+  foreignKey: "id_cliente",
+  as: "cliente",
+});
 
-// Relación entre metodopago y clientemetodopago
-metodopago.hasMany(clientemetodopago, { foreignKey: "id_metodo_pago", as: 'metodospago' });
-clientemetodopago.belongsTo(metodopago, { foreignKey: "id_metodo_pago", as: 'metodopago' }); 
+metodopago.hasMany(clientemetodopago, {
+  foreignKey: "id_metodo_pago",
+  as: "metodospago",
+});
+clientemetodopago.belongsTo(metodopago, {
+  foreignKey: "id_metodo_pago",
+  as: "metodopago",
+});
 
 module.exports = { clientemetodopago };

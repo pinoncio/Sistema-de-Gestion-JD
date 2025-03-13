@@ -1,15 +1,15 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
-const { ot } = require("./otmodel"); // importa el modelo ot
-const { insumo } = require("./insumomodel"); // importa el modelo insumo
+const { ot } = require("./otmodel");
+const { insumo } = require("./insumomodel");
 
 const otinsumo = db.define(
   "ot_insumo",
   {
     id_ot: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      allowNull: true, // Corregido: 'allowNull' en lugar de 'allownull'
+      primaryKey: true,
+      allowNull: true,
       references: {
         model: ot,
         key: "id_ot",
@@ -17,8 +17,8 @@ const otinsumo = db.define(
     },
     id_insumo: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
+      primaryKey: true,
+      allowNull: false,
       references: {
         model: insumo,
         key: "id_insumo",
@@ -26,7 +26,7 @@ const otinsumo = db.define(
     },
     cantidad_insumo: {
       type: DataTypes.INTEGER,
-      allowNull: false, // Corregido: 'allowNull' en lugar de 'allownull'
+      allowNull: false,
     },
     precio_unitario: {
       type: DataTypes.FLOAT,
@@ -45,33 +45,29 @@ const otinsumo = db.define(
     },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-// Relación entre ot e otinsumo
 ot.hasMany(otinsumo, {
-  foreignKey: "id_ot", // Corregido: 'foreignKey' en lugar de 'foreignkey'
-  as: "ot_insumo", // alias para acceder a los insumos de la ot
+  foreignKey: "id_ot",
+  as: "ot_insumo",
 });
 
-// Relación entre otinsumo e ot
 otinsumo.belongsTo(ot, {
-  foreignKey: "id_ot", // Corregido: 'foreignKey' en lugar de 'foreignkey'
-  as: "ot", // alias para acceder a la ot desde otinsumo
+  foreignKey: "id_ot",
+  as: "ot",
 });
 
-// Relación entre insumo e otinsumo
 insumo.hasMany(otinsumo, {
-  foreignKey: "id_insumo", // Corregido: 'foreignKey' en lugar de 'foreignkey'
-  as: "ot_insumo", // alias para acceder a las otinsumos del insumo
+  foreignKey: "id_insumo",
+  as: "ot_insumo",
 });
 
-// Relación entre otinsumo e insumo
 otinsumo.belongsTo(insumo, {
-  foreignKey: "id_insumo", // Corregido: 'foreignKey' en lugar de 'foreignkey'
-  as: "insumo", // alias para acceder al insumo desde otinsumo
+  foreignKey: "id_insumo",
+  as: "insumo",
 });
 
 module.exports = { otinsumo };

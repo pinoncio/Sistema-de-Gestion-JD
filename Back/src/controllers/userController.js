@@ -7,8 +7,8 @@ const getUsuarios = async (req, res) => {
   try {
     const usuarios = await usuario.findAll({
       include: {
-        model: rol, // incluir los roles relacionados
-        attributes: ["nombre_rol"], // solo obtener el nombre del rol
+        model: rol,
+        attributes: ["nombre_rol"],
       },
     });
     res.json(usuarios);
@@ -32,7 +32,6 @@ const newUsuario = async (req, res) => {
   } = req.body;
 
   try {
-    // verificar existencia del email
     const existingUser = await usuario.findOne({
       where: { email_usuario },
     });
@@ -42,17 +41,14 @@ const newUsuario = async (req, res) => {
       });
     }
 
-    // validar longitud mínima de la contraseña
     if (contrasenia_usuario.length < 8) {
       return res.status(400).json({
         msg: "La contraseña debe tener al menos 8 caracteres",
       });
     }
 
-    // encriptar la contraseña
     const hashedPassword = await bcrypt.hash(contrasenia_usuario, 10);
 
-    // crear el usuario
     await usuario.create({
       nombre_usuario,
       apellido_usuario,
@@ -83,7 +79,6 @@ const loginUser = async (req, res) => {
   try {
     const { rut_usuario, contrasenia_usuario } = req.body;
 
-    // buscar al usuario por su rut
     const user = await usuario.findOne({
       where: { rut_usuario },
     });
@@ -95,7 +90,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // verificar si la cuenta está deshabilitada
     if (!user.estado_usuario) {
       console.error(`Cuenta deshabilitada para el rut: ${rut_usuario}`);
       return res.status(403).json({
@@ -103,7 +97,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // comparar la contraseña
     const passwordMatch = await bcrypt.compare(
       contrasenia_usuario,
       user.contrasenia_usuario
@@ -115,7 +108,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // generar el token
     const user_role = user.rol_usuario;
     const user_id = user.id_usuario;
     const token = jwt.sign(
@@ -124,13 +116,12 @@ const loginUser = async (req, res) => {
       { expiresIn: "30m" }
     );
 
-    // responder con el token y los datos del usuario
     res.json({
       token,
       rol: user_role,
       id_usuario: user_id,
-      nombre_usuario: user.nombre_usuario, // Agregado
-      apellido_usuario: user.apellido_usuario, // Agregado
+      nombre_usuario: user.nombre_usuario,
+      apellido_usuario: user.apellido_usuario,
     });
   } catch (error) {
     console.error("Error en el proceso de login:", error);
@@ -139,7 +130,6 @@ const loginUser = async (req, res) => {
     });
   }
 };
-
 
 const updateUsuario = async (req, res) => {
   const { id_usuario } = req.params;
@@ -166,7 +156,6 @@ const updateUsuario = async (req, res) => {
   }
 
   try {
-    // verificar que el rol existe
     if (rol_usuario) {
       const role = await rol.findOne({ where: { id_rol: rol_usuario } });
       if (!role) {
@@ -177,7 +166,7 @@ const updateUsuario = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(contrasenia_usuario, 10);
-    // actualizar el usuario
+
     await user.update(
       {
         nombre_usuario,
@@ -235,8 +224,8 @@ const getUsuario = async (req, res) => {
     const user = await usuario.findOne({
       where: { id_usuario },
       include: {
-        model: rol, // incluir el rol relacionado
-        attributes: ["nombre_rol"], // obtener solo el nombre del rol
+        model: rol,
+        attributes: ["nombre_rol"],
       },
     });
     if (!user) {

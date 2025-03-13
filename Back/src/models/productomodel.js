@@ -32,7 +32,6 @@ const producto = db.define(
   }
 );
 
-// Definir relación con la OT
 producto.belongsTo(ot, { foreignKey: "id_ot" });
 ot.hasMany(producto, { foreignKey: "id_ot" });
 

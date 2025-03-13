@@ -1,7 +1,6 @@
 const { contactocomercial } = require("../models/contactocomercialmodel");
 const { cliente } = require("../models/clientemodel");
 
-// Obtener todos los contactos comerciales
 const getContactosComerciales = async (req, res) => {
   try {
     const contactos = await contactocomercial.findAll({
@@ -30,7 +29,6 @@ const getContactosComerciales = async (req, res) => {
   }
 };
 
-// Obtener un contacto comercial por id de cliente
 const getContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   try {
@@ -64,8 +62,6 @@ const getContactoComercial = async (req, res) => {
   }
 };
 
-// Crear un nuevo contacto comercial
-// Crear un nuevo contacto comercial
 const newContactoComercial = async (req, res) => {
   const {
     id_cliente,
@@ -76,7 +72,6 @@ const newContactoComercial = async (req, res) => {
   } = req.body;
 
   try {
-    // Verificar si el cliente existe
     const clienteExistente = await cliente.findOne({ where: { id_cliente } });
     if (!clienteExistente) {
       return res.status(400).json({
@@ -84,7 +79,6 @@ const newContactoComercial = async (req, res) => {
       });
     }
 
-    // Crear el contacto comercial
     const contacto = await contactocomercial.create({
       id_cliente,
       contacto_comercial,
@@ -108,7 +102,6 @@ const newContactoComercial = async (req, res) => {
   }
 };
 
-// Actualizar un contacto comercial
 const updateContactoComercial = async (req, res) => {
   const { id_cliente } = req.params;
   const {
@@ -129,7 +122,6 @@ const updateContactoComercial = async (req, res) => {
   }
 
   try {
-    // Actualizar el contacto comercial
     await contactocomercial.update(
       {
         contacto_comercial,
@@ -152,7 +144,6 @@ const updateContactoComercial = async (req, res) => {
   }
 };
 
-// Eliminar un contacto comercial
 const deleteContactoComercial = async (req, res) => {
   const { id_contacto } = req.params;
 

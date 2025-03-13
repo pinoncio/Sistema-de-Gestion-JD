@@ -2,11 +2,10 @@ const { otinsumo } = require("../models/otinsumomodel");
 const { ot } = require("../models/otmodel");
 const { insumo } = require("../models/insumomodel");
 
-// Obtener todos los insumos de una OT
 const getInsumosByOt = async (req, res) => {
   const { id_ot } = req.params;
   try {
-    console.log("Modelo otinsumo:", otinsumo); // Verificar si el modelo está definido
+    console.log("Modelo otinsumo:", otinsumo);
 
     if (!otinsumo) {
       return res
@@ -19,12 +18,12 @@ const getInsumosByOt = async (req, res) => {
       include: [
         {
           model: ot,
-          as: "ot", // usar el alias definido en la relación
+          as: "ot",
           attributes: ["id_ot", "tipo_documento", "fecha_solicitud"],
         },
         {
           model: insumo,
-          as: "insumo", // usar el alias definido en la relación
+          as: "insumo",
           attributes: ["nombre_insumo", "precio_venta", "cantidad"],
         },
       ],
@@ -38,20 +37,19 @@ const getInsumosByOt = async (req, res) => {
 
     res.json(otInsumos);
   } catch (error) {
-    console.error(error); // Imprimir error completo
+    console.error(error);
     res.status(500).json({
       msg: "Error al obtener los insumos de la orden de trabajo.",
-      error: error.message, // Mostrar solo el mensaje del error
-      stack: error.stack, // Agregar la pila de llamadas para diagnóstico
+      error: error.message,
+      stack: error.stack,
     });
   }
 };
 
-// Obtener un insumo específico de una OT por la relación (id_ot, id_insumo)
 const getInsumoById = async (req, res) => {
   const { id_ot, id_insumo } = req.params;
   try {
-    console.log("Modelo otinsumo:", otinsumo); // Verificar si el modelo está definido
+    console.log("Modelo otinsumo:", otinsumo);
 
     if (!otinsumo) {
       return res
@@ -64,12 +62,12 @@ const getInsumoById = async (req, res) => {
       include: [
         {
           model: ot,
-          as: "ot", // Usar el alias definido en la relación
+          as: "ot",
           attributes: ["id_ot", "tipo_documento", "fecha_solicitud"],
         },
         {
           model: insumo,
-          as: "insumo", // Usar el alias definido en la relación
+          as: "insumo",
           attributes: ["nombre_insumo", "precio_venta", "cantidad"],
         },
       ],
@@ -83,11 +81,11 @@ const getInsumoById = async (req, res) => {
 
     res.json(otInsumoData);
   } catch (error) {
-    console.error(error); // Imprimir error completo
+    console.error(error);
     res.status(500).json({
       msg: "Error al obtener el insumo de la orden de trabajo.",
-      error: error.message, // Mostrar solo el mensaje del error
-      stack: error.stack, // Agregar la pila de llamadas para diagnóstico
+      error: error.message,
+      stack: error.stack,
     });
   }
 };

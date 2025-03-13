@@ -1,14 +1,13 @@
 const { informaciondepago } = require("../models/informacionpagomodel");
 const { cliente } = require("../models/clientemodel");
 
-// Obtener todas las informaciones de pago
 const getInformacionesDePago = async (req, res) => {
   try {
     const informaciones = await informaciondepago.findAll({
       include: [
         {
           model: cliente,
-          as: "cliente",  // Relación definida en el modelo
+          as: "cliente",
           attributes: ["nombre_razon_social", "rut"],
         },
       ],
@@ -25,7 +24,6 @@ const getInformacionesDePago = async (req, res) => {
   }
 };
 
-// Obtener una informacion de pago por id
 const getInformacionDePago = async (req, res) => {
   const { id_cliente } = req.params;
   try {
@@ -34,7 +32,7 @@ const getInformacionDePago = async (req, res) => {
       include: [
         {
           model: cliente,
-          as: "cliente", // Relación definida en el modelo
+          as: "cliente",
           attributes: ["nombre_razon_social", "rut"],
         },
       ],
@@ -59,7 +57,6 @@ const getInformacionDePago = async (req, res) => {
   }
 };
 
-// Crear una nueva informacion de pago
 const newInformacionDePago = async (req, res) => {
   const {
     id_cliente,
@@ -69,7 +66,6 @@ const newInformacionDePago = async (req, res) => {
   } = req.body;
 
   try {
-    // Verificar si el cliente existe
     const clienteExistente = await cliente.findOne({ where: { id_cliente } });
     if (!clienteExistente) {
       return res.status(400).json({
@@ -77,7 +73,6 @@ const newInformacionDePago = async (req, res) => {
       });
     }
 
-    // Crear la información de pago
     const informacion = await informaciondepago.create({
       id_cliente,
       nombre_responsable,
@@ -100,7 +95,6 @@ const newInformacionDePago = async (req, res) => {
   }
 };
 
-// Actualizar una informacion de pago
 const updateInformacionDePago = async (req, res) => {
   const { id_cliente } = req.params;
   const { nombre_responsable, correo_electronico, telefono_responsable } =
@@ -116,7 +110,6 @@ const updateInformacionDePago = async (req, res) => {
   }
 
   try {
-    // Actualizar la información de pago
     await informaciondepago.update(
       { nombre_responsable, correo_electronico, telefono_responsable },
       { where: { id_cliente: id_cliente } }
@@ -134,7 +127,6 @@ const updateInformacionDePago = async (req, res) => {
   }
 };
 
-// Eliminar una informacion de pago
 const deleteInformacionDePago = async (req, res) => {
   const { id_informacion } = req.params;
 

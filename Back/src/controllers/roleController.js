@@ -44,10 +44,7 @@ const updateRol = async (req, res) => {
       });
     }
 
-    await rol.update(
-      { nombre_rol: nombreRol },
-      { where: { id_rol: idRol } }
-    );
+    await rol.update({ nombre_rol: nombreRol }, { where: { id_rol: idRol } });
     return res.json({
       msg: `Rol con id ${idRol} actualizado correctamente`,
     });

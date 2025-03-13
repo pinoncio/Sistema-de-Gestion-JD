@@ -20,7 +20,7 @@ const usuario = db.define(
       type: DataTypes.INTEGER,
       references: {
         model: rol,
-        key: "id_rol", // Cambié 'ID_ROL' a 'id_rol' para seguir convención de nombres
+        key: "id_rol",
       },
     },
     estado_usuario: { type: DataTypes.BOOLEAN, defaultValue: true },
@@ -31,8 +31,7 @@ const usuario = db.define(
   }
 );
 
-// Definimos la relación de clave foránea
-usuario.belongsTo(rol, { foreignKey: "rol_usuario" }); 
-rol.hasMany(usuario, { foreignKey: "rol_usuario" }); 
+usuario.belongsTo(rol, { foreignKey: "rol_usuario" });
+rol.hasMany(usuario, { foreignKey: "rol_usuario" });
 
 module.exports = { usuario };

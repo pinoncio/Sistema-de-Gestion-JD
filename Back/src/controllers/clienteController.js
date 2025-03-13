@@ -5,7 +5,6 @@ const { contactocomercial } = require("../models/contactocomercialmodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
 const sequelize = require("../config/db");
 
-// obtener todos los clientes
 const getClientes = async (req, res) => {
   try {
     const clientes = await cliente.findAll({
@@ -41,9 +40,6 @@ const getClientes = async (req, res) => {
   }
 };
 
-
-
-// obtener un cliente por id
 const getCliente = async (req, res) => {
   const { id_cliente } = req.params;
   try {
@@ -86,8 +82,6 @@ const getCliente = async (req, res) => {
   }
 };
 
-
-// crear un nuevo cliente
 const newCliente = async (req, res) => {
   console.log("Datos recibidos:", req.body);
 
@@ -131,13 +125,13 @@ const newCliente = async (req, res) => {
       { transaction }
     );
 
-    // Crear contacto comercial si se proporciona
     if (contacto_comercial) {
       await contactocomercial.create(
         {
           id_cliente: clienteData.id_cliente,
           contacto_comercial: contacto_comercial.contacto_comercial,
-          correo_electronico_comercial: contacto_comercial.correo_electronico_comercial,
+          correo_electronico_comercial:
+            contacto_comercial.correo_electronico_comercial,
           telefono_fijo: contacto_comercial.telefono_fijo,
           telefono_celular: contacto_comercial.telefono_celular,
         },
@@ -145,7 +139,6 @@ const newCliente = async (req, res) => {
       );
     }
 
-    // Crear información de pago si se proporciona
     if (informacion_de_pago) {
       await informaciondepago.create(
         {
@@ -174,7 +167,6 @@ const newCliente = async (req, res) => {
   }
 };
 
-// actualizar un cliente
 const updateCliente = async (req, res) => {
   const { id_cliente } = req.params;
   const {
@@ -220,7 +212,8 @@ const updateCliente = async (req, res) => {
         {
           id_cliente,
           contacto_comercial: contacto_comercial.contacto_comercial,
-          correo_electronico_comercial: contacto_comercial.correo_electronico_comercial,
+          correo_electronico_comercial:
+            contacto_comercial.correo_electronico_comercial,
           telefono_fijo: contacto_comercial.telefono_fijo,
           telefono_celular: contacto_comercial.telefono_celular,
         },
@@ -255,7 +248,6 @@ const updateCliente = async (req, res) => {
   }
 };
 
-// eliminar un cliente
 const deleteCliente = async (req, res) => {
   const { id_cliente } = req.params;
 
@@ -280,7 +272,6 @@ const deleteCliente = async (req, res) => {
   }
 };
 
-// activar o desactivar un cliente
 const activarCliente = async (req, res) => {
   const { id_cliente } = req.params;
   const { trigger } = req.body;
@@ -298,13 +289,15 @@ const activarCliente = async (req, res) => {
   try {
     await clienteData.update(
       {
-        cliente_vigente: trigger === 1, // activar o desactivar cliente
+        cliente_vigente: trigger === 1,
       },
       { where: { id_cliente } }
     );
 
     return res.json({
-      msg: `Cliente con id ${id_cliente} ${trigger === 1 ? "activado" : "desactivado"} correctamente.`,
+      msg: `Cliente con id ${id_cliente} ${
+        trigger === 1 ? "activado" : "desactivado"
+      } correctamente.`,
     });
   } catch (error) {
     return res.status(400).json({

@@ -1,7 +1,6 @@
 const { producto } = require("../models/productomodel");
 const { ot } = require("../models/otmodel");
 
-// Obtener todos los productos
 const getAllProductos = async (req, res) => {
   try {
     const productos = await producto.findAll({
@@ -24,7 +23,6 @@ const getAllProductos = async (req, res) => {
   }
 };
 
-// Obtener productos por id_ot
 const getProductosByOt = async (req, res) => {
   const { id_ot } = req.params;
   try {
@@ -41,7 +39,9 @@ const getProductosByOt = async (req, res) => {
     if (productos.length === 0) {
       return res
         .status(404)
-        .json({ msg: `No se encontraron productos para la OT con id: ${id_ot}` });
+        .json({
+          msg: `No se encontraron productos para la OT con id: ${id_ot}`,
+        });
     }
 
     res.json(productos);

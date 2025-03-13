@@ -8,19 +8,14 @@ const {
   deleteInformacionDePago,
 } = require("../controllers/informacionpagocontroller");
 
-// Ruta para obtener todas las informaciones de pago
 router.get("/list", getInformacionesDePago);
 
-// Ruta para obtener una información de pago específica por el id_cliente
 router.get("/:id_cliente", getInformacionDePago);
 
-// Ruta para crear una nueva información de pago
 router.post("/", newInformacionDePago);
 
-// Ruta para actualizar una información de pago por el id_cliente
 router.put("/:id_cliente", updateInformacionDePago);
 
-// Ruta para eliminar una información de pago por el id_cliente
 router.delete("/:id_informacion", deleteInformacionDePago);
 
 module.exports = router;

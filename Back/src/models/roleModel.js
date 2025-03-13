@@ -4,11 +4,11 @@ const dbconnection = require("../config/db");
 const rol = dbconnection.define(
   "rol",
   {
-    id_rol: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, // Corregido: 'primaryKey' y 'autoIncrement'
-    nombre_rol: { type: DataTypes.STRING }, // Corregido: 'DataTypes.STRING' en lugar de 'datatypes.string'
+    id_rol: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    nombre_rol: { type: DataTypes.STRING },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );

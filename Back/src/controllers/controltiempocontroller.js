@@ -1,7 +1,6 @@
 const { controltiempo } = require("../models/controltiempomodel");
 const { it } = require("../models/informemodel");
 
-// Obtener todos los registros de control_tiempo
 const getAllTiempo = async (req, res) => {
   try {
     const controltiempos = await controltiempo.findAll({
@@ -24,7 +23,6 @@ const getAllTiempo = async (req, res) => {
   }
 };
 
-// Obtener registros por id_it
 const getTiempoByIt = async (req, res) => {
   const { id_it } = req.params;
 

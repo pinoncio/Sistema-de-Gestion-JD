@@ -48,7 +48,7 @@ const it = db.define(
   }
 );
 
-// Definir relaciones con cliente y OT
+
 it.belongsTo(cliente, { foreignKey: "id_cliente" });
 cliente.hasMany(it, { foreignKey: "id_cliente" });
 

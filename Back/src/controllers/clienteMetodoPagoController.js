@@ -2,39 +2,36 @@ const { clientemetodopago } = require("../models/clientemetodopagomodel");
 const { cliente } = require("../models/clientemodel");
 const { metodopago } = require("../models/metodopagomodel");
 
-// código en clientemetodopagocontroller.js
-
-// Agregar método de pago a un cliente
 const agregarMetodoPagoCliente = async (req, res) => {
   try {
     const { id_cliente, id_metodo_pago } = req.body;
 
-    // Buscar al cliente por su id
     const clienteData = await cliente.findOne({ where: { id_cliente } });
     if (!clienteData) {
       return res.status(404).json({ msg: "Cliente no encontrado" });
     }
 
-    // Buscar el método de pago por su id
-    const metodoPagoData = await metodopago.findOne({ where: { id_metodo_pago } });
+    const metodoPagoData = await metodopago.findOne({
+      where: { id_metodo_pago },
+    });
     if (!metodoPagoData) {
       return res.status(404).json({ msg: "Método de pago no encontrado" });
     }
 
-    // Crear la relación en la tabla intermedia clientemetodopago
     await clientemetodopago.create({
       id_cliente: id_cliente,
       id_metodo_pago: id_metodo_pago,
     });
 
-    res.status(200).json({ msg: "Método de pago agregado correctamente al cliente" });
+    res
+      .status(200)
+      .json({ msg: "Método de pago agregado correctamente al cliente" });
   } catch (error) {
     console.error("Error al agregar el método de pago:", error);
     res.status(500).json({ msg: "Error al agregar el método de pago", error });
   }
 };
 
-// Obtener todos los métodos de pago de un cliente por su id
 const obtenerMetodosPagoCliente = async (req, res) => {
   const { id_cliente } = req.params;
 
@@ -43,13 +40,13 @@ const obtenerMetodosPagoCliente = async (req, res) => {
       include: [
         {
           model: clientemetodopago,
-          as: "clientemetodospago", // Alias de la relación cliente -> clientemetodopago
-          attributes: ["id_metodo_pago"], // Columnas específicas de clientemetodopago
+          as: "clientemetodospago",
+          attributes: ["id_metodo_pago"],
           include: [
             {
               model: metodopago,
-              as: "metodopago", // Alias de la relación clientemetodopago -> metodopago
-              attributes: ["nombre_metodo", "descripcion"], // Columnas específicas de metodopago
+              as: "metodopago",
+              attributes: ["nombre_metodo", "descripcion"],
             },
           ],
         },
@@ -62,7 +59,6 @@ const obtenerMetodosPagoCliente = async (req, res) => {
       });
     }
 
-    // Acceder a los métodos de pago del cliente
     return res.status(200).json(clienteData.clientemetodospago);
   } catch (error) {
     console.error(error);
@@ -73,7 +69,6 @@ const obtenerMetodosPagoCliente = async (req, res) => {
   }
 };
 
-// Obtener un método de pago específico para un cliente
 const obtenerMetodoPagoClienteporId = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
 
@@ -93,8 +88,8 @@ const obtenerMetodoPagoClienteporId = async (req, res) => {
       include: [
         {
           model: metodopago,
-          as: "metodopago", // Alias de la relación clientemetodopago -> metodopago
-          attributes: ["nombre_metodo", "descripcion"], // Columnas específicas de metodopago
+          as: "metodopago",
+          attributes: ["nombre_metodo", "descripcion"],
         },
       ],
     });
@@ -154,7 +149,6 @@ const actualizarMetodoPagoCliente = async (req, res) => {
   }
 };
 
-// Eliminar un método de pago de un cliente
 const eliminarMetodoPagoCliente = async (req, res) => {
   const { id_cliente, id_metodo_pago } = req.params;
 

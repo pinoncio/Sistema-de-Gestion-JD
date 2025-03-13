@@ -6,14 +6,14 @@ const metodopago = db.define(
   {
     id_metodo_pago: {
       type: DataTypes.INTEGER,
-      primaryKey: true, // Corregido: 'primaryKey' en lugar de 'primarykey'
-      autoIncrement: true, // Corregido: 'autoIncrement' en lugar de 'autoincrement'
+      primaryKey: true,
+      autoIncrement: true,
     },
     nombre_metodo: { type: DataTypes.STRING },
     descripcion: { type: DataTypes.STRING },
   },
   {
-    freezeTableName: true, // Corregido: 'freezeTableName' en minúsculas
+    freezeTableName: true,
     timestamps: false,
   }
 );

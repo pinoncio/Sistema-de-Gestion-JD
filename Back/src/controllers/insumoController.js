@@ -1,13 +1,12 @@
 const { insumo } = require("../models/insumomodel");
 const { categoria } = require("../models/categoriamodel");
 
-// Obtener todos los insumos
 const getInsumos = async (req, res) => {
   try {
     const insumos = await insumo.findAll({
       include: {
-        model: categoria, // Incluir la categoría relacionada
-        attributes: ["nombre_categoria"], // Solo obtener el nombre de la categoría
+        model: categoria,
+        attributes: ["nombre_categoria"],
       },
     });
     res.json(insumos);
@@ -19,9 +18,8 @@ const getInsumos = async (req, res) => {
   }
 };
 
-// Obtener un insumo por id
 const getInsumo = async (req, res) => {
-  const id = parseInt(req.params.id_insumo, 10); // Convertir a número
+  const id = parseInt(req.params.id_insumo, 10);
 
   if (isNaN(id)) {
     return res.status(400).json({ msg: "ID de insumo inválido." });
@@ -52,7 +50,6 @@ const getInsumo = async (req, res) => {
   }
 };
 
-// Crear un nuevo insumo
 const newInsumo = async (req, res) => {
   const {
     tipo_insumo,
@@ -65,7 +62,6 @@ const newInsumo = async (req, res) => {
   } = req.body;
 
   try {
-    // Verificar existencia del nombre del insumo
     const existingInsumo = await insumo.findOne({
       where: { nombre_insumo: nombre_insumo },
     });
@@ -75,21 +71,17 @@ const newInsumo = async (req, res) => {
       });
     }
 
-    // Calcular los valores automáticos
     const stock_disponible = cantidad;
     if (isNaN(sub_total)) {
       return res
         .status(400)
         .json({ msg: "sub_total debe ser números válidos." });
     }
-    const precio_venta = (
-      parseFloat(sub_total)
-    ).toFixed(2);
+    const precio_venta = parseFloat(sub_total).toFixed(2);
 
     const precio_neto = sub_total;
-    const estado_insumo = true; // El estado es siempre 'true' al crear
+    const estado_insumo = true;
 
-    // Crear el insumo
     await insumo.create({
       tipo_insumo: tipo_insumo,
       nombre_insumo: nombre_insumo,
@@ -116,7 +108,6 @@ const newInsumo = async (req, res) => {
   }
 };
 
-// Actualizar un insumo
 const updateInsumo = async (req, res) => {
   const { id_insumo } = req.params;
   const {
@@ -139,7 +130,6 @@ const updateInsumo = async (req, res) => {
   }
 
   try {
-    // Calcular los valores automáticos
     const stock_disponible =
       existingInsumo.stock_disponible !== cantidad
         ? cantidad
@@ -150,13 +140,10 @@ const updateInsumo = async (req, res) => {
         .status(400)
         .json({ msg: "sub_total deben ser números válidos." });
     }
-    const precio_venta = (
-      parseFloat(sub_total)
-    ).toFixed(2);
+    const precio_venta = parseFloat(sub_total).toFixed(2);
 
     const precio_neto = sub_total;
 
-    // Actualizar el insumo
     await insumo.update(
       {
         tipo_insumo: tipo_insumo,
@@ -185,7 +172,6 @@ const updateInsumo = async (req, res) => {
   }
 };
 
-// Eliminar un insumo
 const deleteInsumo = async (req, res) => {
   const { id_insumo } = req.params;
 
@@ -212,12 +198,10 @@ const deleteInsumo = async (req, res) => {
   }
 };
 
-// Activar/desactivar un insumo
 const activarInsumo = async (req, res) => {
   const { id_insumo } = req.params;
   const { trigger } = req.body;
 
-  // Buscar el insumo por id
   const existingInsumo = await insumo.findOne({
     where: { id_insumo: id_insumo },
   });
@@ -231,7 +215,7 @@ const activarInsumo = async (req, res) => {
     if (trigger == 1) {
       await insumo.update(
         {
-          estado_insumo: true, // Cambié a estado_insumo
+          estado_insumo: true,
         },
         { where: { id_insumo: id_insumo } }
       );
@@ -241,7 +225,7 @@ const activarInsumo = async (req, res) => {
     } else {
       await insumo.update(
         {
-          estado_insumo: false, // Cambié a estado_insumo
+          estado_insumo: false,
         },
         { where: { id_insumo: id_insumo } }
       );
