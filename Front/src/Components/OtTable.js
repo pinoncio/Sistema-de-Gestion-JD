@@ -50,6 +50,7 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
     <Table>
       <TableHead>
         <TableRow>
+          <TableCell>N° OT</TableCell>
           <TableCell>Cliente</TableCell>
           <TableCell>Tipo documento</TableCell>
           <TableCell>
@@ -79,6 +80,7 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
       <TableBody>
         {stableSort(ordenes, comparator).map((orden, index) => (
           <TableRow key={orden.id_ot || index}>
+            <TableCell>N°{orden.id_ot}</TableCell>
             <TableCell>{getClienteName(orden.id_cliente)}</TableCell>
             <TableCell>{orden.tipo_documento}</TableCell>
             <TableCell>

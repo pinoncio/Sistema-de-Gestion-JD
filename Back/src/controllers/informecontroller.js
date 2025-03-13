@@ -126,7 +126,6 @@ const newInformeTrabajo = async (req, res) => {
   try {
     if (
       !id_cliente ||
-      !id_ot ||
       !control_tiempo ||
       control_tiempo.length === 0
     ) {
@@ -135,7 +134,7 @@ const newInformeTrabajo = async (req, res) => {
 
     const nuevaIt = await it.create({
       id_cliente,
-      id_ot,
+      id_ot: id_ot || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,
@@ -243,7 +242,7 @@ const updateInformeTrabajo = async (req, res) => {
 
     await informeExistente.update({
       id_cliente,
-      id_ot,
+      id_ot: id_ot || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,

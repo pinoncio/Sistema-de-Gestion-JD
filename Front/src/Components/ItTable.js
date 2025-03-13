@@ -12,12 +12,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const ItTable = ({ informes, onDelete }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("fecha_control_tiempo");
+  const navigate = useNavigate();
+  const handlePdfRedirect = (id_it) => {
+    navigate(`/pdf-preview/${id_it}`);
+  };
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -106,9 +110,7 @@ const ItTable = ({ informes, onDelete }) => {
             <TableCell>
               {informe.control_tiempo && informe.control_tiempo.length > 0 ? (
                 informe.control_tiempo.map((control, idx) => (
-                  <div key={idx}>
-                    {control.fecha}
-                  </div>
+                  <div key={idx}>{control.fecha}</div>
                 ))
               ) : (
                 <span>No hay control de tiempo</span>
@@ -140,7 +142,8 @@ const ItTable = ({ informes, onDelete }) => {
               >
                 <DeleteIcon />
               </IconButton>
-              <IconButton color="primary" sx={{ ml: 1 }}>
+              <IconButton color="primary" sx={{ ml: 1 }}
+                onClick={() => handlePdfRedirect(informe.id_it)}>
                 <PictureAsPdfIcon />
               </IconButton>
             </TableCell>

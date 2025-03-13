@@ -19,6 +19,7 @@ import OrderForm from "./Components/OtForm";
 import OrderUForm from "./Components/OtUForm";
 import ItPage from "./Pages/ItPage";
 import ItForm from "./Components/ItForm";
+import PdfPreview from "./Services/VerInforme";
 
 const App = () => {
   return (
@@ -158,6 +159,14 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <ItForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/pdf-preview/:id_it"  // Definir id_it como un parámetro dinámico
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <PdfPreview />
               </PrivateRoute>
             }
           />
