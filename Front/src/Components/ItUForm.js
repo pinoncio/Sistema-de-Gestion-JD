@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import {
   TextField,
@@ -18,23 +18,31 @@ import {
   Snackbar,
   Divider,
 } from "@mui/material";
-import { createIt } from "../Services/itService";
+import { getIt, getIts, updateIt } from "../Services/itService";
 import { getClientes } from "../Services/clienteService";
-import { getOts } from "../Services/otService";
-import { getAllTiempos } from "../Services/tiempoService";
+import { getOts, getOt } from "../Services/otService";
+import { getAllTiempos, getTiempoByIt } from "../Services/tiempoService";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import EditIcon from "@mui/icons-material/Edit";
 import UserLayout from "./Layout/UserLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-const ItForm = () => {
+const ItUForm = () => {
+  const { id_it } = useParams();
   const [clientes, setClientes] = useState([]);
-  const [setTiempos] = useState([]);
+  const [tiempos, setTiempos] = useState([]);
   const [ot, setOt] = useState([]);
+  const [it, setIt] = useState([]);
+  const [filteredOt, setFilteredOt] = useState([]);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [filteredOt, setFilteredOt] = useState([]);
+  const [editingIndexTiempo, setEditingIndexTiempo] = useState(null);
+  const [editedTiempo, setEditedTiempo] = useState({});
+
   const user = JSON.parse(localStorage.getItem("user")) || {
     nombre: "",
     apellido: "",
@@ -85,23 +93,87 @@ const ItForm = () => {
   useEffect(() => {
     fetchClientes();
     fetchTiempos();
+    fetchIts();
     fetchOt();
+    if (id_it) {
+      fetchIt(id_it);
+      fetchTiempoByIt(id_it);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id_it]);
+
+  useEffect(() => {
+    if (ot.length > 0 && it.length > 0) {
+      const otSinIt = ot.filter(
+        (otItem) =>
+          !it.some((itItem) => itItem.id_ot === otItem.id_ot) ||
+          otItem.id_ot === formData.id_ot
+      );
+      setFilteredOt(otSinIt);
+    }
+  }, [ot, it, formData.id_ot]);
+
+  const fetchIts = async () => {
+    try {
+      const its = await getIts();
+      setIt(its);
+    } catch (error) {
+      console.error("Error al obtener las It:", error);
+    }
+  };
+
+  const fetchIt = async (id) => {
+    try {
+      const itData = await getIt(id);
+      setFormData({
+        ...itData,
+        id_ot: itData.ot.id_ot || "",
+      });
+
+      if (itData?.id_ot) {
+        fetchOtById(itData.id_ot);
+      }
+
+      if (itData?.id_cliente) {
+        handleClienteSeleccionado(itData.id_cliente);
+      }
+    } catch (error) {
+      console.error("Error al obtener la IT:", error);
+    }
+  };
+
+  const fetchOt = async () => {
+    try {
+      const otData = await getOts();
+      setOt(Array.isArray(otData) ? otData : []);
+    } catch (error) {
+      console.error("Error al obtener las OTs:", error);
+    }
+  };
+
+  const fetchOtById = async (id_ot) => {
+    try {
+      const otData = await getOt(id_ot);
+      setOt(Array.isArray(otData) ? otData : []); // Asegúrate de que otData sea un array
+    } catch (error) {
+      console.error("Error al obtener la OT:", error);
+    }
+  };
+
+  const fetchTiempoByIt = async (id) => {
+    try {
+      const tiempoData = await getTiempoByIt(id);
+      setTiempos(tiempoData);
+    } catch (error) {
+      console.error("Error al obtener los tiempos por IT:", error);
+    }
+  };
 
   const fetchClientes = async () => {
     try {
       setClientes(await getClientes());
     } catch (error) {
       console.error("Error al obtener los clientes:", error);
-    }
-  };
-
-  const fetchOt = async () => {
-    try {
-      setOt(await getOts());
-    } catch (error) {
-      console.error("Error al obtener las Ot:", error);
     }
   };
 
@@ -113,22 +185,15 @@ const ItForm = () => {
     }
   };
 
-  const [errors, setErrors] = useState({});
-  const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
-  const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
-
-  const handleChange = (e, field) => {
-    const { value } = e.target;
-    if (!validateNumber(value) && value !== "") {
-      setErrors({
-        ...errors,
-        [field]: "Solo se permiten números y puntos",
-      });
-      return;
+  useEffect(() => {
+    if (tiempos.length > 0) {
     }
+  }, [tiempos]);
 
-    if (field === "id_cliente") {
-      const selectedCliente = clientes.find((c) => c.id_cliente === value);
+  const handleClienteSeleccionado = useCallback(
+    (id_cliente) => {
+      const selectedCliente = clientes.find((c) => c.id_cliente === id_cliente);
+
       if (selectedCliente) {
         setCurrentCliente({
           cliente: {
@@ -143,9 +208,62 @@ const ItForm = () => {
             },
           },
         });
-        setFilteredOt(ot.filter((o) => o.id_cliente === value));
+
+        // Filtrar OTs asociadas al cliente seleccionado, excluyendo aquellas ya asociadas a una IT
+        const filteredData = ot.filter(
+          (o) =>
+            o.id_cliente === id_cliente &&
+            (!tiempos.some((t) => t.id_ot === o.id_ot) ||
+              o.id_ot === formData.id_ot)
+        );
+
+        setFilteredOt(filteredData);
+      } else {
+        setCurrentCliente({
+          cliente: {
+            nombre_razon_social: "",
+            rut: "",
+            direccion: "",
+            informacion_de_pago: {
+              correo_electronico: "",
+              telefono_responsable: "",
+            },
+          },
+        });
+        setFilteredOt([]);
       }
+    },
+    [clientes, ot, tiempos, formData.id_ot]
+  );
+
+  useEffect(() => {
+    if (formData.id_cliente && clientes.length > 0) {
+      handleClienteSeleccionado(formData.id_cliente);
     }
+  }, [formData.id_cliente, clientes, handleClienteSeleccionado]);
+
+  const [errors, setErrors] = useState({});
+  const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+  const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
+
+  const handleChange = (e, field) => {
+    const { value } = e.target;
+    if (field === "id_ot") {
+      setFormData({ ...formData, [field]: value });
+      return;
+    }
+    if (!validateNumber(value) && value !== "") {
+      setErrors({
+        ...errors,
+        [field]: "Solo se permiten números y puntos",
+      });
+      return;
+    }
+
+    if (field === "id_cliente") {
+      handleClienteSeleccionado(value);
+    }
+
     setFormData({ ...formData, [field]: value });
     setErrors({ ...errors, [field]: "" });
   };
@@ -164,12 +282,11 @@ const ItForm = () => {
   };
 
   const isAlphanumericWithDash = (value) => {
-    return /^[A-Za-z0-9-]*$/.test(value); // Permite letras, números y guiones
+    return /^[A-Za-z0-9-]*$/.test(value);
   };
 
   const isNumberEndingWithHOrM = (value) => {
     return /^[0-9]*$/.test(value) || /^[0-9]+[hHmM]$/.test(value);
-    // Permite solo números mientras se escribe, y al final "h" o "m"
   };
 
   const handleInputChange = (e, field, validationFn) => {
@@ -186,10 +303,38 @@ const ItForm = () => {
     }
   };
 
-  const handleCreateIt = async (data) => {
+  const handleEditTiempo = (index) => {
+    const tiempoToEdit = formData.control_tiempo[index];
+    setEditingIndexTiempo(index);
+    setEditedTiempo(tiempoToEdit);
+  };
+
+  const handleSaveTiempo = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      control_tiempo: prevData.control_tiempo.map((item, i) =>
+        i === editingIndexTiempo ? { ...item, ...editedTiempo } : item
+      ),
+    }));
+    setEditingIndexTiempo(null);
+    setEditedTiempo({});
+  };
+
+  const handleCancelEditTiempo = () => {
+    setEditingIndexTiempo(null);
+    setEditedTiempo({});
+  };
+
+  const handleInputChangeTiempo = (e, field) => {
+    const { value } = e.target;
+    setEditedTiempo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleUpdateIt = async (data) => {
+    const { id_it, ...itData } = data;
     try {
-      await createIt(data);
-      setSnackbarMessage("IT creada correctamente.");
+      await updateIt(id_it, itData);
+      setSnackbarMessage("IT actualizada correctamente.");
       setOpenSnackbar(true);
       setFormData({
         id_cliente: "",
@@ -211,7 +356,7 @@ const ItForm = () => {
         insumo: "",
         observacion: "",
         control_tiempo: [],
-        cliente: [],
+        clientes: [],
       });
       setCurrentTiempo({
         fecha: "",
@@ -379,7 +524,7 @@ const ItForm = () => {
     };
     console.log("Datos a enviar:", dataToSubmit);
     try {
-      await handleCreateIt(dataToSubmit);
+      await handleUpdateIt(dataToSubmit);
       setFormData({
         id_cliente: "",
         id_ot: "",
@@ -402,20 +547,20 @@ const ItForm = () => {
         control_tiempo: [],
         clientes: [],
       });
-      setSnackbarMessage("IT creada correctamente.");
+      setSnackbarMessage("IT actualizada correctamente.");
       setOpenSnackbar(true);
       setTimeout(() => {
         navigate("/its");
       }, 2000);
     } catch (error) {
-      console.error("Error al crear/actualizar la IT:", error);
+      console.error("Error al actualizar la IT:", error);
       setErrors({
         ...errors,
         generales:
           error.response?.data?.message ||
-          "Ha ocurrido un error al crear la IT. Intente nuevamente.",
+          "Ha ocurrido un error al actualizar la IT. Intente nuevamente.",
       });
-      setSnackbarMessage("Error al crear la IT.");
+      setSnackbarMessage("Error al actualizar la IT.");
       setOpenSnackbar(true);
     }
   };
@@ -575,7 +720,7 @@ const ItForm = () => {
               <TextField
                 label="Orden de Trabajo"
                 select
-                value={formData.id_ot}
+                value={formData.id_ot} // Asegúrate de que formData.id_ot esté correctamente asignado
                 onChange={(e) => handleChange(e, "id_ot")}
                 name="id_ot"
                 fullWidth
@@ -584,11 +729,15 @@ const ItForm = () => {
                 }}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
-                {filteredOt.map((ot) => (
-                  <MenuItem key={ot.id_ot} value={ot.id_ot}>
-                    N°{ot.id_ot}
-                  </MenuItem>
-                ))}
+                {filteredOt.length > 0 ? (
+                  filteredOt.map((otItem) => (
+                    <MenuItem key={otItem.id_ot} value={otItem.id_ot}>
+                      N°{otItem.id_ot}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No hay OTs disponibles</MenuItem>
+                )}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -923,13 +1072,85 @@ const ItForm = () => {
                   <TableBody>
                     {formData.control_tiempo.map((tiempo, index) => (
                       <TableRow key={index}>
-                        <TableCell>{tiempo.fecha}</TableCell>
-                        <TableCell>{tiempo.viaje_ida}</TableCell>
-                        <TableCell>{tiempo.trabajo}</TableCell>
-                        <TableCell>{tiempo.viaje_vuelta}</TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index ? (
+                            <TextField
+                              value={editedTiempo.fecha || ""}
+                              onChange={(e) =>
+                                handleInputChangeTiempo(e, "fecha")
+                              }
+                              type="date"
+                              size="small"
+                            />
+                          ) : (
+                            tiempo.fecha
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index ? (
+                            <TextField
+                              value={editedTiempo.viaje_ida || ""}
+                              onChange={(e) =>
+                                handleInputChangeTiempo(e, "viaje_ida")
+                              }
+                              size="small"
+                            />
+                          ) : (
+                            tiempo.viaje_ida
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index ? (
+                            <TextField
+                              value={editedTiempo.trabajo || ""}
+                              onChange={(e) =>
+                                handleInputChangeTiempo(e, "trabajo")
+                              }
+                              size="small"
+                            />
+                          ) : (
+                            tiempo.trabajo
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index ? (
+                            <TextField
+                              value={editedTiempo.viaje_vuelta || ""}
+                              onChange={(e) =>
+                                handleInputChangeTiempo(e, "viaje_vuelta")
+                              }
+                              size="small"
+                            />
+                          ) : (
+                            tiempo.viaje_vuelta
+                          )}
+                        </TableCell>
                         <TableCell>{tiempo.total_hh_viaje}</TableCell>
                         <TableCell>{tiempo.total_hh_trabajo}</TableCell>
                         <TableCell>
+                          {editingIndexTiempo === index ? (
+                            <>
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleSaveTiempo(index)}
+                              >
+                                <SaveIcon />
+                              </IconButton>
+                              <IconButton
+                                color="secondary"
+                                onClick={handleCancelEditTiempo}
+                              >
+                                <CancelIcon />
+                              </IconButton>
+                            </>
+                          ) : (
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleEditTiempo(index)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           <IconButton
                             color="error"
                             onClick={() => handleRemoveTiempo(index)}
@@ -994,4 +1215,4 @@ const ItForm = () => {
   );
 };
 
-export default ItForm;
+export default ItUForm;

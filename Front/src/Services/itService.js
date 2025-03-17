@@ -30,7 +30,8 @@ export const createIt = async (itData) => {
   }
 };
 
-export const updateOt = async (id_it, itData) => {
+export const updateIt = async (id_it, itData) => {
+  console.log(id_it);  // Verifica que id_it es el valor esperado
   try {
     const response = await api.put(`/its/${id_it}`, itData);
     return response.data;
@@ -39,6 +40,7 @@ export const updateOt = async (id_it, itData) => {
     throw error;
   }
 };
+
 
 export const deleteIt = async (id_it) => {
   try {
