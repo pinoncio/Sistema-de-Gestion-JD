@@ -80,17 +80,15 @@ const UserFormModal = ({
     }
   };
 
-  const getMaxDate = () => {
-    const maxDate = new Date();
-    maxDate.setMonth(maxDate.getMonth() - 1);
-    return maxDate.toISOString().split("T")[0];
+  const getMinDate = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split("T")[0];
   };
 
   const formatRUT = (rut) => {
-    // Limitar a 9 dígitos como máximo
-    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); // Asegura que solo haya hasta 9 números
+    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); 
 
-    // Verificar si el RUT tiene 8 o 9 dígitos
     if (cleanedRUT.length <= 8) {
       cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
     } else if (cleanedRUT.length === 9) {
@@ -99,7 +97,7 @@ const UserFormModal = ({
         "$1.$2.$3-$4"
       );
     } else {
-      cleanedRUT = cleanedRUT.substring(0, 9); // Limitar a 9 caracteres
+      cleanedRUT = cleanedRUT.substring(0, 9);
     }
 
     return cleanedRUT;
@@ -310,18 +308,21 @@ const UserFormModal = ({
                 value={formData.fecha_nacimiento_usuario}
                 onChange={(e) => {
                   const inputDate = e.target.value;
-                  const maxDate = getMaxDate();
-                  if (inputDate > maxDate) {
+                  const minDate = getMinDate(); // Fecha mínima permitida (18 años atrás)
+
+                  if (inputDate > new Date().toISOString().split("T")[0]) {
                     setErrors({
                       ...errors,
                       fecha_nacimiento_usuario:
-                        "La fecha no puede ser mayor al 24 de diciembre de 2024.",
+                        "La fecha no puede ser en el futuro.",
                     });
-                  } else {
+                  } else if (inputDate > minDate) {
                     setErrors({
                       ...errors,
-                      fecha_nacimiento_usuario: "",
+                      fecha_nacimiento_usuario: "Debe tener al menos 18 años.",
                     });
+                  } else {
+                    setErrors({ ...errors, fecha_nacimiento_usuario: "" });
                     setFormData({
                       ...formData,
                       fecha_nacimiento_usuario: inputDate,
@@ -331,22 +332,13 @@ const UserFormModal = ({
                 fullWidth
                 margin="normal"
                 required
-                max={getMaxDate()} // Aplica la fecha máxima
+                inputProps={{
+                  max: new Date().toISOString().split("T")[0], // No permite fechas futuras
+                }}
                 helperText={errors.fecha_nacimiento_usuario || ""}
                 error={!!errors.fecha_nacimiento_usuario}
-                InputProps={{
-                  // Estilos para mostrar el campo en gris y deshabilitado si hay error
-                  inputProps: {
-                    style: {
-                      color: errors.fecha_nacimiento_usuario ? "gray" : "black",
-                      pointerEvents: errors.fecha_nacimiento_usuario
-                        ? "none"
-                        : "auto",
-                    },
-                  },
-                }}
                 InputLabelProps={{
-                  shrink: true, // Para mantener la etiqueta en la parte superior
+                  shrink: true,
                 }}
               />
             </div>

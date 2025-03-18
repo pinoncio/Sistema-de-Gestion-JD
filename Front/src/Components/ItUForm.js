@@ -154,7 +154,12 @@ const ItUForm = () => {
   const fetchOtById = async (id_ot) => {
     try {
       const otData = await getOt(id_ot);
-      setOt(Array.isArray(otData) ? otData : []); // Asegúrate de que otData sea un array
+      if (otData) {
+        setOt((prevOt) => {
+          const newOt = prevOt.filter((item) => item.id_ot !== id_ot);
+          return [...newOt, otData]; // Agregar la OT sin perder las demás
+        });
+      }
     } catch (error) {
       console.error("Error al obtener la OT:", error);
     }
@@ -248,10 +253,12 @@ const ItUForm = () => {
 
   const handleChange = (e, field) => {
     const { value } = e.target;
+
     if (field === "id_ot") {
       setFormData({ ...formData, [field]: value });
       return;
     }
+
     if (!validateNumber(value) && value !== "") {
       setErrors({
         ...errors,
@@ -260,11 +267,18 @@ const ItUForm = () => {
       return;
     }
 
-    if (field === "id_cliente") {
-      handleClienteSeleccionado(value);
+    // Actualizar el valor del campo actual
+    const updatedFormData = { ...formData, [field]: value };
+
+    // 🔹 Si los valores de km_salida y km_retorno son válidos, calcular total_km
+    const kmSalida = parseFloat(updatedFormData.km_salida) || 0;
+    const kmRetorno = parseFloat(updatedFormData.km_retorno) || 0;
+
+    if (kmSalida > 0 && kmRetorno > 0) {
+      updatedFormData.total_km = `${kmRetorno - kmSalida} km`;
     }
 
-    setFormData({ ...formData, [field]: value });
+    setFormData(updatedFormData);
     setErrors({ ...errors, [field]: "" });
   };
 
@@ -291,6 +305,11 @@ const ItUForm = () => {
 
   const handleInputChange = (e, field, validationFn) => {
     const { value } = e.target;
+
+    if (field === "total_hh") {
+      setFormData({ ...formData, [field]: value });
+      return;
+    }
 
     if (validationFn(value)) {
       setFormData({ ...formData, [field]: value });
@@ -325,9 +344,81 @@ const ItUForm = () => {
     setEditedTiempo({});
   };
 
+  const formatFecha = (fecha) => {
+    if (!fecha) return "";
+
+    const dateObj = new Date(fecha);
+    if (isNaN(dateObj)) return fecha;
+
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = String(dateObj.getFullYear()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+  };
+
   const handleInputChangeTiempo = (e, field) => {
     const { value } = e.target;
-    setEditedTiempo((prev) => ({ ...prev, [field]: value }));
+
+    const parseTime = (timeString) => {
+      const regex = /(\d+)h\s*(\d*)m?/; // Acepta "2h", "30m", "2h 30m"
+      const match = timeString.match(regex);
+
+      if (match) {
+        const hours = parseInt(match[1]) || 0;
+        const minutes = parseInt(match[2]) || 0;
+        return { hours, minutes };
+      }
+
+      // Si solo hay minutos ("30m")
+      const minutesOnlyMatch = timeString.match(/(\d+)m/);
+      if (minutesOnlyMatch) {
+        return { hours: 0, minutes: parseInt(minutesOnlyMatch[1]) };
+      }
+
+      return { hours: 0, minutes: 0 };
+    };
+
+    setEditedTiempo((prev) => {
+      const updatedData = { ...prev, [field]: value };
+
+      // Convertir las entradas de tiempo a horas y minutos
+      const viajeIda = parseTime(updatedData.viaje_ida || "0");
+      const viajeVuelta = parseTime(updatedData.viaje_vuelta || "0");
+      const trabajo = parseTime(updatedData.trabajo || "0");
+
+      // Sumar las horas y minutos de viaje
+      const totalViajeHours = viajeIda.hours + viajeVuelta.hours;
+      const totalViajeMinutes = viajeIda.minutes + viajeVuelta.minutes;
+
+      // Sumar las horas y minutos de trabajo
+      const totalTrabajoHours = trabajo.hours;
+      const totalTrabajoMinutes = trabajo.minutes;
+
+      // Convertir minutos a horas si es necesario
+      const totalMinutesViaje = totalViajeHours * 60 + totalViajeMinutes;
+      const totalHoursViaje = Math.floor(totalMinutesViaje / 60);
+      const totalMinutesRestanteViaje = totalMinutesViaje % 60;
+
+      const totalMinutesTrabajo = totalTrabajoHours * 60 + totalTrabajoMinutes;
+      const totalHoursTrabajo = Math.floor(totalMinutesTrabajo / 60);
+      const totalMinutesRestanteTrabajo = totalMinutesTrabajo % 60;
+
+      // Formatear los valores de total_hh
+      const totalViajeFormatted = `${totalHoursViaje}h ${totalMinutesRestanteViaje}m`;
+      const totalTrabajoFormatted = `${totalHoursTrabajo}h ${totalMinutesRestanteTrabajo}m`;
+
+      updatedData.total_hh_viaje = totalViajeFormatted;
+      updatedData.total_hh_trabajo = totalTrabajoFormatted;
+
+      // 🔹 Aquí también actualizamos `formData.total_hh`
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        total_hh: totalTrabajoFormatted,
+      }));
+
+      return updatedData;
+    });
   };
 
   const handleUpdateIt = async (data) => {
@@ -412,41 +503,84 @@ const ItUForm = () => {
 
   const handleCurrentTiempoChange = (e, field) => {
     const { value } = e.target;
+
+    // Función para parsear tiempo (h y m)
+    const parseTime = (timeString) => {
+      const regex = /(\d+)h\s*(\d*)m?/;
+      const match = timeString.match(regex);
+
+      if (match) {
+        const hours = parseInt(match[1]) || 0;
+        const minutes = parseInt(match[2]) || 0;
+        return { hours, minutes };
+      }
+
+      // Si solo hay minutos ("30m")
+      const minutesOnlyMatch = timeString.match(/(\d+)m/);
+      if (minutesOnlyMatch) {
+        return { hours: 0, minutes: parseInt(minutesOnlyMatch[1]) };
+      }
+
+      return { hours: 0, minutes: 0 };
+    };
+
+    // Si es la fecha, la registramos normalmente
     if (field === "fecha") {
-      handleFechaChange(e, field);
+      setCurrentTiempo((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+      handleFechaChange(e, field); // Llama a la función correspondiente
       return;
     }
-    const regex = /^[0-9]+(h|m)?$/;
-    if (regex.test(value) || value === "") {
-      setCurrentTiempo((prev) => {
-        const updatedData = { ...prev, [field]: value };
-        if (field === "viaje_ida" || field === "viaje_vuelta") {
-          const viajeIda = updatedData.viaje_ida
-            ? parseInt(updatedData.viaje_ida)
-            : 0;
-          const viajeVuelta = updatedData.viaje_vuelta
-            ? parseInt(updatedData.viaje_vuelta)
-            : 0;
-          updatedData.total_hh_viaje = `${viajeIda + viajeVuelta}h`;
-        }
-        if (field === "trabajo") {
-          const trabajo = updatedData.trabajo
-            ? parseInt(updatedData.trabajo)
-            : 0;
-          updatedData.total_hh_trabajo = `${trabajo}h`;
-        }
-        return updatedData;
-      });
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
+
+    // Actualizamos los valores de los campos de tiempo
+    setCurrentTiempo((prev) => {
+      const updatedData = { ...prev, [field]: value };
+
+      // Parsear las entradas de tiempo (viaje_ida, viaje_vuelta y trabajo)
+      const viajeIda = parseTime(updatedData.viaje_ida || "0");
+      const viajeVuelta = parseTime(updatedData.viaje_vuelta || "0");
+      const trabajo = parseTime(updatedData.trabajo || "0");
+
+      // Sumar las horas y minutos de viaje
+      const totalViajeHours = viajeIda.hours + viajeVuelta.hours;
+      const totalViajeMinutes = viajeIda.minutes + viajeVuelta.minutes;
+
+      // Sumar las horas y minutos de trabajo
+      const totalTrabajoHours = trabajo.hours;
+      const totalTrabajoMinutes = trabajo.minutes;
+
+      // Convertir minutos a horas si es necesario
+      const totalMinutesViaje = totalViajeHours * 60 + totalViajeMinutes;
+      const totalHoursViaje = Math.floor(totalMinutesViaje / 60);
+      const totalMinutesRestanteViaje = totalMinutesViaje % 60;
+
+      const totalMinutesTrabajo = totalTrabajoHours * 60 + totalTrabajoMinutes;
+      const totalHoursTrabajo = Math.floor(totalMinutesTrabajo / 60);
+      const totalMinutesRestanteTrabajo = totalMinutesTrabajo % 60;
+
+      // Formatear los valores de total_hh
+      const totalViajeFormatted = `${totalHoursViaje}h ${totalMinutesRestanteViaje}m`;
+      const totalTrabajoFormatted = `${totalHoursTrabajo}h ${totalMinutesRestanteTrabajo}m`;
+
+      updatedData.total_hh_viaje = totalViajeFormatted;
+      updatedData.total_hh_trabajo = totalTrabajoFormatted;
+
+      // Actualizamos `formData.total_hh`
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        total_hh: totalTrabajoFormatted,
       }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "Solo se permiten números seguidos de 'h' o 'm'.",
-      }));
-    }
+
+      return updatedData;
+    });
+  };
+
+  const getMinDate = () => {
+    const today = new Date();
+    today.setDate(today.getDate() - 7); // Fecha mínima: hace 7 días
+    return today.toISOString().split("T")[0]; // Formato YYYY-MM-DD
   };
 
   const handleAddTiempo = () => {
@@ -653,7 +787,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Nombre / Razón Social"
+                label="Nombre Razón Social"
                 type="text"
                 value={currentCliente.cliente.nombre_razon_social}
                 fullWidth
@@ -786,7 +920,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Numero_serie"
+                label="Numero de serie"
                 name="numero_serie"
                 value={formData.numero_serie}
                 onChange={(e) =>
@@ -802,7 +936,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="numero_motor"
+                label="Numero motor"
                 name="numero_motor"
                 value={formData.numero_motor}
                 onChange={(e) =>
@@ -818,7 +952,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="km_salida"
+                label="Kilometro de salida"
                 name="km_salida"
                 value={formData.km_salida}
                 onChange={(e) => handleChange(e, "km_salida")}
@@ -832,7 +966,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="km_retorno"
+                label="Kilometro de retorno"
                 name="km_retorno"
                 value={formData.km_retorno}
                 onChange={(e) => handleChange(e, "km_retorno")}
@@ -850,7 +984,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
-                label="queja_sintoma"
+                label="Queja y/o Sintoma"
                 name="queja_sintoma"
                 value={formData.queja_sintoma}
                 onChange={(e) => handleNameChange(e, "queja_sintoma")}
@@ -866,7 +1000,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
-                label="diagnostico"
+                label="Diagnostico"
                 name="diagnostico"
                 value={formData.diagnostico}
                 onChange={(e) => handleNameChange(e, "diagnostico")}
@@ -882,7 +1016,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
-                label="pieza_falla"
+                label="Pieza falla"
                 name="pieza_falla"
                 value={formData.pieza_falla}
                 onChange={(e) => handleNameChange(e, "pieza_falla")}
@@ -898,7 +1032,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
-                label="solucion"
+                label="Solución"
                 name="solucion"
                 value={formData.solucion}
                 onChange={(e) => handleNameChange(e, "solucion")}
@@ -914,7 +1048,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="total hh"
+                label="Total horas hombre"
                 name="total_hh"
                 value={formData.total_hh}
                 onChange={(e) =>
@@ -930,7 +1064,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
-                label="total km"
+                label="Total Kilometros"
                 name="total_km"
                 value={formData.total_km}
                 onChange={(e) =>
@@ -946,7 +1080,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="insumo"
+                label="Insumo"
                 name="insumo"
                 value={formData.insumo}
                 onChange={(e) => handleNameChange(e, "insumo")}
@@ -964,24 +1098,23 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="Fecha"
+                label="Fecha de visita"
                 type="date"
                 fullWidth
                 value={currentTiempo.fecha}
                 onChange={(e) => handleCurrentTiempoChange(e, "fecha")}
-                error={!!errors.fecha}
-                helperText={errors.fecha}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 inputProps={{
-                  min: new Date().toISOString().split("T")[0],
+                  min: getMinDate(), // Fecha mínima permitida: 7 días atrás
                 }}
               />
             </Grid>
+
             <Grid item xs={2}>
               <TextField
-                label="viaje_ida"
+                label="Viaje de ida"
                 fullWidth
                 value={currentTiempo.viaje_ida}
                 onChange={(e) => handleCurrentTiempoChange(e, "viaje_ida")}
@@ -994,7 +1127,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="trabajo"
+                label="Horas de trabajo"
                 fullWidth
                 value={currentTiempo.trabajo}
                 onChange={(e) => handleCurrentTiempoChange(e, "trabajo")}
@@ -1007,7 +1140,7 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="viaje_vuelta"
+                label="Viaje de vuelta"
                 fullWidth
                 value={currentTiempo.viaje_vuelta}
                 onChange={(e) => handleCurrentTiempoChange(e, "viaje_vuelta")}
@@ -1020,39 +1153,38 @@ const ItUForm = () => {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="total_hh_viaje"
+                label="Total horas de viaje"
                 fullWidth
                 value={currentTiempo.total_hh_viaje}
-                onChange={(e) => handleFechaChange(e, "total_hh_viaje")}
                 error={!!errors.total_hh_viaje}
                 helperText={errors.total_hh_viaje}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                disabled
               />
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="total_hh_trabajo"
+                label="Total de horas hombre"
                 fullWidth
                 value={currentTiempo.total_hh_trabajo}
-                onChange={(e) =>
-                  handleCurrentTiempoChange(e, "total_hh_trabajo")
-                }
                 error={!!errors.total_hh_trabajo}
                 helperText={errors.total_hh_trabajo}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                disabled
               />
             </Grid>
+
             <Grid item xs={12}>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleAddTiempo}
               >
-                Agregar Control de Tiempo
+                Agendar Visita
               </Button>
             </Grid>
             <Grid item xs={12}>
@@ -1083,9 +1215,10 @@ const ItUForm = () => {
                               size="small"
                             />
                           ) : (
-                            tiempo.fecha
+                            formatFecha(tiempo.fecha)
                           )}
                         </TableCell>
+
                         <TableCell>
                           {editingIndexTiempo === index ? (
                             <TextField
@@ -1125,8 +1258,18 @@ const ItUForm = () => {
                             tiempo.viaje_vuelta
                           )}
                         </TableCell>
-                        <TableCell>{tiempo.total_hh_viaje}</TableCell>
-                        <TableCell>{tiempo.total_hh_trabajo}</TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index
+                            ? editedTiempo.total_hh_viaje ||
+                              tiempo.total_hh_viaje
+                            : tiempo.total_hh_viaje}
+                        </TableCell>
+                        <TableCell>
+                          {editingIndexTiempo === index
+                            ? editedTiempo.total_hh_trabajo ||
+                              tiempo.total_hh_trabajo
+                            : tiempo.total_hh_trabajo}
+                        </TableCell>
                         <TableCell>
                           {editingIndexTiempo === index ? (
                             <>
@@ -1196,7 +1339,7 @@ const ItUForm = () => {
               color="primary"
               sx={{ flex: 1 }}
             >
-              Crear IT
+              Actualizar IT
             </Button>
           </Box>
         </Box>

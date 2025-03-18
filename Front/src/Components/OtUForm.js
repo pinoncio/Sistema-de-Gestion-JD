@@ -176,14 +176,17 @@ const OrderUForm = () => {
 
   const handleDateChange = (e, field) => {
     const { value } = e.target;
-    if (!isNaN(Date.parse(value))) {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else
+    const today = new Date().toISOString().split("T")[0];
+
+    if (value < today) {
       setErrors({
         ...errors,
-        [field]: "Ingrese una fecha válida en formato YYYY-MM-DD.",
+        [field]: "No se permiten fechas pasadas.",
       });
+    } else {
+      setFormData({ ...formData, [field]: value });
+      setErrors({ ...errors, [field]: "" });
+    }
   };
 
   const handleUpdateOt = async (data) => {
@@ -446,13 +449,12 @@ const OrderUForm = () => {
   const handleEditProducto = (index) => {
     const productoToEdit = formData.productos[index];
     console.log("Editando producto:", productoToEdit);
-    
-    setEditingIndexProducto(index); 
+
+    setEditingIndexProducto(index);
     setEditedProducto({
-      ...productoToEdit, 
+      ...productoToEdit,
     });
   };
-  
 
   const handleSaveProducto = (index) => {
     const updatedProducto = {
@@ -461,7 +463,7 @@ const OrderUForm = () => {
       precio_total: calculateTotalProducto(editedProducto),
     };
     console.log("Guardando producto actualizado:", updatedProducto);
-    
+
     setFormData((prevData) => ({
       ...prevData,
       productos: prevData.productos.map((item, i) =>
@@ -470,7 +472,6 @@ const OrderUForm = () => {
     }));
     setEditingIndexProducto(null); // Sale del modo de edición
   };
-  
 
   const handleCancelEditProducto = () => {
     setEditingIndexProducto(null); // Sale del modo de edición sin guardar
@@ -479,11 +480,11 @@ const OrderUForm = () => {
   const handleInputChangeProducto = (e, field) => {
     const { value } = e.target;
     // Convierte el valor de descuento_producto a número (si es un número válido) o a 0 si es un string vacío
-    const numericValue = field === "descuento_producto" ? parseFloat(value) || 0 : value;
-  
+    const numericValue =
+      field === "descuento_producto" ? parseFloat(value) || 0 : value;
+
     setEditedProducto((prev) => ({ ...prev, [field]: numericValue }));
   };
-  
 
   const calculateTotalProducto = (producto) => {
     const cantidad = parseFloat(producto.cantidad_producto) || 0;
@@ -493,7 +494,6 @@ const OrderUForm = () => {
     const afEx = producto.af_ex_producto === "Exento" ? 0 : 1;
     return (cantidad * precioUnitario * (1 - descuento / 100) + recargo) * afEx;
   };
-  
 
   useEffect(() => {
     const { descuento_global, monto_exento, ot_insumo, productos } = formData;
@@ -754,7 +754,10 @@ const OrderUForm = () => {
                 InputLabelProps={{ shrink: true }}
                 required
                 error={!!errors.fecha_entrega}
-                helperText={errors.fecha_entrega || "Campó obligatorio"}
+                helperText={errors.fecha_entrega || "Campo obligatorio"}
+                inputProps={{
+                  min: new Date().toISOString().split("T")[0], // Solo permite desde hoy en adelante
+                }}
               />
             </Grid>
 

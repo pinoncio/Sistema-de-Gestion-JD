@@ -152,14 +152,17 @@ const OrderForm = () => {
 
   const handleDateChange = (e, field) => {
     const { value } = e.target;
-    if (!isNaN(Date.parse(value))) {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else
+    const today = new Date().toISOString().split("T")[0];
+
+    if (value < today) {
       setErrors({
         ...errors,
-        [field]: "Ingrese una fecha válida en formato YYYY-MM-DD.",
+        [field]: "No se permiten fechas pasadas.",
       });
+    } else {
+      setFormData({ ...formData, [field]: value });
+      setErrors({ ...errors, [field]: "" });
+    }
   };
 
   const handleCreateOt = async (data) => {
@@ -634,7 +637,10 @@ const OrderForm = () => {
                 InputLabelProps={{ shrink: true }}
                 required
                 error={!!errors.fecha_entrega}
-                helperText={errors.fecha_entrega || "Campó obligatorio"}
+                helperText={errors.fecha_entrega || "Campo obligatorio"}
+                inputProps={{
+                  min: new Date().toISOString().split("T")[0], // Solo permite desde hoy en adelante
+                }}
               />
             </Grid>
 
