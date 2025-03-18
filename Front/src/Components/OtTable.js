@@ -72,6 +72,7 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
             </TableSortLabel>
           </TableCell>
           <TableCell>Tipo OT</TableCell>
+          <TableCell>N° de serie</TableCell>
           <TableCell>Observacion final</TableCell>
           <TableCell>Total</TableCell>
           <TableCell>Acciones</TableCell>
@@ -90,6 +91,7 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
               {moment(orden.fecha_entrega).format("DD/MM/YYYY")}
             </TableCell>
             <TableCell>{orden.tipo_ot}</TableCell>
+            <TableCell>{orden.numero_serie}</TableCell>
             <TableCell>{orden.observacion_final}</TableCell>
             <TableCell>
               {new Intl.NumberFormat("es-CL", {

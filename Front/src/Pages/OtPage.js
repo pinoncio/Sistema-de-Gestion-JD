@@ -12,6 +12,8 @@ import {
   CardContent,
   Snackbar,
   Alert,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
@@ -23,6 +25,7 @@ const OtPage = () => {
   const [ordenes, setOrdenes] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("cliente"); // Tipo de búsqueda (cliente o número de serie)
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [snackbarSeverity] = useState("success");
@@ -57,13 +60,19 @@ const OtPage = () => {
     return cliente ? cliente.nombre_razon_social : "Sin Cliente";
   };
 
-  // Filtrar las órdenes por el nombre del cliente
-  const filteredOrdenes = ordenes.filter(
-    (orden) =>
-      getClienteName(orden.id_cliente)
+  // Filtro dinámico dependiendo del tipo de búsqueda
+  const filteredOrdenes = ordenes.filter((orden) => {
+    if (searchType === "cliente") {
+      return getClienteName(orden.id_cliente)
         .toLowerCase()
-        .includes(searchQuery.toLowerCase()) // Filtra por nombre_razon_social
-  );
+        .includes(searchQuery.toLowerCase());
+    } else if (searchType === "numero_serie") {
+      return orden.numero_serie
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    }
+    return false;
+  });
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -97,13 +106,40 @@ const OtPage = () => {
     });
   };
 
+  const handleSearchTypeChange = (event, newSearchType) => {
+    if (newSearchType) {
+      setSearchType(newSearchType);
+    }
+  };
+
   return (
     <UserLayout>
       <h1>Lista completa de órdenes de trabajo</h1>
 
       <div className="search-bar">
+        {/* Botones para seleccionar el tipo de búsqueda */}
+        <ToggleButtonGroup
+          value={searchType}
+          exclusive
+          onChange={handleSearchTypeChange}
+          aria-label="Tipo de búsqueda"
+        >
+          <ToggleButton value="cliente" aria-label="Buscar por cliente">
+            Buscar por Cliente
+          </ToggleButton>
+          <ToggleButton
+            value="numero_serie"
+            aria-label="Buscar por número de serie"
+          >
+            Buscar por Número de Serie
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        {/* Campo de búsqueda */}
         <TextField
-          label="Buscar por cliente"
+          label={`Buscar por ${
+            searchType === "cliente" ? "cliente" : "número de serie"
+          }`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth

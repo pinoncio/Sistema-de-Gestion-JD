@@ -132,15 +132,12 @@ const ItForm = () => {
     // Actualizar el valor del campo actual
     const updatedFormData = { ...formData, [field]: value };
 
-    // Si los valores de km_salida y km_retorno son válidos, calcular total_km
-    const kmSalida = parseFloat(updatedFormData.km_salida) || 0;
-    const kmRetorno = parseFloat(updatedFormData.km_retorno) || 0;
-
-    // Solo actualizamos total_km si ambos valores son válidos (mayores a 0)
-    if (kmSalida > 0 && kmRetorno > 0) {
-      updatedFormData.total_km = `${kmRetorno - kmSalida} km`;
-    } else {
-      updatedFormData.total_km = ""; // Si no es válido, limpiamos total_km
+    // Si el campo es 'id_ot', obtener el número de serie correspondiente
+    if (field === "id_ot") {
+      const selectedOt = filteredOt.find((o) => o.id_ot === value);
+      if (selectedOt) {
+        updatedFormData.numero_serie = selectedOt.numero_serie; // Asignar el número de serie correspondiente
+      }
     }
 
     // Si el campo es 'id_cliente', actualizar la información del cliente
@@ -699,15 +696,14 @@ const ItForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Numero_serie"
+                label="Número de Serie"
                 name="numero_serie"
                 value={formData.numero_serie}
                 onChange={(e) =>
                   handleInputChange(e, "numero_serie", isAlphanumericWithDash)
                 }
                 fullWidth
-                error={!!errors.numero_serie}
-                helperText={errors.numero_serie}
+                disabled
                 InputLabelProps={{
                   shrink: true,
                 }}
