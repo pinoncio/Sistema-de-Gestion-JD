@@ -48,9 +48,23 @@ export const updateOt = async (id_ot, otData) => {
 export const deleteOt = async (id_ot) => {
   try {
     const response = await api.delete(`/ots/${id_ot}`);
-    return response.data;
+
+    // Si la respuesta tiene un código 400, mostramos el mensaje en consola y lanzamos un error
+    if (response.status === 400) {
+      throw new Error(
+        response.data.msg || "No se pudo eliminar la orden de trabajo."
+      );
+    }
+
+    return response.data; // Retorna la respuesta exitosa del servidor
   } catch (error) {
     console.error("Error al eliminar la orden de trabajo:", error);
-    throw error;
+
+    // Si el error contiene un mensaje, lo mostramos, de lo contrario mostramos un mensaje genérico
+    throw new Error(
+      error.response
+        ? error.response.data.msg
+        : error.message || "Ha ocurrido un error inesperado"
+    );
   }
 };

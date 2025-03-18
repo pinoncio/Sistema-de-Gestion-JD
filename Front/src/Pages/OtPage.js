@@ -87,7 +87,10 @@ const OtPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          // Llamada a la función deleteOt sin asignar la respuesta
           await deleteOt(id);
+
+          // Si no hay errores, eliminar con éxito
           await fetchOrdenes();
           Swal.fire(
             "¡Orden eliminada!",
@@ -96,11 +99,11 @@ const OtPage = () => {
           );
         } catch (error) {
           console.error("Error al eliminar la orden de trabajo", error);
-          Swal.fire(
-            "Error",
-            "Ha ocurrido un error al eliminar la orden de trabajo.",
-            "error"
-          );
+
+          // Mostrar el mensaje de error con Swal
+          const errorMessage =
+            error.message || "Ha ocurrido un error inesperado";
+          Swal.fire("Error", errorMessage, "error");
         }
       }
     });

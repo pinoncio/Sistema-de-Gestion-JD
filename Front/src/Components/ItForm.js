@@ -161,6 +161,14 @@ const ItForm = () => {
       }
     }
 
+    // 🔹 Si los valores de km_salida y km_retorno son válidos, calcular total_km
+    const kmSalida = parseFloat(updatedFormData.km_salida) || 0;
+    const kmRetorno = parseFloat(updatedFormData.km_retorno) || 0;
+
+    if (kmSalida > 0 && kmRetorno > 0) {
+      updatedFormData.total_km = `${kmRetorno - kmSalida} km`;
+    }
+
     // Actualizar el estado solo una vez al final
     setFormData(updatedFormData);
     setErrors({ ...errors, [field]: "" });

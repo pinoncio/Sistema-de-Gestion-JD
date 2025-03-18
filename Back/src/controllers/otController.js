@@ -7,6 +7,7 @@ const { clientemetodopago } = require("../models/clientemetodopagomodel");
 const { metodopago } = require("../models/metodopagomodel");
 const { contactocomercial } = require("../models/contactocomercialmodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
+const { it } = require("../models/informemodel");
 
 const getOts = async (req, res) => {
   try {
@@ -485,16 +486,22 @@ const deleteOt = async (req, res) => {
       });
     }
 
+    const relatedIT = await it.findOne({ where: { id_ot } });
+    if (relatedIT) {
+      return res.status(400).json({
+        msg: "No se puede eliminar una orden de trabajo asignada a un informe de trabajo.",
+      });
+    }
+
     await producto.destroy({ where: { id_ot } });
     await otinsumo.destroy({ where: { id_ot } });
-
     await otData.destroy();
 
     res.json({ msg: "Orden de trabajo eliminada correctamente" });
   } catch (error) {
     res.status(500).json({
       msg: "Ha ocurrido un error al eliminar la orden de trabajo.",
-      error,
+      error: error.message,
     });
   }
 };
