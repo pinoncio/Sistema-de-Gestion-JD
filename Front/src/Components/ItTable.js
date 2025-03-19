@@ -83,16 +83,16 @@ const ItTable = ({ informes, onDelete }) => {
               direction={orderBy === "fecha_control_tiempo" ? order : "asc"}
               onClick={() => handleRequestSort("fecha_control_tiempo")}
             >
-              Fecha Control Tiempo
+              Fecha Visita
             </TableSortLabel>
           </TableCell>
+          <TableCell>Dirección Cliente</TableCell>
+          <TableCell>Tecnico</TableCell>
           <TableCell>Máquina</TableCell>
           <TableCell>Modelo</TableCell>
-          <TableCell>Numero de Serie</TableCell>
-          <TableCell>Queja/Síntoma</TableCell>
-          <TableCell>Observación</TableCell>
-          <TableCell>Insumo</TableCell>
-          <TableCell>Solución</TableCell>
+          <TableCell>N° de Serie</TableCell>
+          <TableCell>N° de Motor</TableCell>
+          <TableCell>Queja y/o Sintoma</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
       </TableHead>
@@ -116,14 +116,13 @@ const ItTable = ({ informes, onDelete }) => {
                 <span>No hay control de tiempo</span>
               )}
             </TableCell>
+            <TableCell>{informe.cliente.direccion}</TableCell>
+            <TableCell>{informe.tecnico}</TableCell>
             <TableCell>{informe.maquina}</TableCell>
             <TableCell>{informe.modelo}</TableCell>
             <TableCell>{informe.numero_serie}</TableCell>
+            <TableCell>{informe.numero_motor}</TableCell>
             <TableCell>{informe.queja_sintoma}</TableCell>
-            <TableCell>{informe.observacion}</TableCell>
-            <TableCell>{informe.insumo}</TableCell>
-            <TableCell>{informe.solucion}</TableCell>
-
             <TableCell>
               <Link to={`/itProfile/${informe.id_it}`}>
                 <IconButton>
@@ -142,8 +141,11 @@ const ItTable = ({ informes, onDelete }) => {
               >
                 <DeleteIcon />
               </IconButton>
-              <IconButton color="primary" sx={{ ml: 1 }}
-                onClick={() => handlePdfRedirect(informe.id_it)}>
+              <IconButton
+                color="primary"
+                sx={{ ml: 1 }}
+                onClick={() => handlePdfRedirect(informe.id_it)}
+              >
                 <PictureAsPdfIcon />
               </IconButton>
             </TableCell>

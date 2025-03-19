@@ -188,7 +188,7 @@ const ItForm = () => {
   };
 
   const isAlphanumericWithDash = (value) => {
-    return /^[A-Za-z0-9-]*$/.test(value); // Permite letras, números y guiones
+    return /^[A-Za-z0-9-]*$/.test(value); 
   };
 
   const isNumberEndingWithHOrM = (value) => {
