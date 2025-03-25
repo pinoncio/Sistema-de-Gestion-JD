@@ -20,7 +20,6 @@ import OrderUForm from "./Components/OtUForm";
 import ItPage from "./Pages/ItPage";
 import ItForm from "./Components/ItForm";
 import ItUForm from "./Components/ItUForm";
-import PdfPreview from "./Services/VerInforme";
 import ItProfilePage from "./Pages/ItVerPage";
 
 const App = () => {
@@ -161,14 +160,6 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <ItForm />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/pdf-preview/:id_it" 
-            element={
-              <PrivateRoute rolPermitido={2}>
-                <PdfPreview />
               </PrivateRoute>
             }
           />

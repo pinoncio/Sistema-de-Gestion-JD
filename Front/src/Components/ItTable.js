@@ -12,16 +12,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import moment from "moment";
+import { generatePDF } from "../Services/VerInforme";
 
 const ItTable = ({ informes, onDelete }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("fecha_control_tiempo");
-  const navigate = useNavigate();
-  const handlePdfRedirect = (id_it) => {
-    navigate(`/pdf-preview/${id_it}`);
-  };
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -31,10 +28,7 @@ const ItTable = ({ informes, onDelete }) => {
 
   const stableSort = (array, comparator) => {
     if (!orderBy) return array;
-
-    // Asegúrate de que control_tiempo esté definido y sea un array en cada informe
     const stabilizedArray = array.map((el, index) => {
-      // Asegurándote de que control_tiempo siempre sea un array
       el.control_tiempo = Array.isArray(el.control_tiempo)
         ? el.control_tiempo
         : [];
@@ -50,11 +44,9 @@ const ItTable = ({ informes, onDelete }) => {
     return stabilizedArray.map((el) => el[0]);
   };
 
-  // Compara las fechas de control_tiempo
   const comparator = (a, b) => {
     if (!orderBy) return 0;
 
-    // Obtener la primera fecha de control_tiempo para comparar
     const controlA =
       a.control_tiempo.length > 0 ? a.control_tiempo[0].fecha : null;
     const controlB =
@@ -63,8 +55,8 @@ const ItTable = ({ informes, onDelete }) => {
     const dateA = moment(controlA);
     const dateB = moment(controlB);
 
-    if (!dateA.isValid()) return 1; // Si no hay fecha válida en A, lo coloca al final
-    if (!dateB.isValid()) return -1; // Si no hay fecha válida en B, lo coloca al final
+    if (!dateA.isValid()) return 1;
+    if (!dateB.isValid()) return -1; 
 
     if (dateA.isBefore(dateB)) return order === "asc" ? -1 : 1;
     if (dateA.isAfter(dateB)) return order === "asc" ? 1 : -1;
@@ -144,7 +136,7 @@ const ItTable = ({ informes, onDelete }) => {
               <IconButton
                 color="primary"
                 sx={{ ml: 1 }}
-                onClick={() => handlePdfRedirect(informe.id_it)}
+                onClick={() => generatePDF(informe.id_it)}
               >
                 <PictureAsPdfIcon />
               </IconButton>

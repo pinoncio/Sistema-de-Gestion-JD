@@ -350,18 +350,26 @@ const ItUForm = () => {
     const dateObj = new Date(fecha);
     if (isNaN(dateObj)) return fecha;
 
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const year = String(dateObj.getFullYear()).slice(-2);
+    // Asegurarse de que la fecha esté en el formato correcto, considerando UTC
+    const day = String(dateObj.getUTCDate()).padStart(2, "0");
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0"); // Meses comienzan en 0
+    const year = String(dateObj.getUTCFullYear()).slice(-2); // Año de 2 dígitos
 
     return `${day}/${month}/${year}`;
+  };
+
+  // Calcular la fecha límite (7 días antes de la fecha actual)
+  const getDateLimit = () => {
+    const today = new Date();
+    today.setDate(today.getDate() - 7); // Restar 7 días
+    return today.toISOString().split("T")[0]; // Formato "YYYY-MM-DD"
   };
 
   const handleInputChangeTiempo = (e, field) => {
     const { value } = e.target;
 
     const parseTime = (timeString) => {
-      const regex = /(\d+)h\s*(\d*)m?/; // Acepta "2h", "30m", "2h 30m"
+      const regex = /(\d+)h\s*(\d*)m?/;
       const match = timeString.match(regex);
 
       if (match) {
@@ -381,6 +389,12 @@ const ItUForm = () => {
 
     setEditedTiempo((prev) => {
       const updatedData = { ...prev, [field]: value };
+
+      // Si el campo es "fecha", aseguramos que esté en formato "yyyy-mm-dd"
+      if (field === "fecha") {
+        const dateObj = new Date(value);
+        updatedData[field] = dateObj.toISOString().split("T")[0]; // Convertir a formato "yyyy-mm-dd"
+      }
 
       // Convertir las entradas de tiempo a horas y minutos
       const viajeIda = parseTime(updatedData.viaje_ida || "0");
@@ -1213,6 +1227,9 @@ const ItUForm = () => {
                               }
                               type="date"
                               size="small"
+                              inputProps={{
+                                min: getDateLimit(), 
+                              }}
                             />
                           ) : (
                             formatFecha(tiempo.fecha)

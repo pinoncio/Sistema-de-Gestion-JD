@@ -188,7 +188,7 @@ const ItForm = () => {
   };
 
   const isAlphanumericWithDash = (value) => {
-    return /^[A-Za-z0-9-]*$/.test(value); 
+    return /^[A-Za-z0-9-]*$/.test(value);
   };
 
   const isNumberEndingWithHOrM = (value) => {
@@ -198,6 +198,11 @@ const ItForm = () => {
 
   const handleInputChange = (e, field, validationFn) => {
     const { value } = e.target;
+
+    if (field === "total_hh") {
+      setFormData({ ...formData, [field]: value });
+      return;
+    }
 
     if (validationFn(value)) {
       setFormData({ ...formData, [field]: value });
