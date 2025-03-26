@@ -26,6 +26,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "./Layout/UserLayout";
 import { useNavigate } from "react-router-dom";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { useLocation } from "react-router-dom";
 
 const ItForm = () => {
   const [clientes, setClientes] = useState([]);
@@ -35,18 +36,21 @@ const ItForm = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [filteredOt, setFilteredOt] = useState([]);
+  const location = useLocation();
+  const otData = location.state || {};
+  console.log("Datos recibidos:", otData);
   const user = JSON.parse(localStorage.getItem("user")) || {
     nombre: "",
     apellido: "",
   };
   const [formData, setFormData] = useState({
-    id_cliente: "",
-    id_ot: "",
+    id_cliente: otData.id_cliente || "",
+    id_ot: otData.id_ot || "",
     tecnico: `${user.nombre} ${user.apellido}`,
     maquina: "",
     modelo: "",
     horometro: "",
-    numero_serie: "",
+    numero_serie: otData.numero_serie || "",
     numero_motor: "",
     km_salida: "",
     km_retorno: "",
@@ -72,6 +76,7 @@ const ItForm = () => {
   });
   const [currentCliente, setCurrentCliente] = useState({
     cliente: {
+      id_cliente: otData.id_cliente || "",
       nombre_razon_social: "",
       rut: "",
       direccion: "",
@@ -88,6 +93,45 @@ const ItForm = () => {
     fetchOt();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (otData.id_cliente) {
+      // Buscar y cargar la información del cliente automáticamente
+      const selectedCliente = clientes.find(
+        (c) => c.id_cliente === otData.id_cliente
+      );
+      if (selectedCliente) {
+        setCurrentCliente({
+          cliente: {
+            nombre_razon_social: selectedCliente.nombre_razon_social || "",
+            rut: selectedCliente.rut || "",
+            direccion: selectedCliente.direccion || "",
+            informacion_de_pago: {
+              correo_electronico:
+                selectedCliente.informacion_de_pago?.correo_electronico || "",
+              telefono_responsable:
+                selectedCliente.informacion_de_pago?.telefono_responsable || "",
+            },
+          },
+        });
+
+        // Filtrar las OTs que pertenecen a este cliente
+        setFilteredOt(ot.filter((o) => o.id_cliente === otData.id_cliente));
+      }
+    }
+
+    if (otData.id_ot) {
+      // Buscar y cargar la información de la OT automáticamente
+      const selectedOt = ot.find((o) => o.id_ot === otData.id_ot);
+      if (selectedOt) {
+        setFormData((prev) => ({
+          ...prev,
+          id_ot: selectedOt.id_ot,
+          numero_serie: selectedOt.numero_serie,
+        }));
+      }
+    }
+  }, [otData.id_cliente, otData.id_ot, clientes, ot]);
 
   const fetchClientes = async () => {
     try {

@@ -26,7 +26,6 @@ import {
 } from "@mui/material";
 import UserLayout from "../Components/Layout/UserLayout";
 
-
 const OtProfilePage = () => {
   const { id_ot } = useParams();
   const [ot, setOt] = useState(null);
@@ -479,16 +478,31 @@ const OtProfilePage = () => {
                 }}
               />
             </Box>
-
           </CardContent>
         </Card>
         <div className="profile-button">
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
+            sx={{ marginRight: "30px" }} // Espacio entre botones
             onClick={() => navigate("/ots")}
           >
             Volver a la lista de Órdenes de trabajo
+          </Button>        
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              navigate("/create-it", {
+                state: {
+                  id_cliente: ot?.id_cliente,
+                  id_ot: ot?.id_ot,
+                  numero_serie: ot?.numero_serie,
+                },
+              })
+            }
+          >
+            Crear Informe
           </Button>
         </div>
       </div>
