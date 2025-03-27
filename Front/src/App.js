@@ -21,6 +21,8 @@ import ItPage from "./Pages/ItPage";
 import ItForm from "./Components/ItForm";
 import ItUForm from "./Components/ItUForm";
 import ItProfilePage from "./Pages/ItVerPage";
+import MaquinaPage from "./Pages/MaquinaPage";
+import MaquinaVerPage from "./Pages/MaquinaVerPage";
 
 const App = () => {
   return (
@@ -176,6 +178,22 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <ItProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/maquina"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <MaquinaPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/maquinaProfile/:id_maquina"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <MaquinaVerPage />
               </PrivateRoute>
             }
           />

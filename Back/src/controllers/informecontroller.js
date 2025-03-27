@@ -3,6 +3,7 @@ const { cliente } = require("../models/clientemodel");
 const { ot } = require("../models/otmodel");
 const { controltiempo } = require("../models/controltiempomodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
+const { maquina } = require("../models/maquinamodel");
 
 const getInformeTrabajos = async (req, res) => {
   try {
@@ -16,6 +17,17 @@ const getInformeTrabajos = async (req, res) => {
               model: informaciondepago,
               as: "informacion_de_pago",
               attributes: ["correo_electronico", "telefono_responsable"],
+            },
+            {
+              model: maquina, // Incluir las máquinas dentro de cliente
+              as: "maquinas", // Alias de la relación
+              attributes: [
+                "id_maquina",
+                "nombre_maquina",
+                "modelo_maquina",
+                "numero_serie",
+                "numero_motor",
+              ], // Asegúrate de incluir los atributos de la máquina que necesitas
             },
           ],
         },
@@ -61,6 +73,17 @@ const getInformeTrabajo = async (req, res) => {
               as: "informacion_de_pago",
               attributes: ["correo_electronico", "telefono_responsable"],
             },
+            {
+              model: maquina, // Incluir las máquinas dentro de cliente
+              as: "maquinas", // Alias de la relación
+              attributes: [
+                "id_maquina",
+                "nombre_maquina",
+                "modelo_maquina",
+                "numero_serie",
+                "numero_motor",
+              ], // Asegúrate de incluir los atributos de la máquina que necesitas
+            },
           ],
         },
         { model: ot, attributes: ["id_ot"] },
@@ -103,6 +126,7 @@ const newInformeTrabajo = async (req, res) => {
   const {
     id_cliente,
     id_ot,
+    id_maquina,
     tecnico,
     maquina,
     modelo,
@@ -124,17 +148,14 @@ const newInformeTrabajo = async (req, res) => {
   } = req.body;
 
   try {
-    if (
-      !id_cliente ||
-      !control_tiempo ||
-      control_tiempo.length === 0
-    ) {
+    if (!id_cliente || id_maquina || !control_tiempo || control_tiempo.length === 0) {
       return res.status(400).json({ msg: "Faltan campos obligatorios" });
     }
 
     const nuevaIt = await it.create({
       id_cliente,
       id_ot: id_ot || null,
+      id_maquina: id_maquina  || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,
@@ -211,6 +232,7 @@ const updateInformeTrabajo = async (req, res) => {
   const {
     id_cliente,
     id_ot,
+    id_maquina,
     tecnico,
     maquina,
     modelo,
@@ -243,6 +265,7 @@ const updateInformeTrabajo = async (req, res) => {
     await informeExistente.update({
       id_cliente,
       id_ot: id_ot || null,
+      id_maquina: id_maquina || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,

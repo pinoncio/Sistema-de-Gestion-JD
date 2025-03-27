@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-  getClientes,
-  deleteCliente,
-  toggleClienteStatus,
-  createCliente,
-  updateCliente,
-} from "../Services/clienteService";
-import ClienteTable from "../Components/ClienteTable";
-import ClienteFormModal from "../Components/ClienteFormModal";
+  getMaquinas,
+  createMaquina,
+  updateMaquina,
+  deleteMaquina,
+} from "../Services/maquinaService";
+import { getClientes } from "../Services/clienteService";
+import { useNavigate } from "react-router-dom";
+import MaquinaTable from "../Components/MaquinaTable";
+import MaquinaFormModal from "../Components/MaquinaFormModal";
 import {
   Button,
   TextField,
@@ -17,82 +17,104 @@ import {
   CardContent,
   Snackbar,
   Alert,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
+import UserLayout from "../Components/Layout/UserLayout";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import "../Styles/User.css";
-import UserLayout from "../Components/Layout/UserLayout";
 
-const ClientePage = () => {
+const MaquinaPage = () => {
+  const [maquinas, setMaquinas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("cliente"); // Tipo de búsqueda (cliente o numero_serie)
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetchMaquinas();
     fetchClientes();
   }, []);
+
+  const fetchMaquinas = async () => {
+    try {
+      const data = await getMaquinas();
+      const maquinasOrdenadas = data.sort(
+        (a, b) => a.id_maquina - b.id_maquina
+      );
+      setMaquinas(maquinasOrdenadas);
+    } catch (error) {
+      console.error("Error al obtener las máquinas", error);
+    }
+  };
 
   const fetchClientes = async () => {
     try {
       const data = await getClientes();
-      const clientesOrdenados = data.sort(
-        (a, b) => a.id_cliente - b.id_cliente
-      );
-      setClientes(clientesOrdenados);
+      setClientes(data);
     } catch (error) {
       console.error("Error al obtener los clientes", error);
     }
   };
 
-  const filteredClientes = clientes.filter(
-    (cliente) =>
-      cliente.nombre_razon_social
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      cliente.nombre_fantasia
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      cliente.rut.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getClienteName = (id_cliente) => {
+    const cliente = clientes.find((c) => c.id_cliente === id_cliente);
+    return cliente ? cliente.nombre_razon_social : "Sin Cliente";
+  };
 
-  const handleCreateCliente = async (formData) => {
+  const filteredMaquinas = maquinas.filter((maquina) => {
+    if (searchType === "cliente") {
+      return getClienteName(maquina.id_cliente)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    } else if (searchType === "numero_serie") {
+      return maquina.numero_serie
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    }
+    return false;
+  });
+
+  const handleCreateMaquina = async (formData) => {
     try {
-      const response = await createCliente(formData);
-      console.log("Cliente creado exitosamente:", response.data);
+      const response = await createMaquina(formData);
+      console.log("Máquina creada exitosamente:", response.data);
       setOpen(false);
-      fetchClientes();
-      setSnackbarMessage("Cliente creado exitosamente!");
+      fetchMaquinas();
+
+      setSnackbarMessage("Máquina creada exitosamente!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Error al crear el cliente:", error);
-      setSnackbarMessage("Ha ocurrido un error al crear el cliente.");
+      console.error("Error al crear la máquina:", error);
+      setSnackbarMessage("Ha ocurrido un error al crear la máquina.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
 
-  const handleUpdateCliente = async (id_cliente, formData) => {
+  const handleUpdateMaquina = async (id, formData) => {
     try {
-      const response = await updateCliente(id_cliente, formData);
-      console.log("Cliente actualizado exitosamente:", response.data);
+      const response = await updateMaquina(id, formData);
+      console.log("Máquina actualizada exitosamente:", response.data);
       setOpen(false);
-      fetchClientes();
+      fetchMaquinas();
 
-      setSnackbarMessage("Cliente actualizado exitosamente!");
+      setSnackbarMessage("Máquina actualizada exitosamente!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Error al actualizar el cliente:", error);
-      setSnackbarMessage("Ha ocurrido un error al actualizar el cliente.");
+      console.error("Error al actualizar la máquina:", error);
+      setSnackbarMessage("Ha ocurrido un error al actualizar la máquina.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -101,14 +123,14 @@ const ClientePage = () => {
   const handleFormSubmit = async (formData) => {
     try {
       if (editing) {
-        await handleUpdateCliente(editId, formData);
+        await handleUpdateMaquina(editId, formData);
       } else {
-        await handleCreateCliente(formData);
+        await handleCreateMaquina(formData);
       }
       setOpen(false);
-      fetchClientes();
+      fetchMaquinas();
     } catch (error) {
-      console.error("Error al guardar el cliente", error);
+      console.error("Error al guardar la máquina", error);
     }
   };
 
@@ -125,14 +147,18 @@ const ClientePage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteCliente(id);
-          await fetchClientes();
-          Swal.fire("Eliminado!", "El cliente ha sido eliminado.", "success");
+          await deleteMaquina(id);
+          await fetchMaquinas();
+          Swal.fire(
+            "¡Máquina eliminada!",
+            "La máquina ha sido eliminada correctamente.",
+            "success"
+          );
         } catch (error) {
-          console.error("Error al eliminar el cliente", error);
+          console.error("Error al eliminar la máquina", error);
           Swal.fire(
             "Error",
-            "Ha ocurrido un error al eliminar el cliente.",
+            "Ha ocurrido un error al eliminar la máquina.",
             "error"
           );
         }
@@ -140,33 +166,10 @@ const ClientePage = () => {
     });
   };
 
-  const handleToggleStatus = async (id_cliente, nuevoEstado) => {
-    try {
-      await toggleClienteStatus(id_cliente, nuevoEstado);
-      setClientes((prevClientes) =>
-        prevClientes.map((cliente) =>
-          cliente.id_cliente === id_cliente
-            ? { ...cliente, cliente_vigente: nuevoEstado }
-            : cliente
-        )
-      );
-
-      setSnackbarMessage(
-        `El cliente ha sido ${
-          nuevoEstado ? "activado" : "desactivado"
-        } exitosamente.`
-      );
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Error al activar/desactivar el cliente:", error);
-    }
-  };
-
-  const handleOpenModal = (cliente = null) => {
-    if (cliente) {
+  const handleOpenModal = (maquina = null) => {
+    if (maquina) {
       setEditing(true);
-      setEditId(cliente.id_cliente);
+      setEditId(maquina.id_maquina);
     } else {
       setEditing(false);
       setEditId(null);
@@ -186,11 +189,30 @@ const ClientePage = () => {
 
   return (
     <UserLayout>
-      <h1>Lista completa de clientes</h1>
+      <h1>Lista completa de máquinas</h1>
 
       <div className="search-bar">
+        <ToggleButtonGroup
+          value={searchType}
+          exclusive
+          onChange={(event, newSearchType) => setSearchType(newSearchType)}
+          aria-label="Tipo de búsqueda"
+        >
+          <ToggleButton value="cliente" aria-label="Buscar por cliente">
+            Buscar por Cliente
+          </ToggleButton>
+          <ToggleButton
+            value="numero_serie"
+            aria-label="Buscar por número de serie"
+          >
+            Buscar por Número de Serie
+          </ToggleButton>
+        </ToggleButtonGroup>
+
         <TextField
-          label="Buscar cliente"
+          label={`Buscar por ${
+            searchType === "cliente" ? "cliente" : "número de serie"
+          }`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth
@@ -206,7 +228,7 @@ const ClientePage = () => {
       </div>
 
       <div
-        className="cliente-actions"
+        className="maquina-actions"
         style={{
           display: "flex",
           justifyContent: "flex-start",
@@ -215,7 +237,7 @@ const ClientePage = () => {
         }}
       >
         <Button
-          onClick={() => navigate("/user")}
+          onClick={() => navigate("/cliente")}
           startIcon={<ExitToAppIcon />}
           style={{
             backgroundColor: "#d32f2f",
@@ -236,38 +258,27 @@ const ClientePage = () => {
             padding: "8px 16px",
           }}
         >
-          Añadir un Cliente
-        </Button>
-        <Button
-          onClick={() => navigate("/maquina")}
-          startIcon={<AddIcon />}
-          style={{
-            backgroundColor: "#4caf50", 
-            color: "white",
-            borderRadius: "4px",
-            padding: "8px 16px",
-          }}
-        >
-          Añadir Máquina
+          Añadir una Máquina
         </Button>
       </div>
 
-      <Card className="cliente-table-container">
+      <Card className="maquina-table-container">
         <CardContent>
-          <ClienteTable
-            clientes={filteredClientes}
+          <MaquinaTable
+            maquinas={filteredMaquinas}
             onDelete={handleDelete}
-            onToggleStatus={handleToggleStatus}
             onEdit={handleOpenModal}
+            getClienteName={getClienteName}
           />
         </CardContent>
       </Card>
 
-      <ClienteFormModal
+      <MaquinaFormModal
         open={open}
         onClose={handleCloseModal}
         onSubmit={handleFormSubmit}
-        clienteData={clientes.find((cliente) => cliente.id_cliente === editId)}
+        maquinaData={maquinas.find((maquina) => maquina.id_maquina === editId)}
+        clientes={clientes}
         editing={editing}
         setEditing={setEditing}
         setEditId={setEditId}
@@ -295,4 +306,4 @@ const ClientePage = () => {
   );
 };
 
-export default ClientePage;
+export default MaquinaPage;

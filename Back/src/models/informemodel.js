@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const db = require("../config/db");
 const { cliente } = require("./clientemodel");
 const { ot } = require("./otmodel");
+const { maquina } = require("./maquinamodel"); 
 
 const it = db.define(
   "informe_trabajo",
@@ -26,7 +27,15 @@ const it = db.define(
         key: "id_ot",
       },
     },
-    maquina: { type: DataTypes.STRING(255) },
+    id_maquina: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: maquina,
+        key: "id_maquina",
+      },
+    },
+    maquina: { type: DataTypes.STRING(255) }, 
     modelo: { type: DataTypes.STRING(255) },
     horometro: { type: DataTypes.INTEGER },
     numero_serie: { type: DataTypes.STRING(100) },
@@ -48,11 +57,14 @@ const it = db.define(
   }
 );
 
-
+// Definir relaciones
 it.belongsTo(cliente, { foreignKey: "id_cliente" });
 cliente.hasMany(it, { foreignKey: "id_cliente" });
 
 it.belongsTo(ot, { foreignKey: "id_ot" });
 ot.hasMany(it, { foreignKey: "id_ot" });
+
+it.belongsTo(maquina, { foreignKey: "id_maquina", as: "maquinas" }); 
+maquina.hasMany(it, { foreignKey: "id_maquina" }); 
 
 module.exports = { it };

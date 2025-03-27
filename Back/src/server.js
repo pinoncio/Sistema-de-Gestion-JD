@@ -17,6 +17,7 @@ const otroutes = require("./routes/otroute");
 const itroutes = require("./routes/informeroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
 const productoroutes = require("./routes/productoroute");
+const maquinaroutes = require("./routes/maquinaroute");
 
 // importar modelos
 const { usuario } = require("./models/usermodel");
@@ -33,6 +34,7 @@ const { otinsumo } = require("./models/otinsumomodel");
 const { producto } = require("./models/productomodel");
 const { it } = require("./models/informemodel");
 const { controltiempo } = require("./models/controltiempomodel");
+const { maquina } = require("./models/maquinamodel");
 
 class server {
   constructor() {
@@ -65,6 +67,7 @@ class server {
     this.app.use("/api/producto", productoroutes);
     this.app.use("/api/its", itroutes);
     this.app.use("/api/tiempo", tiemporoutes);
+    this.app.use("/api/maquina", maquinaroutes);
   }
 
   middlewares() {
@@ -88,6 +91,7 @@ class server {
       await producto.sync({ alter: true });
       await it.sync({ alter: true });
       await controltiempo.sync({ alter: true });
+      await maquina.sync({ alter: true});
       console.log("base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(

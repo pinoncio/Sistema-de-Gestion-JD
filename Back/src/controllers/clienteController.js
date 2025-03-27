@@ -4,6 +4,7 @@ const { clientemetodopago } = require("../models/clientemetodopagomodel");
 const { contactocomercial } = require("../models/contactocomercialmodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
 const sequelize = require("../config/db");
+const { maquina } = require("../models/maquinamodel");
 
 const getClientes = async (req, res) => {
   try {
@@ -25,6 +26,17 @@ const getClientes = async (req, res) => {
           model: informaciondepago,
           as: "informacion_de_pago",
           attributes: ["correo_electronico", "telefono_responsable"],
+        },
+        {
+          model: maquina,
+          as: "maquinas",
+          attributes: [
+            "id_maquina",
+            "nombre_maquina",
+            "modelo_maquina",
+            "numero_serie",
+            "numero_motor",
+          ],
         },
       ],
     });
@@ -62,6 +74,17 @@ const getCliente = async (req, res) => {
           model: informaciondepago,
           as: "informacion_de_pago",
           attributes: ["correo_electronico", "telefono_responsable"],
+        },
+        {
+          model: maquina, // Agregar la relación con 'maquina'
+          as: "maquinas", // Alias de la relación
+          attributes: [
+            "id_maquina",
+            "nombre_maquina",
+            "modelo_maquina",
+            "numero_serie",
+            "numero_motor",
+          ], // Asegúrate de seleccionar los atributos necesarios
         },
       ],
     });

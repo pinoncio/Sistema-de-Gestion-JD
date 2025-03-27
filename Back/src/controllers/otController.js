@@ -8,13 +8,23 @@ const { metodopago } = require("../models/metodopagomodel");
 const { contactocomercial } = require("../models/contactocomercialmodel");
 const { informaciondepago } = require("../models/informacionpagomodel");
 const { it } = require("../models/informemodel");
+const { maquina } = require("../models/maquinamodel");
 
 const getOts = async (req, res) => {
   try {
     const ots = await ot.findAll({
       include: [
-        { model: cliente, attributes: ["nombre_razon_social", "rut"] },
-
+        {
+          model: cliente,
+          attributes: ["nombre_razon_social", "rut"],
+          include: [
+            {
+              model: maquina, // Incluir las máquinas asociadas al cliente
+              as: "maquinas", // Si la relación se llama de otra manera, cámbiala
+              attributes: ["nombre_maquina", "modelo", "numero_serie"],
+            },
+          ],
+        },
         {
           model: otinsumo,
           as: "ot_insumo",
@@ -70,6 +80,13 @@ const getOt = async (req, res) => {
         {
           model: cliente,
           attributes: ["nombre_razon_social", "rut", "direccion", "giro"],
+          include: [
+            {
+              model: maquina, // Incluir las máquinas asociadas al cliente
+              as: "maquinas", // Si la relación se llama de otra manera, cámbiala
+              attributes: ["nombre_maquina", "modelo", "numero_serie"],
+            },
+          ],
         },
         {
           model: otinsumo,
@@ -221,6 +238,7 @@ const getPdfOt = async (req, res) => {
 const newOt = async (req, res) => {
   const {
     id_cliente,
+    id_maquina,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -246,6 +264,7 @@ const newOt = async (req, res) => {
   try {
     if (
       !id_cliente ||
+      !id_maquina ||
       !tipo_documento ||
       !fecha_solicitud ||
       !fecha_entrega ||
@@ -259,6 +278,7 @@ const newOt = async (req, res) => {
 
     const nuevaOt = await ot.create({
       id_cliente,
+      id_maquina,
       tipo_documento,
       fecha_solicitud,
       fecha_entrega,
@@ -349,6 +369,7 @@ const updateOt = async (req, res) => {
   const { id_ot } = req.params;
   const {
     id_cliente,
+    id_maquina,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -400,6 +421,7 @@ const updateOt = async (req, res) => {
 
     await otData.update({
       id_cliente,
+      id_maquina,
       tipo_documento,
       fecha_solicitud,
       fecha_entrega,

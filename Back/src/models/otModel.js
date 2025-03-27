@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/db");
 const { cliente } = require("./clientemodel");
+const { maquina } = require("./maquinamodel"); // Importamos el modelo de maquina
 
 const ot = db.define(
   "ot",
@@ -16,6 +17,14 @@ const ot = db.define(
       references: {
         model: cliente,
         key: "id_cliente",
+      },
+    },
+    id_maquina: {
+      type: DataTypes.INTEGER,
+      allowNull: false, 
+      references: {
+        model: maquina,
+        key: "id_maquina",
       },
     },
     tipo_documento: { type: DataTypes.STRING(50) },
@@ -43,7 +52,11 @@ const ot = db.define(
   }
 );
 
+// Definir relaciones
 ot.belongsTo(cliente, { foreignKey: "id_cliente" });
 cliente.hasMany(ot, { foreignKey: "id_cliente" });
+
+ot.belongsTo(maquina, { foreignKey: "id_maquina" });
+maquina.hasMany(ot, { foreignKey: "id_maquina" });
 
 module.exports = { ot };

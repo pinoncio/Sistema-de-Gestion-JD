@@ -23,6 +23,13 @@ import {
   InputLabel,
   FormControl,
   IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "../Components/Layout/UserLayout";
@@ -118,27 +125,23 @@ const ClientProfilePage = () => {
     setSelectedMetodoPago(event.target.value);
   };
 
-
   const handleAddMetodoPago = async () => {
     if (!selectedMetodoPago) {
-      setError(
-        "Por favor selecciona un método de pago."
-      );
+      setError("Por favor selecciona un método de pago.");
       setOpenSnackbar(true);
       return;
     }
 
     const metodoPagoData = {
       id_cliente,
-      id_metodo_pago: selectedMetodoPago
+      id_metodo_pago: selectedMetodoPago,
     };
 
     try {
-
       await addMetodoPagoCliente(metodoPagoData);
 
       setSelectedMetodoPago("");
-      setSuccessMessage("Método de pago agregado correctamente."); 
+      setSuccessMessage("Método de pago agregado correctamente.");
       fetchClient();
 
       setOpenSnackbar(true);
@@ -480,6 +483,45 @@ const ClientProfilePage = () => {
             >
               Agregar Método de Pago
             </Button>
+
+            {client?.maquinas && client.maquinas.length > 0 && (
+              <>
+                <Typography variant="h6" sx={{ marginTop: 3 }}>
+                  Máquinas Asociadas
+                </Typography>
+                <Divider sx={{ marginBottom: 2 }} />
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <strong>Nombre de la Máquina</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Modelo</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Número de Serie</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Número de Motor</strong>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {client.maquinas.map((maquina) => (
+                        <TableRow key={maquina.id_maquina}>
+                          <TableCell>{maquina.nombre_maquina}</TableCell>
+                          <TableCell>{maquina.modelo_maquina}</TableCell>
+                          <TableCell>{maquina.numero_serie}</TableCell>
+                          <TableCell>{maquina.numero_motor}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </>
+            )}
           </CardContent>
         </Card>
 
