@@ -33,6 +33,7 @@ const OrderForm = () => {
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [maquinasCliente, setMaquinasCliente] = useState([]);
   const [formData, setFormData] = useState({
     id_cliente: "",
     tipo_documento: "Orden de Trabajo",
@@ -136,18 +137,6 @@ const OrderForm = () => {
       setErrors({ ...errors, [field]: "" });
     } else
       setErrors({ ...errors, [field]: "Solo se permiten letras y espacios." });
-  };
-
-  const handleAlphanumericChange = (e, field) => {
-    const { value } = e.target;
-    if (/^[A-Za-z0-9-]+$/.test(value) || value === "") {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    } else
-      setErrors({
-        ...errors,
-        [field]: "Solo se permiten letras, números y guiones.",
-      });
   };
 
   const handleDateChange = (e, field) => {
@@ -536,6 +525,19 @@ const OrderForm = () => {
     setOpenSnackbar(false);
   };
 
+  const handleClienteChange = (e) => {
+    const idCliente = e.target.value;
+    setFormData({ ...formData, id_cliente: idCliente, numero_serie: "" });
+
+    // Buscar las máquinas del cliente seleccionado
+    const clienteSeleccionado = clientes.find(
+      (c) => c.id_cliente === idCliente
+    );
+    setMaquinasCliente(
+      clienteSeleccionado ? clienteSeleccionado.maquinas || [] : []
+    );
+  };
+
   return (
     <UserLayout>
       <form onSubmit={handleSubmit}>
@@ -583,15 +585,13 @@ const OrderForm = () => {
                 label="Cliente"
                 select
                 value={formData.id_cliente}
-                onChange={(e) => handleChange(e, "id_cliente")}
+                onChange={handleClienteChange}
                 name="id_cliente"
                 fullWidth
                 required
                 error={!!errors.id_cliente}
                 helperText={errors.id_cliente || "Campo obligatorio."}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                InputLabelProps={{ shrink: true }}
               >
                 <MenuItem value="">Seleccionar</MenuItem>
                 {clientes.map((c) => (
@@ -691,20 +691,25 @@ const OrderForm = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Número de Serie"
+                select
                 name="numero_serie"
                 value={formData.numero_serie}
-                onChange={(e) => handleAlphanumericChange(e, "numero_serie")}
+                onChange={(e) =>
+                  setFormData({ ...formData, numero_serie: e.target.value })
+                }
                 fullWidth
                 required
-                helperText={
-                  errors.numero_serie ||
-                  (!formData.numero_serie ? "Campó obligatorio" : "")
-                }
                 error={!!errors.numero_serie}
-                InputLabelProps={{
-                  shrink: true, // Hace que el label siempre esté visible
-                }}
-              />
+                helperText={errors.numero_serie || "Campo obligatorio."}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value="">Seleccionar</MenuItem>
+                {maquinasCliente.map((m) => (
+                  <MenuItem key={m.numero_serie} value={m.numero_serie}>
+                    {m.numero_serie}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             <Grid item xs={12} sm={6}>

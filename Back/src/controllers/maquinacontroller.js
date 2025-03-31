@@ -9,10 +9,11 @@ const getMaquinas = async (req, res) => {
       include: [
         {
           model: cliente,
+          as: "cliente",
           attributes: ["nombre_razon_social"],
         },
         {
-          model: ot, 
+          model: ot,
           attributes: [
             "id_ot",
             "tipo_ot",
@@ -23,7 +24,7 @@ const getMaquinas = async (req, res) => {
           ],
         },
         {
-          model: it, 
+          model: it,
           attributes: [
             "id_it",
             "tecnico",
@@ -37,7 +38,7 @@ const getMaquinas = async (req, res) => {
       ],
     });
 
-    res.json(maquinas); 
+    res.json(maquinas);
   } catch (error) {
     console.error("Error en getMaquinas:", error);
     res.status(500).json({
@@ -60,10 +61,11 @@ const getMaquina = async (req, res) => {
       include: [
         {
           model: cliente,
-          attributes: ["nombre_razon_social"], // Relación con el cliente
+          as: "cliente",
+          attributes: ["nombre_razon_social"],
         },
         {
-          model: ot, // Relación con las órdenes de trabajo
+          model: ot,
           attributes: [
             "id_ot",
             "tipo_ot",
@@ -74,7 +76,7 @@ const getMaquina = async (req, res) => {
           ],
         },
         {
-          model: it, // Relación con los informes de trabajo
+          model: it,
           attributes: [
             "id_it",
             "tecnico",
@@ -94,7 +96,7 @@ const getMaquina = async (req, res) => {
       });
     }
 
-    res.json(maquinaEncontrada); // Devuelve la máquina con OT e IT relacionados
+    res.json(maquinaEncontrada);
   } catch (error) {
     console.error("Error en getMaquina:", error);
     res.status(500).json({

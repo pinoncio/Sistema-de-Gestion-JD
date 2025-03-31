@@ -126,7 +126,6 @@ const newInformeTrabajo = async (req, res) => {
   const {
     id_cliente,
     id_ot,
-    id_maquina,
     tecnico,
     maquina,
     modelo,
@@ -148,14 +147,13 @@ const newInformeTrabajo = async (req, res) => {
   } = req.body;
 
   try {
-    if (!id_cliente || id_maquina || !control_tiempo || control_tiempo.length === 0) {
+    if (!id_cliente || !control_tiempo || control_tiempo.length === 0) {
       return res.status(400).json({ msg: "Faltan campos obligatorios" });
     }
 
     const nuevaIt = await it.create({
       id_cliente,
       id_ot: id_ot || null,
-      id_maquina: id_maquina  || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,
@@ -232,7 +230,6 @@ const updateInformeTrabajo = async (req, res) => {
   const {
     id_cliente,
     id_ot,
-    id_maquina,
     tecnico,
     maquina,
     modelo,
@@ -265,7 +262,6 @@ const updateInformeTrabajo = async (req, res) => {
     await informeExistente.update({
       id_cliente,
       id_ot: id_ot || null,
-      id_maquina: id_maquina || null,
       tecnico: tecnico || null,
       maquina: maquina || null,
       modelo: modelo || null,

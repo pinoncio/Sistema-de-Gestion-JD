@@ -27,14 +27,6 @@ const it = db.define(
         key: "id_ot",
       },
     },
-    id_maquina: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: maquina,
-        key: "id_maquina",
-      },
-    },
     maquina: { type: DataTypes.STRING(255) }, 
     modelo: { type: DataTypes.STRING(255) },
     horometro: { type: DataTypes.INTEGER },
@@ -64,7 +56,5 @@ cliente.hasMany(it, { foreignKey: "id_cliente" });
 it.belongsTo(ot, { foreignKey: "id_ot" });
 ot.hasMany(it, { foreignKey: "id_ot" });
 
-it.belongsTo(maquina, { foreignKey: "id_maquina", as: "maquinas" }); 
-maquina.hasMany(it, { foreignKey: "id_maquina" }); 
 
 module.exports = { it };

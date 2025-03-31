@@ -230,6 +230,16 @@ const OtProfilePage = () => {
                 }}
               />
               <TextField
+                label="Número de Serie"
+                value={ot?.numero_serie || ""}
+                fullWidth
+                readOnly
+                sx={{
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "4px",
+                }}
+              />
+              <TextField
                 label="Forma de Pago"
                 value={metodoPago?.nombre_metodo || ""}
                 fullWidth
@@ -488,7 +498,7 @@ const OtProfilePage = () => {
             onClick={() => navigate("/ots")}
           >
             Volver a la lista de Órdenes de trabajo
-          </Button>        
+          </Button>
           <Button
             variant="contained"
             color="primary"
@@ -498,6 +508,16 @@ const OtProfilePage = () => {
                   id_cliente: ot?.id_cliente,
                   id_ot: ot?.id_ot,
                   numero_serie: ot?.numero_serie,
+                  maquinas: ot?.cliente?.maquinas?.length
+                    ? [
+                        // Enviamos un array, incluso si hay una sola máquina
+                        {
+                          nombre_maquina: ot.cliente.maquinas[0].nombre_maquina,
+                          modelo_maquina: ot.cliente.maquinas[0].modelo_maquina,
+                          numero_motor: ot.cliente.maquinas[0].numero_motor,
+                        },
+                      ]
+                    : [],
                 },
               })
             }

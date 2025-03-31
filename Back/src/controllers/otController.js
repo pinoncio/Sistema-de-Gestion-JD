@@ -1,3 +1,5 @@
+const { Op, col } = require("sequelize"); 
+const sequelize = require("../config/db");
 const { ot } = require("../models/otmodel");
 const { cliente } = require("../models/clientemodel");
 const { otinsumo } = require("../models/otinsumomodel");
@@ -19,9 +21,18 @@ const getOts = async (req, res) => {
           attributes: ["nombre_razon_social", "rut"],
           include: [
             {
-              model: maquina, // Incluir las máquinas asociadas al cliente
-              as: "maquinas", // Si la relación se llama de otra manera, cámbiala
-              attributes: ["nombre_maquina", "modelo", "numero_serie"],
+              model: maquina,
+              as: "maquinas",
+              attributes: [
+                "nombre_maquina",
+                "modelo_maquina",
+                "numero_serie",
+                "numero_motor",
+              ],
+              where: {
+                numero_serie: { [Op.eq]: col("ot.numero_serie") }, // Filtra solo la máquina correspondiente
+              },
+              required: false, 
             },
           ],
         },
@@ -79,12 +90,21 @@ const getOt = async (req, res) => {
       include: [
         {
           model: cliente,
-          attributes: ["nombre_razon_social", "rut", "direccion", "giro"],
+          attributes: ["nombre_razon_social", "rut"],
           include: [
             {
-              model: maquina, // Incluir las máquinas asociadas al cliente
-              as: "maquinas", // Si la relación se llama de otra manera, cámbiala
-              attributes: ["nombre_maquina", "modelo", "numero_serie"],
+              model: maquina,
+              as: "maquinas",
+              attributes: [
+                "nombre_maquina",
+                "modelo_maquina",
+                "numero_serie",
+                "numero_motor",
+              ],
+              where: {
+                numero_serie: { [Op.eq]: col("ot.numero_serie") }, // Filtra solo la máquina correspondiente
+              },
+              required: false,
             },
           ],
         },
@@ -238,7 +258,6 @@ const getPdfOt = async (req, res) => {
 const newOt = async (req, res) => {
   const {
     id_cliente,
-    id_maquina,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -264,7 +283,6 @@ const newOt = async (req, res) => {
   try {
     if (
       !id_cliente ||
-      !id_maquina ||
       !tipo_documento ||
       !fecha_solicitud ||
       !fecha_entrega ||
@@ -278,7 +296,6 @@ const newOt = async (req, res) => {
 
     const nuevaOt = await ot.create({
       id_cliente,
-      id_maquina,
       tipo_documento,
       fecha_solicitud,
       fecha_entrega,
@@ -369,7 +386,6 @@ const updateOt = async (req, res) => {
   const { id_ot } = req.params;
   const {
     id_cliente,
-    id_maquina,
     tipo_documento,
     fecha_solicitud,
     fecha_entrega,
@@ -421,7 +437,6 @@ const updateOt = async (req, res) => {
 
     await otData.update({
       id_cliente,
-      id_maquina,
       tipo_documento,
       fecha_solicitud,
       fecha_entrega,

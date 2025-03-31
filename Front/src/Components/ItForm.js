@@ -21,7 +21,6 @@ import {
 import { createIt } from "../Services/itService";
 import { getClientes } from "../Services/clienteService";
 import { getOts } from "../Services/otService";
-import { getAllTiempos } from "../Services/tiempoService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserLayout from "./Layout/UserLayout";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +29,6 @@ import { useLocation } from "react-router-dom";
 
 const ItForm = () => {
   const [clientes, setClientes] = useState([]);
-  const [setTiempos] = useState([]);
   const [ot, setOt] = useState([]);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -38,7 +36,6 @@ const ItForm = () => {
   const [filteredOt, setFilteredOt] = useState([]);
   const location = useLocation();
   const otData = location.state || {};
-  console.log("Datos recibidos:", otData);
   const user = JSON.parse(localStorage.getItem("user")) || {
     nombre: "",
     apellido: "",
@@ -47,11 +44,11 @@ const ItForm = () => {
     id_cliente: otData.id_cliente || "",
     id_ot: otData.id_ot || "",
     tecnico: `${user.nombre} ${user.apellido}`,
-    maquina: "",
-    modelo: "",
+    maquina: otData?.maquinas?.[0]?.nombre_maquina || "",
+    modelo: otData?.maquinas?.[0]?.modelo_maquina || "",
     horometro: "",
     numero_serie: otData.numero_serie || "",
-    numero_motor: "",
+    numero_motor: otData?.maquinas?.[0]?.numero_motor || "",
     km_salida: "",
     km_retorno: "",
     queja_sintoma: "",
@@ -89,7 +86,6 @@ const ItForm = () => {
 
   useEffect(() => {
     fetchClientes();
-    fetchTiempos();
     fetchOt();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -149,14 +145,6 @@ const ItForm = () => {
     }
   };
 
-  const fetchTiempos = async () => {
-    try {
-      setTiempos(await getAllTiempos());
-    } catch (error) {
-      console.error("Error al obtener los tiempos:", error);
-    }
-  };
-
   const [errors, setErrors] = useState({});
   const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
@@ -180,28 +168,67 @@ const ItForm = () => {
     if (field === "id_ot") {
       const selectedOt = filteredOt.find((o) => o.id_ot === value);
       if (selectedOt) {
-        updatedFormData.numero_serie = selectedOt.numero_serie; // Asignar el número de serie correspondiente
+        // Accediendo correctamente a la máquina dentro de las propiedades cliente -> maquinas
+        const maquina = selectedOt.cliente?.maquinas?.[0]; // Suponiendo que hay al menos una máquina
+
+        if (maquina) {
+          updatedFormData.maquina = maquina.nombre_maquina;
+          updatedFormData.modelo = maquina.modelo_maquina;
+          updatedFormData.numero_motor = maquina.numero_motor;
+        }
+
+        updatedFormData.numero_serie = selectedOt.numero_serie;
+      } else {
+        // Si no hay ninguna OT seleccionada, limpiar los datos relacionados con la OT
+        updatedFormData.maquina = "";
+        updatedFormData.modelo = "";
+        updatedFormData.numero_motor = "";
+        updatedFormData.numero_serie = "";
       }
     }
 
     // Si el campo es 'id_cliente', actualizar la información del cliente
     if (field === "id_cliente") {
-      const selectedCliente = clientes.find((c) => c.id_cliente === value);
-      if (selectedCliente) {
+      // Si seleccionas "Seleccionar cliente", limpiar los datos relacionados con la OT
+      if (value === "") {
+        updatedFormData.id_ot = "";
+        updatedFormData.maquina = "";
+        updatedFormData.modelo = "";
+        updatedFormData.numero_motor = "";
+        updatedFormData.numero_serie = "";
+
+        // Limpiar también los datos del cliente
         setCurrentCliente({
           cliente: {
-            nombre_razon_social: selectedCliente.nombre_razon_social || "",
-            rut: selectedCliente.rut || "",
-            direccion: selectedCliente.direccion || "",
+            nombre_razon_social: "",
+            rut: "",
+            direccion: "",
             informacion_de_pago: {
-              correo_electronico:
-                selectedCliente.informacion_de_pago?.correo_electronico || "",
-              telefono_responsable:
-                selectedCliente.informacion_de_pago?.telefono_responsable || "",
+              correo_electronico: "",
+              telefono_responsable: "",
             },
           },
         });
-        setFilteredOt(ot.filter((o) => o.id_cliente === value));
+        setFilteredOt([]);
+      } else {
+        const selectedCliente = clientes.find((c) => c.id_cliente === value);
+        if (selectedCliente) {
+          setCurrentCliente({
+            cliente: {
+              nombre_razon_social: selectedCliente.nombre_razon_social || "",
+              rut: selectedCliente.rut || "",
+              direccion: selectedCliente.direccion || "",
+              informacion_de_pago: {
+                correo_electronico:
+                  selectedCliente.informacion_de_pago?.correo_electronico || "",
+                telefono_responsable:
+                  selectedCliente.informacion_de_pago?.telefono_responsable ||
+                  "",
+              },
+            },
+          });
+          setFilteredOt(ot.filter((o) => o.id_cliente === value));
+        }
       }
     }
 
@@ -709,6 +736,21 @@ const ItForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                label="Número de Serie"
+                name="numero_serie"
+                value={formData.numero_serie}
+                onChange={(e) =>
+                  handleInputChange(e, "numero_serie", isAlphanumericWithDash)
+                }
+                fullWidth
+                disabled
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
                 label="Maquina"
                 name="maquina"
                 value={formData.maquina}
@@ -739,35 +781,6 @@ const ItForm = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Horometro"
-                name="horometro"
-                value={formData.horometro}
-                onChange={(e) => handleChange(e, "horometro")}
-                fullWidth
-                error={!!errors.horometro}
-                helperText={errors.horometro}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Número de Serie"
-                name="numero_serie"
-                value={formData.numero_serie}
-                onChange={(e) =>
-                  handleInputChange(e, "numero_serie", isAlphanumericWithDash)
-                }
-                fullWidth
-                disabled
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
                 label="numero_motor"
                 name="numero_motor"
                 value={formData.numero_motor}
@@ -782,6 +795,21 @@ const ItForm = () => {
                 }}
               ></TextField>
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Horometro"
+                name="horometro"
+                value={formData.horometro}
+                onChange={(e) => handleChange(e, "horometro")}
+                fullWidth
+                error={!!errors.horometro}
+                helperText={errors.horometro}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+
             <Grid item xs={12} sm={3}>
               <TextField
                 label="Kilometro de salida"

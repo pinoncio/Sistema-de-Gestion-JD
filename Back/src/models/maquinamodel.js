@@ -30,7 +30,8 @@ const maquina = db.define(
 );
 
 // Relación con cliente
-maquina.belongsTo(cliente, { foreignKey: "id_cliente" });
-cliente.hasMany(maquina, { foreignKey: "id_cliente" });
+cliente.hasMany(maquina, { foreignKey: "id_cliente", as: "maquinas" });
+maquina.belongsTo(cliente, { foreignKey: "id_cliente", as: "cliente" });
+
 
 module.exports = { maquina };
