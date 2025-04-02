@@ -2,6 +2,7 @@ const { maquina } = require("../models/maquinamodel");
 const { cliente } = require("../models/clientemodel");
 const { ot } = require("../models/otmodel");
 const { it } = require("../models/informemodel");
+const { controltiempo } = require("../models/controltiempomodel");
 
 const getMaquinas = async (req, res) => {
   try {
@@ -33,6 +34,21 @@ const getMaquinas = async (req, res) => {
             "diagnostico",
             "solucion",
             "total_hh",
+          ],
+          include: [
+            {
+              model: controltiempo,
+              as: "control_tiempo",
+              attributes: [
+                "id_control_tiempo",
+                "fecha",
+                "viaje_ida",
+                "trabajo",
+                "viaje_vuelta",
+                "total_hh_viaje",
+                "total_hh_trabajo",
+              ],
+            },
           ],
         },
       ],
@@ -80,11 +96,18 @@ const getMaquina = async (req, res) => {
           attributes: [
             "id_it",
             "tecnico",
-            "horometro",
-            "queja_sintoma",
             "diagnostico",
             "solucion",
-            "total_hh",
+          ],
+          include: [
+            {
+              model: controltiempo,
+              as: "control_tiempo",
+              attributes: [
+                "id_control_tiempo",
+                "fecha",
+              ],
+            },
           ],
         },
       ],

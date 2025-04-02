@@ -19,6 +19,14 @@ const ot = db.define(
         key: "id_cliente",
       },
     },
+    id_maquina: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: maquina,
+        key: "id_maquina",
+      },
+    },
     tipo_documento: { type: DataTypes.STRING(50) },
     fecha_solicitud: { type: DataTypes.DATEONLY },
     fecha_entrega: { type: DataTypes.DATEONLY },
@@ -47,6 +55,9 @@ const ot = db.define(
 // Definir relaciones
 ot.belongsTo(cliente, { foreignKey: "id_cliente" });
 cliente.hasMany(ot, { foreignKey: "id_cliente" });
+
+ot.belongsTo(maquina, { foreignKey: "id_maquina", as: "maquinas" });
+maquina.hasMany(ot, { foreignKey: "id_maquina" });
 
 
 module.exports = { ot };

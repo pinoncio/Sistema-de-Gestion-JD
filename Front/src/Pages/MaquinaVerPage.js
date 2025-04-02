@@ -202,21 +202,32 @@ const MaquinaVerPage = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>N° IT</TableCell>
-                      <TableCell>Técnico</TableCell>
-                      <TableCell>Diagnóstico</TableCell>
-                      <TableCell>Queja/Síntoma</TableCell>
-                      <TableCell>Total hh</TableCell>
+                      <TableCell>Técnico </TableCell>
+                      <TableCell>Fecha Visita</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {maquina.informe_trabajos.map((it, index) => (
                       <>
                         <TableRow key={index}>
-                          <TableCell>{it.id_it}</TableCell>
+                          <TableCell>N°{it.id_it}</TableCell>
                           <TableCell>{it.tecnico}</TableCell>
-                          <TableCell>{it.diagnostico}</TableCell>
-                          <TableCell>{it.queja_sintoma}</TableCell>
-                          <TableCell>{it.total_hh}</TableCell>
+                          <TableCell>
+                            {it.control_tiempo && it.control_tiempo.length > 0
+                              ? new Intl.DateTimeFormat("es-CL", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }).format(new Date(it.control_tiempo[0].fecha))
+                              : "Sin fecha"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow key={`${index}-diagnostico`}>
+                          <TableCell colSpan={6}>
+                            <Typography variant="body1">
+                              <strong>Diagnóstico:</strong> {it.diagnostico}
+                            </Typography>
+                          </TableCell>
                         </TableRow>
                         <TableRow key={`${index}-solucion`}>
                           <TableCell colSpan={6}>

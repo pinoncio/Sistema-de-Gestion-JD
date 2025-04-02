@@ -23,6 +23,7 @@ import ItUForm from "./Components/ItUForm";
 import ItProfilePage from "./Pages/ItVerPage";
 import MaquinaPage from "./Pages/MaquinaPage";
 import MaquinaVerPage from "./Pages/MaquinaVerPage";
+import CostoPage from "./Pages/GastoPage";
 
 const App = () => {
   return (
@@ -197,7 +198,14 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          
+          <Route
+            path="/gastos"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <CostoPage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>

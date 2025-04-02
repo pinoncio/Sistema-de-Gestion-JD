@@ -18,6 +18,7 @@ const itroutes = require("./routes/informeroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
 const productoroutes = require("./routes/productoroute");
 const maquinaroutes = require("./routes/maquinaroute");
+const gastoroutes = require("./routes/gastoroute"); // Cambié 'costoroutes' a 'gastoroutes'
 
 // importar modelos
 const { usuario } = require("./models/usermodel");
@@ -35,6 +36,8 @@ const { producto } = require("./models/productomodel");
 const { it } = require("./models/informemodel");
 const { controltiempo } = require("./models/controltiempomodel");
 const { maquina } = require("./models/maquinamodel");
+const { gasto } = require("./models/gastomodel"); // Cambié 'costo' a 'gasto'
+const { otgasto } = require("./models/otgastomodel"); // Cambié 'otcosto' a 'otgasto'
 
 class server {
   constructor() {
@@ -68,6 +71,7 @@ class server {
     this.app.use("/api/its", itroutes);
     this.app.use("/api/tiempo", tiemporoutes);
     this.app.use("/api/maquina", maquinaroutes);
+    this.app.use("/api/gasto", gastoroutes); // Cambié 'costoroutes' a 'gastoroutes'
   }
 
   middlewares() {
@@ -92,6 +96,8 @@ class server {
       await it.sync({ alter: true });
       await controltiempo.sync({ alter: true });
       await maquina.sync({ alter: true});
+      await gasto.sync({ alter: true}); // Cambié 'costo' a 'gasto'
+      await otgasto.sync({ alter: true}); // Cambié 'otcosto' a 'otgasto'
       console.log("base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(
