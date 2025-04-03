@@ -281,6 +281,7 @@ const newOt = async (req, res) => {
     productos,
     insumos,
   } = req.body;
+  console.log("Insumos recibidos en el backend:", req.body.insumos);
 
   try {
     if (
@@ -343,7 +344,7 @@ const newOt = async (req, res) => {
 
     // Crear productos
     const productosData = productos.map((producto) => ({
-      id_ot: nuevaOt.id_ot, // Asegurar que cada producto tenga el ID de la OT
+      id_ot: nuevaOt.id_ot,
       nombre_producto: producto.nombre_producto,
       cantidad_producto: producto.cantidad_producto,
       precio_unitario: producto.precio_unitario,
@@ -354,6 +355,42 @@ const newOt = async (req, res) => {
     }));
 
     await producto.bulkCreate(productosData);
+
+    for (const insumoData of insumos) {
+      const insumoEncontrado = await insumo.findOne({
+        where: { id_insumo: insumoData.id_insumo },
+      });
+
+      if (
+        !insumoEncontrado ||
+        insumoEncontrado.cantidad < insumoData.cantidad_insumo
+      ) {
+        return res.status(400).json({
+          msg: `No hay suficiente stock para el insumo ${
+            insumoData.id_insumo
+          }. Disponible: ${
+            insumoEncontrado ? insumoEncontrado.cantidad : 0
+          }, Solicitado: ${insumoData.cantidad_insumo}.`,
+        });
+      }
+
+      await insumoEncontrado.update({
+        cantidad: insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+        stock_disponible:
+          insumoEncontrado.cantidad - insumoData.cantidad_insumo,
+      });
+
+      await otinsumo.create({
+        id_ot: nuevaOt.id_ot,
+        id_insumo: insumoData.id_insumo,
+        cantidad_insumo: insumoData.cantidad_insumo,
+        precio_unitario: insumoData.precio_unitario,
+        descuento_insumo: insumoData.descuento_insumo,
+        recargo_insumo: insumoData.recargo_insumo,
+        af_ex_insumo: insumoData.af_ex_insumo,
+        precio_total: insumoData.precio_total,
+      });
+    }
 
     // Crear gastos a partir de productos
     for (const prod of productos) {
@@ -372,7 +409,7 @@ const newOt = async (req, res) => {
         pago_neto: pagoNeto,
         iva: ivaCalculado,
         total_pagado: totalPagado,
-        nro_factura: "editar",
+        nro_factura: 1,
         proveedor: "editar",
         sin_ot: false,
         id_ot: nuevaOt.id_ot, // Asegurar que se asigna la OT correctamente
@@ -417,7 +454,7 @@ const updateOt = async (req, res) => {
     total,
     comentario,
     productos,
-    insumos,
+    ot_insumo,
   } = req.body;
 
   try {
@@ -428,7 +465,6 @@ const updateOt = async (req, res) => {
       });
     }
 
-    // Buscar la máquina asociada al cliente con el número de serie correcto
     const maquinaAsociada = await maquina.findOne({
       where: {
         id_cliente,
@@ -442,8 +478,24 @@ const updateOt = async (req, res) => {
       });
     }
 
-    // Eliminar productos y gastos anteriores
+    const otInsumosAntiguos = await otinsumo.findAll({ where: { id_ot } });
+
+    for (const otInsumoAntiguo of otInsumosAntiguos) {
+      const insumoEncontrado = await insumo.findOne({
+        where: { id_insumo: otInsumoAntiguo.id_insumo },
+      });
+
+      if (insumoEncontrado) {
+        await insumoEncontrado.update({
+          cantidad: insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
+          stock_disponible:
+            insumoEncontrado.cantidad + otInsumoAntiguo.cantidad_insumo,
+        });
+      }
+    }
+
     await producto.destroy({ where: { id_ot } });
+    await otinsumo.destroy({ where: { id_ot } });
 
     const gastosAsociados = await otgasto.findAll({ where: { id_ot } });
     const idsGastos = gastosAsociados.map((g) => g.id_gasto);
@@ -452,7 +504,6 @@ const updateOt = async (req, res) => {
       await otgasto.destroy({ where: { id_ot } });
     }
 
-    // Actualizar la OT
     await otData.update({
       id_cliente,
       id_maquina: maquinaAsociada.id_maquina,
@@ -476,7 +527,6 @@ const updateOt = async (req, res) => {
       total,
     });
 
-    // Si hay productos, los creamos
     if (productos && productos.length > 0) {
       const productosData = productos.map((producto) => ({
         id_ot,
@@ -491,7 +541,38 @@ const updateOt = async (req, res) => {
 
       await producto.bulkCreate(productosData);
 
-      // Enviar productos a gasto
+      for (const otInsumoData of ot_insumo) {
+        const insumoEncontrado = await insumo.findOne({
+          where: { id_insumo: otInsumoData.id_insumo },
+        });
+
+        if (
+          !insumoEncontrado ||
+          insumoEncontrado.stock_disponible < otInsumoData.cantidad_insumo
+        ) {
+          return res.status(400).json({
+            msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}.`,
+          });
+        }
+
+        await insumoEncontrado.update({
+          cantidad: insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
+          stock_disponible:
+            insumoEncontrado.cantidad - otInsumoData.cantidad_insumo,
+        });
+
+        await otinsumo.create({
+          id_ot,
+          id_insumo: otInsumoData.id_insumo,
+          cantidad_insumo: otInsumoData.cantidad_insumo,
+          precio_unitario: otInsumoData.precio_unitario,
+          descuento_insumo: otInsumoData.descuento_insumo,
+          recargo_insumo: otInsumoData.recargo_insumo,
+          af_ex_insumo: otInsumoData.af_ex_insumo,
+          precio_total: otInsumoData.precio_total,
+        });
+      }
+
       for (const prod of productos) {
         const totalPagado = prod.precio_unitario;
         const pagoNeto = totalPagado / 1.19;
@@ -506,7 +587,7 @@ const updateOt = async (req, res) => {
           pago_neto: pagoNeto,
           iva: ivaCalculado,
           total_pagado: totalPagado,
-          nro_factura: "editar",
+          nro_factura: 1,
           proveedor: "editar",
           sin_ot: false,
           id_ot,

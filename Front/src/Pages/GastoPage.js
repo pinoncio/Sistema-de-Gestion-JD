@@ -5,7 +5,6 @@ import {
   updateGasto,
   deleteGasto,
 } from "../Services/gastoService";
-import { getOts } from "../Services/otService";
 import { getClientes } from "../Services/clienteService";
 import { useNavigate } from "react-router-dom";
 import GastoTable from "../Components/GastoTable";
@@ -18,22 +17,26 @@ import {
   CardContent,
   Snackbar,
   Alert,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import Swal from "sweetalert2";
 import SearchIcon from "@mui/icons-material/Search";
 import UserLayout from "../Components/Layout/UserLayout";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import Swal from "sweetalert2";
 import "../Styles/User.css";
+import { getOts } from "../Services/otService";
 
 const GastoPage = () => {
   const [gastos, setGastos] = useState([]);
   const [ots, setOts] = useState([]);
   const [clientes, setClientes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("item_gasto");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -55,31 +58,41 @@ const GastoPage = () => {
   };
 
   const fetchOts = async () => {
-    try {
-      const data = await getOts();
-      setOts(data);
-    } catch (error) {
-      console.error("Error al obtener las OTs", error);
-    }
-  };
+      try {
+        const data = await getOts();
+        setOts(data);
+      } catch (error) {
+        console.error("Error al obtener las OTs", error);
+      }
+    };
 
   const fetchClientes = async () => {
     try {
       const data = await getClientes();
       setClientes(data);
     } catch (error) {
-      console.error("Error al obtener las Clientes", error);
+      console.error("Error al obtener los Clientes", error);
     }
   };
 
   const getClienteName = (id_cliente) => {
     const cliente = clientes.find((c) => c.id_cliente === id_cliente);
-    return cliente ? cliente.nombre_razon_social : "Sin Categoria";
+    return cliente ? cliente.nombre_razon_social : "Sin Cliente";
   };
 
-  const filteredGastos = gastos.filter((gasto) =>
-    gasto.item_gasto.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtro dinámico dependiendo del tipo de búsqueda
+  const filteredGastos = gastos.filter((gasto) => {
+    if (searchType === "item_gasto") {
+      return gasto.item_gasto.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (searchType === "proveedor") {
+      return gasto.proveedor.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (searchType === "cliente") {
+      return getClienteName(gasto.id_cliente)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    }
+    return false;
+  });
 
   const handleCreateGasto = async (formData) => {
     try {
@@ -156,12 +169,41 @@ const GastoPage = () => {
     setSnackbarOpen(false);
   };
 
+  const handleSearchTypeChange = (event, newSearchType) => {
+    if (newSearchType) {
+      setSearchType(newSearchType);
+    }
+  };
+
   return (
     <UserLayout>
       <h1>Lista de Gastos</h1>
       <div className="search-bar">
+        <ToggleButtonGroup
+          value={searchType}
+          exclusive
+          onChange={handleSearchTypeChange}
+          aria-label="Tipo de búsqueda"
+        >
+          <ToggleButton value="item_gasto" aria-label="Buscar por item_gasto">
+            Buscar por Item de Gasto
+          </ToggleButton>
+          <ToggleButton value="proveedor" aria-label="Buscar por proveedor">
+            Buscar por Proveedor
+          </ToggleButton>
+          <ToggleButton value="cliente" aria-label="Buscar por cliente">
+            Buscar por Cliente
+          </ToggleButton>
+        </ToggleButtonGroup>
+
         <TextField
-          label="Buscar gasto"
+          label={`Buscar por ${
+            searchType === "item_gasto"
+              ? "item de gasto"
+              : searchType === "proveedor"
+              ? "proveedor"
+              : "cliente"
+          }`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth

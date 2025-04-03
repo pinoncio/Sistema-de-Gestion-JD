@@ -13,14 +13,27 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 
-const GastoTable = ({ gastos, onDelete, onEdit, ots }) => {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("");
+const GastoTable = ({ gastos, onDelete, onEdit, ots, getClienteName }) => {
+  const [order, setOrder] = useState("desc"); // Orden descendente por defecto
+  const [orderBy, setOrderBy] = useState("id_gasto"); // Ordenar por id_gasto por defecto
+  const [filterByDate, setFilterByDate] = useState("none"); // Filtro de fecha
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const handleDateSort = () => {
+    if (filterByDate === "none") {
+      setFilterByDate("asc"); // Ascendente por fecha
+      setOrderBy("fecha_compra");
+    } else if (filterByDate === "asc") {
+      setFilterByDate("desc"); // Descendente por fecha
+    } else {
+      setFilterByDate("none"); // Sin filtro
+      setOrderBy("id_gasto"); // Volver a ordenar por id_gasto por defecto
+    }
   };
 
   const stableSort = (array, comparator) => {
@@ -36,6 +49,24 @@ const GastoTable = ({ gastos, onDelete, onEdit, ots }) => {
 
   const comparator = (a, b) => {
     if (!orderBy) return 0;
+
+    // Si estamos ordenando por id_gasto, ordenar por número
+    if (orderBy === "id_gasto") {
+      if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
+      if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+      return 0;
+    }
+
+    // Si estamos ordenando por fecha_compra
+    if (orderBy === "fecha_compra") {
+      const dateA = new Date(a[orderBy]);
+      const dateB = new Date(b[orderBy]);
+      if (dateA < dateB) return filterByDate === "asc" ? -1 : 1;
+      if (dateA > dateB) return filterByDate === "asc" ? 1 : -1;
+      return 0;
+    }
+
+    // Para otros campos (orden normal)
     if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
     if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
     return 0;
@@ -56,13 +87,22 @@ const GastoTable = ({ gastos, onDelete, onEdit, ots }) => {
           </TableCell>
           <TableCell>OT</TableCell>
           <TableCell>Detalle</TableCell>
-          <TableCell>Fecha de Compra</TableCell>
+          <TableCell>
+            <TableSortLabel
+              active={orderBy === "fecha_compra"}
+              direction={filterByDate === "asc" ? "asc" : "desc"}
+              onClick={handleDateSort}
+            >
+              Fecha de Compra
+            </TableSortLabel>
+          </TableCell>
           <TableCell>Método de Pago</TableCell>
           <TableCell>Pago Neto</TableCell>
           <TableCell>IVA</TableCell>
           <TableCell>Total Pagado</TableCell>
           <TableCell>N° Factura</TableCell>
           <TableCell>Proveedor</TableCell>
+          <TableCell>Cliente</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
       </TableHead>
@@ -101,6 +141,7 @@ const GastoTable = ({ gastos, onDelete, onEdit, ots }) => {
               </TableCell>
               <TableCell>{gasto.nro_factura}</TableCell>
               <TableCell>{gasto.proveedor}</TableCell>
+              <TableCell>{getClienteName(gasto.id_cliente)}</TableCell>
               <TableCell>
                 <Link to={`/gastoProfile/${gasto.id_gasto}`}>
                   <IconButton>

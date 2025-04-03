@@ -163,7 +163,7 @@ const GastoFormModal = ({
       return;
     }
 
-    // Eliminar caracteres no numéricos
+    // Eliminar caracteres no numéricos (esto asegura que no se guarden caracteres no deseados)
     value = value.replace(/\D/g, "");
 
     // Si es nro_factura, guardar solo el número sin puntos
@@ -173,15 +173,17 @@ const GastoFormModal = ({
       return;
     }
 
-    // Si es pago_neto, aplicar formato con puntos de miles
+    // Si es pago_neto, aplicar formato con puntos de miles para visualización,
+    // pero guardar el valor sin puntos
     if (field === "pago_neto") {
-      const pagoNeto = parseInt(value, 10) || 0;
+      const pagoNeto = parseInt(value, 10) || 0; // Convertir a número sin puntos
       const iva = pagoNeto * 0.19;
       const totalPagado = pagoNeto + iva;
 
+      // Guardar valores sin puntos
       setFormData({
         ...formData,
-        pago_neto: formatNumberWithDots(value), // Mostrar con puntos de miles
+        pago_neto: pagoNeto, // Almacenar sin puntos
         iva: iva.toFixed(0), // Redondeado sin decimales
         total_pagado: totalPagado.toFixed(0), // Redondeado sin decimales
       });
@@ -193,14 +195,16 @@ const GastoFormModal = ({
     setErrors({ ...errors, [field]: "" });
   };
 
-  // Función para formatear números con puntos de miles
-  const formatNumberWithDots = (value) => {
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const formatNumberWithDots = (number) => {
+    if (number === undefined || number === null || isNaN(number)) return "";
+
+    // Convertir el número a string y agregar los puntos de miles
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (
       !formData.item_gasto ||
       !formData.detalle ||
@@ -220,9 +224,9 @@ const GastoFormModal = ({
       });
       return;
     }
-  
+
     try {
-      console.log("Enviando datos:", formData); 
+      console.log("Enviando datos:", formData);
       await onSubmit(formData);
       resetForm();
       setEditing(false);
@@ -243,7 +247,6 @@ const GastoFormModal = ({
       }
     }
   };
-  
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
@@ -371,7 +374,7 @@ const GastoFormModal = ({
             <div className="form-group">
               <TextField
                 label="Pago Neto"
-                value={formData.pago_neto}
+                value={formatNumberWithDots(formData.pago_neto)} // Mostrar con puntos de miles
                 onChange={(e) => handleChangeNumber(e, "pago_neto")}
                 fullWidth
                 margin="normal"

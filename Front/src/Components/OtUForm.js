@@ -34,7 +34,7 @@ const OrderUForm = () => {
   const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
-  const [setOtInsumos] = useState([]);
+  const [otinsumo, setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -91,22 +91,28 @@ const OrderUForm = () => {
   const fetchOtInsumos = useCallback(
     async (id_ot) => {
       try {
-        setOtInsumos(await getInsumosByOT(id_ot));
+        const data = await getInsumosByOT(id_ot);
+        console.log("Insumos obtenidos:", data);
+        setOtInsumos(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error al obtener los insumos de la OT:", error);
       }
     },
     [setOtInsumos]
   );
+  
+  
 
   useEffect(() => {
     fetchClientes();
     fetchInsumos();
     if (id_ot) {
+      console.log("ID_OT en useEffect:", id_ot);
       fetchOt(id_ot);
       fetchOtInsumos(id_ot);
     }
   }, [id_ot, fetchOtInsumos]);
+  
 
   const fetchOt = async (id_ot) => {
     try {

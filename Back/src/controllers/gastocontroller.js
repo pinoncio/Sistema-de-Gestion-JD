@@ -103,19 +103,21 @@ const newGasto = async (req, res) => {
       where: { item_gasto, proveedor },
     });
 
-    // Si ya existe un gasto con el mismo item_gasto y proveedor, se puede proceder
-    // No retornamos error si el gasto ya existe, porque se permite la repetición de item_gasto con diferentes proveedores
     if (existingGasto) {
       console.log(
         "Este gasto ya está registrado con este proveedor, pero se permitirá la repetición."
       );
     }
 
-    if (id_ot && sin_ot) {
+    // Asegurar que sin_ot sea tratado como string y validar que no vengan ambos
+    if (id_ot && sin_ot && sin_ot.trim() !== "") {
       return res.status(400).json({
         msg: "Solo se puede proporcionar id_ot o sin_ot, no ambos.",
       });
     }
+
+    // Si sin_ot es undefined o está vacío, lo convertimos a null
+    const sinOtValue = sin_ot && sin_ot.trim() !== "" ? sin_ot.trim() : null;
 
     // Creación del nuevo gasto
     const nuevoGasto = await gasto.create({
@@ -129,7 +131,7 @@ const newGasto = async (req, res) => {
       total_pagado,
       nro_factura,
       proveedor,
-      sin_ot,
+      sin_ot: sinOtValue,
       id_cliente,
       observacion,
     });
@@ -204,11 +206,14 @@ const updateGasto = async (req, res) => {
       });
     }
 
-    if (id_ot && sin_ot) {
+    if (id_ot && sin_ot && sin_ot.trim() !== "") {
       return res.status(400).json({
         msg: "Solo se puede proporcionar id_ot o sin_ot, no ambos.",
       });
     }
+
+    // Asegurar que sin_ot se almacene correctamente como string o null si está vacío
+    const sinOtValue = sin_ot && sin_ot.trim() !== "" ? sin_ot.trim() : null;
 
     // Actualizar el gasto
     await gasto.update(
@@ -223,7 +228,7 @@ const updateGasto = async (req, res) => {
         total_pagado,
         nro_factura,
         proveedor,
-        sin_ot,
+        sin_ot: sinOtValue,
         id_cliente,
         observacion,
       },
