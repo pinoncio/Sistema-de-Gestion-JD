@@ -54,6 +54,7 @@ const GastoFormModal = ({
             gastoData.ots && gastoData.ots.length > 0
               ? gastoData.ots[0].id_ot
               : "",
+          sin_ot: gastoData.sin_ot || "",
           item_gasto: gastoData.item_gasto || "",
           detalle: gastoData.detalle || "",
           fecha_compra: gastoData.fecha_compra || "",
@@ -66,6 +67,8 @@ const GastoFormModal = ({
           id_cliente: gastoData.id_cliente || "",
           observacion: gastoData.observacion || "",
         });
+
+        // ✅ Aquí la corrección
         setIsAssociatedWithOt(gastoData.ots && gastoData.ots.length > 0);
       } else {
         setFormData((prevState) => ({
@@ -94,7 +97,7 @@ const GastoFormModal = ({
       id_cliente: "",
     });
     setErrors({});
-    setIsAssociatedWithOt(false); // Reset checkbox state
+    setIsAssociatedWithOt(false);
   };
 
   const handleChangeOt = (e) => {
@@ -121,17 +124,8 @@ const GastoFormModal = ({
 
   const handleDateChange = (e, field) => {
     const { value } = e.target;
-    const today = new Date().toISOString().split("T")[0];
-
-    if (value < today) {
-      setErrors({
-        ...errors,
-        [field]: "No se permiten fechas pasadas.",
-      });
-    } else {
-      setFormData({ ...formData, [field]: value });
-      setErrors({ ...errors, [field]: "" });
-    }
+    setFormData({ ...formData, [field]: value });
+    setErrors({ ...errors, [field]: "" });
   };
 
   const handleChangeName = (e, field) => {
@@ -205,6 +199,7 @@ const GastoFormModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Verificación de campos obligatorios
     if (
       !formData.item_gasto ||
       !formData.detalle ||
@@ -225,9 +220,33 @@ const GastoFormModal = ({
       return;
     }
 
+    let finalData = {
+      ...formData,
+      id_ot: formData.id_ot ? parseInt(formData.id_ot, 10) : null,
+      id_cliente: formData.id_cliente
+        ? parseInt(formData.id_cliente, 10)
+        : null,
+      iva: parseFloat(formData.iva),
+      total_pagado: parseFloat(formData.total_pagado),
+    };
+
+    // Si no hay OT asociada, enviar el sin_ot
+    if (!formData.id_ot && formData.sin_ot) {
+      finalData.sin_ot = formData.sin_ot;
+    } else {
+      delete finalData.sin_ot; // Si hay OT, eliminar sin_ot
+    }
+
+    // Ver en consola los datos que se van a enviar
+    console.log("🔍 Datos a enviar al backend:");
+    Object.entries(finalData).forEach(([key, value]) => {
+      console.log(`${key}:`, value, `(${typeof value})`);
+    });
+
     try {
-      console.log("Enviando datos:", formData);
-      await onSubmit(formData);
+      // Enviar los datos al backend
+      console.log("Enviando datos:", finalData);
+      await onSubmit(finalData);
       resetForm();
       setEditing(false);
       setEditId(null);
@@ -255,9 +274,9 @@ const GastoFormModal = ({
   const handleCheckboxChange = (e) => {
     setIsAssociatedWithOt(e.target.checked);
     if (e.target.checked) {
-      setFormData({ ...formData, sin_ot: "" }); // Clear sin_ot when OT is selected
+      setFormData({ ...formData, sin_ot: "" });
     } else {
-      setFormData({ ...formData, id_ot: "" }); // Clear id_ot when "sin_ot" is selected
+      setFormData({ ...formData, id_ot: "" });
     }
   };
 
@@ -343,10 +362,8 @@ const GastoFormModal = ({
                 required
                 InputLabelProps={{ shrink: true }}
                 error={!!errors.fecha_compra}
-                inputProps={{
-                  min: new Date().toISOString().split("T")[0],
-                }}
               />
+
               <TextField
                 label="Método de Pago"
                 value={formData.metodo_pago}

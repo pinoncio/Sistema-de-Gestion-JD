@@ -58,13 +58,13 @@ const GastoPage = () => {
   };
 
   const fetchOts = async () => {
-      try {
-        const data = await getOts();
-        setOts(data);
-      } catch (error) {
-        console.error("Error al obtener las OTs", error);
-      }
-    };
+    try {
+      const data = await getOts();
+      setOts(data);
+    } catch (error) {
+      console.error("Error al obtener las OTs", error);
+    }
+  };
 
   const fetchClientes = async () => {
     try {
@@ -110,9 +110,12 @@ const GastoPage = () => {
     }
   };
 
-  const handleUpdateGasto = async (id, formData) => {
+  const handleUpdateGasto = async (id_gasto, formData) => {
+    console.log("ID Gasto:", id_gasto); // Asegúrate de que esto sea un número o cadena
+    console.log("Formulario:", formData); // Verifica el contenido de formData
+
     try {
-      await updateGasto(id, formData);
+      await updateGasto(id_gasto, formData);
       setOpen(false);
       fetchGastos();
       setSnackbarMessage("Gasto actualizado exitosamente!");
@@ -123,6 +126,20 @@ const GastoPage = () => {
       setSnackbarMessage("Ha ocurrido un error al actualizar el gasto.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+    }
+  };
+
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (editing) {
+        await handleUpdateGasto(editId, formData);
+      } else {
+        await handleCreateGasto(formData);
+      }
+      setOpen(false);
+      fetchGastos();
+    } catch (error) {
+      console.error("Error al guardar el insumo", error);
     }
   };
 
@@ -254,11 +271,13 @@ const GastoPage = () => {
       <GastoFormModal
         open={open}
         onClose={handleCloseModal}
-        onSubmit={editing ? handleUpdateGasto : handleCreateGasto}
+        onSubmit={handleFormSubmit}
         gastoData={gastos.find((gasto) => gasto.id_gasto === editId)}
         ots={ots}
         clientes={clientes}
         editing={editing}
+        setEditing={setEditing}
+        setEditId={setEditId}
       />
 
       <Snackbar

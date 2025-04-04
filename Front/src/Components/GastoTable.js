@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 
-const GastoTable = ({ gastos, onDelete, onEdit, ots, getClienteName }) => {
+const GastoTable = ({ gastos, onDelete, onEdit, getClienteName }) => {
   const [order, setOrder] = useState("desc"); // Orden descendente por defecto
   const [orderBy, setOrderBy] = useState("id_gasto"); // Ordenar por id_gasto por defecto
   const [filterByDate, setFilterByDate] = useState("none"); // Filtro de fecha
@@ -85,6 +85,7 @@ const GastoTable = ({ gastos, onDelete, onEdit, ots, getClienteName }) => {
               Ítem de Gasto
             </TableSortLabel>
           </TableCell>
+          <TableCell>ID Gasto</TableCell>
           <TableCell>OT</TableCell>
           <TableCell>Detalle</TableCell>
           <TableCell>
@@ -112,14 +113,13 @@ const GastoTable = ({ gastos, onDelete, onEdit, ots, getClienteName }) => {
 
           return (
             <TableRow key={gasto.id_gasto}>
+              <TableCell>N°{gasto.id_gasto}</TableCell>
               <TableCell>{gasto.item_gasto}</TableCell>
               <TableCell>
                 {ot ? `N°${ot.id_ot}` : gasto.sin_ot || "No disponible"}
               </TableCell>
               <TableCell>{gasto.detalle}</TableCell>
-              <TableCell>
-                {new Date(gasto.fecha_compra).toLocaleDateString()}
-              </TableCell>
+              <TableCell>{gasto.fecha_compra}</TableCell>
               <TableCell>{gasto.metodo_pago}</TableCell>
               <TableCell>
                 {new Intl.NumberFormat("es-CL", {
