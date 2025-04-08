@@ -34,7 +34,7 @@ const MaquinaPage = () => {
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState("cliente"); // Tipo de búsqueda (cliente o numero_serie)
+  const [searchType, setSearchType] = useState("cliente");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -49,7 +49,7 @@ const MaquinaPage = () => {
     try {
       const data = await getMaquinas();
       const maquinasOrdenadas = data.sort(
-        (a, b) => a.id_maquina - b.id_maquina
+        (a, b) => b.id_maquina - a.id_maquina
       );
       setMaquinas(maquinasOrdenadas);
     } catch (error) {

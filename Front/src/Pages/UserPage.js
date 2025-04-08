@@ -47,7 +47,7 @@ const UserPage = () => {
     try {
       const data = await getUsuarios();
       const usuariosOrdenados = data.sort(
-        (a, b) => a.id_usuario - b.id_usuario // Changed ID_USUARIO to id_usuario
+        (a, b) => b.id_usuario - a.id_usuario // Changed ID_USUARIO to id_usuario
       );
       setUsuarios(usuariosOrdenados);
     } catch (error) {

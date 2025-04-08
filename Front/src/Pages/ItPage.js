@@ -39,7 +39,7 @@ const ItPage = () => {
   const fetchIt = async () => {
     try {
       const data = await getIts();
-      const informesOrdenadas = data.sort((a, b) => a.id_it - b.id_it);
+      const informesOrdenadas = data.sort((a, b) => b.id_it - a.id_it);
       setInformes(informesOrdenadas);
     } catch (error) {
       console.error("Error al obtener los informes de trabajo", error);

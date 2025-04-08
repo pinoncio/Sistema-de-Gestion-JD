@@ -25,7 +25,7 @@ const OtPage = () => {
   const [ordenes, setOrdenes] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState("cliente"); // Tipo de búsqueda (cliente o número de serie)
+  const [searchType, setSearchType] = useState("cliente");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [snackbarSeverity] = useState("success");
@@ -39,7 +39,7 @@ const OtPage = () => {
   const fetchOrdenes = async () => {
     try {
       const data = await getOts();
-      const ordenesOrdenadas = data.sort((a, b) => a.id_ot - b.id_ot);
+      const ordenesOrdenadas = data.sort((a, b) => b.id_ot - a.id_ot);
       setOrdenes(ordenesOrdenadas);
     } catch (error) {
       console.error("Error al obtener las órdenes de trabajo", error);

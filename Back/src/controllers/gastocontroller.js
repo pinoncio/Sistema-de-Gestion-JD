@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { ot } = require("../models/otmodel");
 const { gasto } = require("../models/gastomodel");
 const { otgasto } = require("../models/otgastomodel");
@@ -253,9 +254,12 @@ const updateGasto = async (req, res) => {
         });
       }
 
-      // Verificar si el producto ya existe en la OT
+      // Buscar el producto con el nombre original del gasto
       const productoExistente = await producto.findOne({
-        where: { id_ot, nombre_producto: item_gasto },
+        where: {
+          id_ot,
+          nombre_producto: existingGasto.item_gasto, // usamos el nombre anterior para encontrarlo
+        },
       });
 
       const productoData = {
@@ -269,10 +273,8 @@ const updateGasto = async (req, res) => {
       };
 
       if (productoExistente) {
-        // Si el producto ya existe, se actualiza
         await productoExistente.update(productoData);
       } else {
-        // Si no existe, se crea un nuevo producto
         productoData.id_ot = id_ot;
         await producto.create(productoData);
       }
@@ -316,10 +318,65 @@ const deleteGasto = async (req, res) => {
   }
 };
 
+const getGastosMensuales = async (req, res) => {
+  const { anio, mes } = req.query;
+
+  if (!anio) {
+    return res.status(400).json({
+      msg: "Debe proporcionar 'anio' en los parámetros de consulta.",
+    });
+  }
+
+  try {
+    let whereCondition = {
+      fecha_compra: {
+        [Op.gte]: new Date(anio, 0, 1), // Desde el 1 de enero del año
+        [Op.lte]: new Date(anio, 11, 31, 23, 59, 59), // Hasta el 31 de diciembre del año
+      },
+    };
+
+    // Si el mes no es "todos", filtrar también por mes
+    if (mes && mes !== "todos") {
+      const fechaInicio = new Date(anio, mes - 1, 1);
+      const fechaFin = new Date(anio, mes, 0, 23, 59, 59);
+      whereCondition.fecha_compra = {
+        [Op.between]: [fechaInicio, fechaFin],
+      };
+    }
+
+    const gastos = await gasto.findAll({
+      where: whereCondition,
+      include: [
+        {
+          model: ot,
+          through: { model: otgasto, attributes: [] },
+          include: {
+            model: cliente,
+            attributes: ["nombre_razon_social"],
+          },
+        },
+        {
+          model: cliente,
+          attributes: ["nombre_razon_social"],
+        },
+      ],
+    });
+
+    res.json(gastos);
+  } catch (error) {
+    console.error("Error al obtener los gastos mensuales:", error);
+    res.status(500).json({
+      msg: "Error al obtener los gastos mensuales.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   newGasto,
   updateGasto,
   getGasto,
   getGastos,
   deleteGasto,
+  getGastosMensuales,
 };

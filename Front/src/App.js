@@ -24,6 +24,8 @@ import ItProfilePage from "./Pages/ItVerPage";
 import MaquinaPage from "./Pages/MaquinaPage";
 import MaquinaVerPage from "./Pages/MaquinaVerPage";
 import CostoPage from "./Pages/GastoPage";
+import GastoVerPage from "./Pages/GastoVerPage";
+import GastoMensual from "./Pages/GastoMensual";
 
 const App = () => {
   return (
@@ -203,6 +205,22 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={2}>
                 <CostoPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/gastoProfile/:id_gasto"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <GastoVerPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/gastoMensual"
+            element={
+              <PrivateRoute rolPermitido={2}>
+                <GastoMensual />
               </PrivateRoute>
             }
           />

@@ -111,9 +111,6 @@ const GastoPage = () => {
   };
 
   const handleUpdateGasto = async (id_gasto, formData) => {
-    console.log("ID Gasto:", id_gasto); // Asegúrate de que esto sea un número o cadena
-    console.log("Formulario:", formData); // Verifica el contenido de formData
-
     try {
       await updateGasto(id_gasto, formData);
       setOpen(false);
@@ -252,6 +249,12 @@ const GastoPage = () => {
           style={{ backgroundColor: "#f0f0f1" }}
         >
           Añadir un Gasto
+        </Button>
+        <Button
+          onClick={() => navigate("/gastoMensual")}
+          style={{ backgroundColor: "#00796b", color: "white" }}
+        >
+          Ver Gastos Mensuales
         </Button>
       </div>
 

@@ -32,13 +32,14 @@ const CategoriaPage = () => {
     try {
       const data = await getCategorias();
       const categoriasOrdenadas = data.sort(
-        (a, b) => a.id_categoria - b.id_categoria
+        (a, b) => b.id_categoria - a.id_categoria 
       );
       setCategorias(categoriasOrdenadas);
     } catch (error) {
       console.error("Error al obtener las categorías", error);
     }
   };
+  
 
   const handleCreateCategoria = async (nombre_categoria) => {
     try {

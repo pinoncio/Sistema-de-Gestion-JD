@@ -34,7 +34,7 @@ const OrderUForm = () => {
   const { id_ot } = useParams();
   const [clientes, setClientes] = useState([]);
   const [insumos, setInsumos] = useState([]);
-  const [otinsumo, setOtInsumos] = useState([]);
+  const [setOtInsumos] = useState([]);
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [openSnackbar, setOpenSnackbar] = useState(false);

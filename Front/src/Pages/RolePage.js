@@ -31,7 +31,7 @@ const RolePage = () => {
   const fetchRoles = async () => {
     try {
       const data = await getRoles();
-      const rolesOrdenados = data.sort((a, b) => a.id_rol - b.id_rol); // changed ID_ROL to id_rol
+      const rolesOrdenados = data.sort((a, b) => b.id_rol - a.id_rol); // changed ID_ROL to id_rol
       setRoles(rolesOrdenados);
     } catch (error) {
       console.error("Error al obtener los roles", error);

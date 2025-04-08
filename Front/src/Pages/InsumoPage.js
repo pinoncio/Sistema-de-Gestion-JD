@@ -46,7 +46,7 @@ const InsumoPage = () => {
   const fetchInsumos = async () => {
     try {
       const data = await getInsumos();
-      const insumosOrdenados = data.sort((a, b) => a.id_insumo - b.id_insumo);
+      const insumosOrdenados = data.sort((a, b) => b.id_insumo - a.id_insumo);
       setInsumos(insumosOrdenados);
     } catch (error) {
       console.error("Error al obtener los insumos", error);

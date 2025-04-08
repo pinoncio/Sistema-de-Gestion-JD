@@ -44,7 +44,7 @@ const ClientePage = () => {
     try {
       const data = await getClientes();
       const clientesOrdenados = data.sort(
-        (a, b) => a.id_cliente - b.id_cliente
+        (a, b) => b.id_cliente - a.id_cliente
       );
       setClientes(clientesOrdenados);
     } catch (error) {

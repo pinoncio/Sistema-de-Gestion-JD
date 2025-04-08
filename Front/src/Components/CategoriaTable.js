@@ -45,6 +45,7 @@ const CategoriaTable = ({ categorias = [], onDelete, onEdit }) => {
     <Table>
       <TableHead>
         <TableRow>
+        <TableCell>Id Categoria</TableCell>
           <TableCell>
             <TableSortLabel
               active={orderBy === "nombre"}
@@ -60,6 +61,7 @@ const CategoriaTable = ({ categorias = [], onDelete, onEdit }) => {
       <TableBody>
         {stableSort(categorias, comparator).map((categoria) => (
           <TableRow key={categoria.id_categoria}>
+            <TableCell>N°{categoria.id_categoria}</TableCell>
             <TableCell>{categoria.nombre_categoria}</TableCell>
             <TableCell>
               <IconButton

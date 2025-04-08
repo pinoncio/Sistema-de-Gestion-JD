@@ -54,3 +54,16 @@ export const deleteGasto = async (id_gasto) => {
     throw error;
   }
 };
+
+// Obtener los gastos mensuales
+export const getGastosMensuales = async (anio, mes) => {
+  try {
+    const response = await api.get(
+      `/gasto/gasto/mensuales?anio=${anio}&mes=${mes}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener los gastos mensuales:", error);
+    throw error;
+  }
+};
