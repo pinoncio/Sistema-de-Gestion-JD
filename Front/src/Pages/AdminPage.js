@@ -1,18 +1,15 @@
 import React from "react";
 import { Box, Grid2, Paper, Typography, Container } from "@mui/material";
-import {
-  People,
-  GroupAdd,
-  AccountBox,
-  Settings,
-  Help,
-  InsertChart,
-} from "@mui/icons-material"; // Añadimos más iconos
+import { People, GroupAdd, AccountBox } from "@mui/icons-material"; // Añadimos más iconos
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../Components/Layout/AdminLayout";
 
 const AdminHome = () => {
   const navigate = useNavigate();
+
+  // Obtener el objeto 'user' desde localStorage
+  const user = JSON.parse(localStorage.getItem("user")); // Convertimos el string a objeto
+  const idUsuario = user ? user.idUsuario : null; // Extraemos 'idUsuario' de 'user'
 
   // Añadimos más "stats" vacíos
   const stats = [
@@ -29,18 +26,7 @@ const AdminHome = () => {
     {
       icon: <AccountBox sx={{ fontSize: "6rem" }} />,
       title: "Perfil",
-      route: "",
-    },
-    {
-      icon: <Settings sx={{ fontSize: "6rem" }} />,
-      title: "Configuración",
-      route: "",
-    },
-    { icon: <Help sx={{ fontSize: "6rem" }} />, title: "Ayuda", route: "" },
-    {
-      icon: <InsertChart sx={{ fontSize: "6rem" }} />,
-      title: "Graficas",
-      route: "",
+      route: idUsuario ? `/ver/${idUsuario}` : "/perfil", // Usamos la idUsuario si está disponible
     },
   ];
 
@@ -78,7 +64,6 @@ const AdminHome = () => {
             <Grid2 container spacing={10}>
               {stats.map((stat, index) => (
                 <Grid2 item xs={12} sm={6} md={4} lg={2} key={index}>
-                  {" "}
                   {/* Añadimos más columnas */}
                   <Paper
                     sx={{

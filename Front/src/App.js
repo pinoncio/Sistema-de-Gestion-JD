@@ -26,6 +26,7 @@ import MaquinaVerPage from "./Pages/MaquinaVerPage";
 import CostoPage from "./Pages/GastoPage";
 import GastoVerPage from "./Pages/GastoVerPage";
 import GastoMensual from "./Pages/GastoMensual";
+import AdminProfilePage from "./Pages/AdminProfile";
 
 const App = () => {
   return (
@@ -64,6 +65,14 @@ const App = () => {
             element={
               <PrivateRoute rolPermitido={1}>
                 <UserProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/ver/:id_usuario"
+            element={
+              <PrivateRoute rolPermitido={1}>
+                <AdminProfilePage />
               </PrivateRoute>
             }
           />

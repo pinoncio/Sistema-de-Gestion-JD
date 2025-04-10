@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TextField, Button, Snackbar, Alert } from "@mui/material";
+import { Modal, TextField, Button, Snackbar, Alert, Box } from "@mui/material";
 import "../Styles/FormCategoria.css";
 
 const CategoriaFormModal = ({
@@ -73,10 +73,29 @@ const CategoriaFormModal = ({
   return (
     <>
       <Modal open={open} onClose={onClose}>
-        <div className="categoria-form-modal-content">
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            padding: { xs: 2, sm: 3, md: 4 },
+            borderRadius: 2,
+            width: { xs: "90%", sm: 600 },
+            maxWidth: "90%",
+          }}
+        >
           <h2>{editing ? "Editar Categoría" : "Crear Categoría"}</h2>
           <form onSubmit={handleSubmit}>
-            <div className="categoria-form-group">
+            <Box
+              sx={{
+                marginBottom: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
               <TextField
                 label="Nombre de la Categoría"
                 value={nombreCategoria}
@@ -88,14 +107,26 @@ const CategoriaFormModal = ({
                   !nombreCategoria.trim() &&
                   "El nombre de la categoría es obligatorio."
                 }
+                sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}
               />
-            </div>
-            <div className="categoria-form-actions">
-              <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
-              <Button onClick={onClose}>Cancelar</Button>
-            </div>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+              }}
+            >
+              <Button type="submit" variant="contained" color="primary">
+                {editing ? "Actualizar" : "Crear"}
+              </Button>
+              <Button onClick={onClose} variant="outlined" color="secondary">
+                Cancelar
+              </Button>
+            </Box>
           </form>
-        </div>
+        </Box>
       </Modal>
 
       {/* Snackbar para mostrar el mensaje de error */}
@@ -103,7 +134,7 @@ const CategoriaFormModal = ({
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }} // Ubicación a la derecha superior
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
