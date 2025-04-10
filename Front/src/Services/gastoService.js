@@ -55,12 +55,15 @@ export const deleteGasto = async (id_gasto) => {
   }
 };
 
-// Obtener los gastos mensuales
-export const getGastosMensuales = async (anio, mes) => {
+export const getGastosMensuales = async (anio, mes, clienteId) => {
   try {
-    const response = await api.get(
-      `/gasto/gasto/mensuales?anio=${anio}&mes=${mes}`
-    );
+    const response = await api.get("/gasto/gasto/mensuales", {
+      params: {
+        anio,
+        mes,
+        ...(clienteId && { clienteId }), 
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error al obtener los gastos mensuales:", error);

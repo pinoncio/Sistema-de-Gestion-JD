@@ -1102,7 +1102,7 @@ const OrderForm = () => {
                         <TableCell>${producto.precio_unitario}</TableCell>
                         <TableCell>{producto.descuento_producto}%</TableCell>
                         <TableCell>${producto.recargo_producto}</TableCell>
-                        <TableCell>{producto.af_ex_producto}</TableCell>
+                        <TableCell>{producto.af_ex}</TableCell>
                         <TableCell>${producto.precio_total}</TableCell>
                         <TableCell>
                           <IconButton

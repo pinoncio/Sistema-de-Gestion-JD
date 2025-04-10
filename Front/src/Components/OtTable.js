@@ -17,7 +17,7 @@ import moment from "moment";
 import { generatePdf } from "../Services/GenerateOt";
 
 const OtTable = ({ ordenes, onDelete, getClienteName }) => {
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("fecha_solicitud");
 
   const handleRequestSort = (property) => {

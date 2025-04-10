@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getGastosMensuales } from "../Services/gastoService";
+import { getClientes } from "../Services/clienteService";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -42,8 +43,10 @@ ChartJS.register(
 
 const GastoMensual = () => {
   const [gastosMensuales, setGastosMensuales] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedClient, setSelectedClient] = useState("");
   const [gastoTotal, setGastoTotal] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -54,12 +57,24 @@ const GastoMensual = () => {
     navigate("/gastos");
   };
 
+  const fetchClientes = async () => {
+    try {
+      const response = await getClientes(); // Asegúrate de tener un servicio que traiga los clientes
+      setClientes(response);
+    } catch (error) {
+      console.error("Error al obtener los clientes", error);
+      setSnackbarMessage("Error al obtener los clientes.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
   const fetchGastosMensuales = useCallback(async () => {
     try {
-      // Si se seleccionó "Todos los Meses", obtiene los datos de todos los meses
       const data = await getGastosMensuales(
         selectedYear,
-        selectedMonth === "" ? "todos" : selectedMonth
+        selectedMonth === "" ? "todos" : selectedMonth,
+        selectedClient // Pasar el cliente seleccionado para filtrar
       );
       setGastosMensuales(data);
 
@@ -71,16 +86,21 @@ const GastoMensual = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, selectedClient]);
 
   useEffect(() => {
+    fetchClientes();
     if (selectedYear) {
       fetchGastosMensuales();
     }
-  }, [selectedYear, selectedMonth, fetchGastosMensuales]);
+  }, [selectedYear, selectedMonth, selectedClient, fetchGastosMensuales]);
 
   const handleMonthChange = (event) => {
     setSelectedMonth(event.target.value);
+  };
+
+  const handleClientChange = (event) => {
+    setSelectedClient(event.target.value);
   };
 
   const handleYearChange = (event) => {
@@ -437,7 +457,7 @@ const GastoMensual = () => {
         Volver
       </Button>
       <Grid container spacing={3} style={{ marginBottom: "16px" }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2}>
           <FormControl fullWidth>
             <InputLabel>
               {selectedMonth === "" ? "Todos los Meses" : "Mes"}
@@ -470,7 +490,7 @@ const GastoMensual = () => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2}>
           <FormControl fullWidth>
             <InputLabel>Año</InputLabel>
             <Select
@@ -481,6 +501,24 @@ const GastoMensual = () => {
               {[2023, 2024, 2025].map((year) => (
                 <MenuItem key={year} value={year}>
                   {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={2}>
+          <FormControl fullWidth>
+            <InputLabel>Seleccionar Cliente</InputLabel>
+            <Select
+              value={selectedClient}
+              onChange={handleClientChange}
+              label="Seleccionar Cliente"
+            >
+              <MenuItem value="">Seleccionar Cliente</MenuItem>
+              {clientes.map((cliente) => (
+                <MenuItem key={cliente.id_cliente} value={cliente.id_cliente}>
+                  {cliente.nombre_razon_social}
                 </MenuItem>
               ))}
             </Select>

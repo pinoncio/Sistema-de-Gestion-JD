@@ -281,7 +281,6 @@ const newOt = async (req, res) => {
     productos,
     insumos,
   } = req.body;
-  console.log("Insumos recibidos en el backend:", req.body.insumos);
 
   try {
     if (
@@ -342,20 +341,23 @@ const newOt = async (req, res) => {
         .json({ msg: "Error al crear la orden de trabajo" });
     }
 
-    // Crear productos
-    const productosData = productos.map((producto) => ({
-      id_ot: nuevaOt.id_ot,
-      nombre_producto: producto.nombre_producto,
-      cantidad_producto: producto.cantidad_producto,
-      precio_unitario: producto.precio_unitario,
-      descuento_producto: producto.descuento_producto,
-      recargo_producto: producto.recargo_producto,
-      af_ex: producto.af_ex,
-      precio_total: producto.precio_total,
-    }));
+    // Crear los productos después de que la OT haya sido creada
+    const productosData = productos.map((producto) => {
+      return {
+        id_ot: nuevaOt.id_ot, // Asegurarse de que la OT esté correctamente asignada
+        nombre_producto: producto.nombre_producto,
+        cantidad_producto: producto.cantidad_producto,
+        precio_unitario: producto.precio_unitario,
+        descuento_producto: producto.descuento_producto,
+        recargo_producto: producto.recargo_producto,
+        af_ex: producto.af_ex,
+        precio_total: producto.precio_total,
+      };
+    });
 
     await producto.bulkCreate(productosData);
 
+    // Crear los insumos después de los productos
     for (const insumoData of insumos) {
       const insumoEncontrado = await insumo.findOne({
         where: { id_insumo: insumoData.id_insumo },
@@ -392,15 +394,13 @@ const newOt = async (req, res) => {
       });
     }
 
-    // Crear gastos a partir de productos
+    // Crear los gastos para cada producto
     for (const prod of productos) {
       const totalPagado = prod.precio_unitario;
-      const pagoNeto = totalPagado / 1.19;
+      const pagoNeto = Math.round(totalPagado / 1.19); // Redondear al entero más cercano
       const ivaCalculado = totalPagado - pagoNeto;
 
-      console.log(`Registrando gasto con id_ot: ${nuevaOt.id_ot}`); // Verificar que el ID de OT se está asignando
-
-      await gasto.create({
+      const nuevoGasto = await gasto.create({
         item_gasto: prod.nombre_producto,
         detalle: "editar",
         descripcion: "editar",
@@ -411,10 +411,15 @@ const newOt = async (req, res) => {
         total_pagado: totalPagado,
         nro_factura: 1,
         proveedor: "editar",
-        sin_ot: false,
-        id_ot: nuevaOt.id_ot, // Asegurar que se asigna la OT correctamente
+        id_ot: nuevaOt.id_ot, // Asegurarse de que se asigna la OT correctamente
         id_cliente: nuevaOt.id_cliente,
         observacion: "editar",
+      });
+
+      // Ahora, insertamos la relación en la tabla intermedia `otgasto`
+      await otgasto.create({
+        id_ot: nuevaOt.id_ot,
+        id_gasto: nuevoGasto.id_gasto,
       });
     }
 
@@ -551,7 +556,7 @@ const updateOt = async (req, res) => {
           insumoEncontrado.stock_disponible < otInsumoData.cantidad_insumo
         ) {
           return res.status(400).json({
-            msg: `No hay suficiente cantidad del insumo ${insumoData.id_insumo}.`,
+            msg: `No hay suficiente cantidad del insumo ${otInsumoData.id_insumo}.`,
           });
         }
 
@@ -575,8 +580,8 @@ const updateOt = async (req, res) => {
 
       for (const prod of productos) {
         const totalPagado = prod.precio_unitario;
-        const pagoNeto = totalPagado / 1.19;
-        const ivaCalculado = totalPagado - pagoNeto;
+        const pagoNeto = Math.round(totalPagado / 1.19); // Redondear al entero más cercano
+        const ivaCalculado = totalPagado - pagoNeto; // El IVA es la diferencia entre el total y el pago neto, sin decimales
 
         const nuevoGasto = await gasto.create({
           item_gasto: prod.nombre_producto,

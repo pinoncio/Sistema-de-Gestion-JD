@@ -110,15 +110,15 @@ const newGasto = async (req, res) => {
       );
     }
 
-    // Asegurar que sin_ot sea tratado como string y validar que no vengan ambos
+    // Asegurarse de que no se pasen ambos campos (id_ot y sin_ot)
     if (id_ot && sin_ot && sin_ot.trim() !== "") {
       return res.status(400).json({
         msg: "Solo se puede proporcionar id_ot o sin_ot, no ambos.",
       });
     }
 
-    // Si sin_ot es undefined o está vacío, lo convertimos a null
-    const sinOtValue = sin_ot && sin_ot.trim() !== "" ? sin_ot.trim() : null;
+    // Si sin_ot es undefined o está vacío, lo convertimos a "No"
+    const sinOtValue = sin_ot && sin_ot.trim() !== "" ? sin_ot.trim() : "No";
 
     // Creación del nuevo gasto
     const nuevoGasto = await gasto.create({
@@ -319,7 +319,7 @@ const deleteGasto = async (req, res) => {
 };
 
 const getGastosMensuales = async (req, res) => {
-  const { anio, mes } = req.query;
+  const { anio, mes, clienteId } = req.query;
 
   if (!anio) {
     return res.status(400).json({
@@ -330,12 +330,11 @@ const getGastosMensuales = async (req, res) => {
   try {
     let whereCondition = {
       fecha_compra: {
-        [Op.gte]: new Date(anio, 0, 1), // Desde el 1 de enero del año
-        [Op.lte]: new Date(anio, 11, 31, 23, 59, 59), // Hasta el 31 de diciembre del año
+        [Op.gte]: new Date(anio, 0, 1),
+        [Op.lte]: new Date(anio, 11, 31, 23, 59, 59),
       },
     };
 
-    // Si el mes no es "todos", filtrar también por mes
     if (mes && mes !== "todos") {
       const fechaInicio = new Date(anio, mes - 1, 1);
       const fechaFin = new Date(anio, mes, 0, 23, 59, 59);
@@ -344,12 +343,20 @@ const getGastosMensuales = async (req, res) => {
       };
     }
 
+    // Filtrar directamente por 'id_cliente' si se proporciona
+    if (clienteId) {
+      whereCondition.id_cliente = clienteId;
+    }
+
     const gastos = await gasto.findAll({
       where: whereCondition,
       include: [
         {
           model: ot,
-          through: { model: otgasto, attributes: [] },
+          through: {
+            model: otgasto,
+            attributes: [],
+          },
           include: {
             model: cliente,
             attributes: ["nombre_razon_social"],
@@ -371,6 +378,7 @@ const getGastosMensuales = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   newGasto,
