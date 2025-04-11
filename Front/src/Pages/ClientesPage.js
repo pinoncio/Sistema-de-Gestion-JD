@@ -36,6 +36,9 @@ const ClientePage = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRol = user?.rol;
+
   useEffect(() => {
     fetchClientes();
   }, []);
@@ -227,28 +230,32 @@ const ClientePage = () => {
           Volver
         </Button>
 
-        <Button
-          onClick={() => handleOpenModal()}
-          startIcon={<AddIcon />}
-          style={{
-            backgroundColor: "#f0f0f1",
-            borderRadius: "4px",
-            padding: "8px 16px",
-          }}
-        >
-          Añadir un Cliente
-        </Button>
+        {userRol !== 3 && (
+          <>
+            <Button
+              onClick={() => handleOpenModal()}
+              startIcon={<AddIcon />}
+              style={{
+                backgroundColor: "#f0f0f1",
+                borderRadius: "4px",
+                padding: "8px 16px",
+              }}
+            >
+              Añadir un Cliente
+            </Button>
+          </>
+        )}
         <Button
           onClick={() => navigate("/maquina")}
           startIcon={<AddIcon />}
           style={{
-            backgroundColor: "#4caf50", 
+            backgroundColor: "#4caf50",
             color: "white",
             borderRadius: "4px",
             padding: "8px 16px",
           }}
         >
-          Añadir Máquina
+          Ver Listado de maquinas
         </Button>
       </div>
 

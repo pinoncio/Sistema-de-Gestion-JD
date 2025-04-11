@@ -38,7 +38,7 @@ const App = () => {
           <Route
             path="/admin"
             element={
-              <PrivateRoute rolPermitido={1}>
+              <PrivateRoute rolesPermitidos={[1]}>
                 <AdminHome />
               </PrivateRoute>
             }
@@ -47,7 +47,7 @@ const App = () => {
           <Route
             path="/users"
             element={
-              <PrivateRoute rolPermitido={1}>
+              <PrivateRoute rolesPermitidos={[1]}>
                 <UserPage />
               </PrivateRoute>
             }
@@ -55,7 +55,7 @@ const App = () => {
           <Route
             path="/role"
             element={
-              <PrivateRoute rolPermitido={1}>
+              <PrivateRoute rolesPermitidos={[1]}>
                 <RolePage />
               </PrivateRoute>
             }
@@ -63,7 +63,7 @@ const App = () => {
           <Route
             path="/perfil/:id_usuario"
             element={
-              <PrivateRoute rolPermitido={1}>
+              <PrivateRoute rolesPermitidos={[1]}>
                 <UserProfilePage />
               </PrivateRoute>
             }
@@ -71,28 +71,24 @@ const App = () => {
           <Route
             path="/ver/:id_usuario"
             element={
-              <PrivateRoute rolPermitido={1}>
+              <PrivateRoute rolesPermitidos={[1]}>
                 <AdminProfilePage />
               </PrivateRoute>
             }
           />
-
           <Route path="/login" element={<LoginPage />} />
-          {/* Rutas protegidas para rol 2 (Usuarios normales) */}
           <Route
             path="/user"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <UserHome />
               </PrivateRoute>
             }
           />
-
-          {/* Otras rutas protegidas */}
           <Route
             path="/cliente"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <ClientePage />
               </PrivateRoute>
             }
@@ -100,7 +96,7 @@ const App = () => {
           <Route
             path="/clienteProfile/:id_cliente"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <ClientProfilePage />
               </PrivateRoute>
             }
@@ -108,7 +104,7 @@ const App = () => {
           <Route
             path="/categoria"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <CategoriaPage />
               </PrivateRoute>
             }
@@ -116,7 +112,7 @@ const App = () => {
           <Route
             path="/insumo"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 4]}>
                 <InsumoPage />
               </PrivateRoute>
             }
@@ -124,7 +120,7 @@ const App = () => {
           <Route
             path="/insumoProfile/:id_insumo"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 4]}>
                 <InsumoProfilePage />
               </PrivateRoute>
             }
@@ -132,7 +128,7 @@ const App = () => {
           <Route
             path="/ots"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <OtPage />
               </PrivateRoute>
             }
@@ -140,7 +136,7 @@ const App = () => {
           <Route
             path="/otProfile/:id_ot"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <OTProfilePage />
               </PrivateRoute>
             }
@@ -148,7 +144,7 @@ const App = () => {
           <Route
             path="/create-ot"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <OrderForm />
               </PrivateRoute>
             }
@@ -156,7 +152,7 @@ const App = () => {
           <Route
             path="/update-ot/:id_ot"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <OrderUForm />
               </PrivateRoute>
             }
@@ -164,7 +160,7 @@ const App = () => {
           <Route
             path="/its"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <ItPage />
               </PrivateRoute>
             }
@@ -172,7 +168,7 @@ const App = () => {
           <Route
             path="/create-it"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 5]}>
                 <ItForm />
               </PrivateRoute>
             }
@@ -180,7 +176,7 @@ const App = () => {
           <Route
             path="/update-it/:id_it"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 5]}>
                 <ItUForm />
               </PrivateRoute>
             }
@@ -188,7 +184,7 @@ const App = () => {
           <Route
             path="/itProfile/:id_it"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <ItProfilePage />
               </PrivateRoute>
             }
@@ -196,7 +192,7 @@ const App = () => {
           <Route
             path="/maquina"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <MaquinaPage />
               </PrivateRoute>
             }
@@ -204,7 +200,7 @@ const App = () => {
           <Route
             path="/maquinaProfile/:id_maquina"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4, 5]}>
                 <MaquinaVerPage />
               </PrivateRoute>
             }
@@ -212,7 +208,7 @@ const App = () => {
           <Route
             path="/gastos"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <CostoPage />
               </PrivateRoute>
             }
@@ -220,7 +216,7 @@ const App = () => {
           <Route
             path="/gastoProfile/:id_gasto"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <GastoVerPage />
               </PrivateRoute>
             }
@@ -228,7 +224,7 @@ const App = () => {
           <Route
             path="/gastoMensual"
             element={
-              <PrivateRoute rolPermitido={2}>
+              <PrivateRoute rolesPermitidos={[2, 3, 4]}>
                 <GastoMensual />
               </PrivateRoute>
             }

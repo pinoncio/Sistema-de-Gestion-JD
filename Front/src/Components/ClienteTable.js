@@ -18,6 +18,10 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
 
+  // Obtener rol desde localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRol = user ? user.rol : null;
+
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -83,6 +87,7 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
                 onChange={() =>
                   onToggleStatus(cliente.id_cliente, !cliente.cliente_vigente)
                 }
+                disabled={userRol === 3} // Desactivar el switch si el rol es 3
               />
             </TableCell>
             <TableCell>
@@ -91,12 +96,19 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <IconButton color="warning" onClick={() => onEdit(cliente)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton color="error" onClick={() => onDelete(cliente.id_cliente)}>
-                <DeleteIcon />
-              </IconButton>
+              {userRol !== 3 && ( // Solo si el rol NO es 3, se muestra el botón de editar
+                <IconButton color="warning" onClick={() => onEdit(cliente)}>
+                  <EditIcon />
+                </IconButton>
+              )}
+              {userRol === 2 && ( // Solo el rol 2 puede ver el botón de eliminar
+                <IconButton
+                  color="error"
+                  onClick={() => onDelete(cliente.id_cliente)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
             </TableCell>
           </TableRow>
         ))}

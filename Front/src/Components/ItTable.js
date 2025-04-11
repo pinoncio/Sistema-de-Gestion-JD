@@ -20,6 +20,10 @@ const ItTable = ({ informes, onDelete }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("fecha_control_tiempo");
 
+  // Obtener el rol del usuario desde localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRole = user ? user.rol : null;
+
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -56,7 +60,7 @@ const ItTable = ({ informes, onDelete }) => {
     const dateB = moment(controlB);
 
     if (!dateA.isValid()) return 1;
-    if (!dateB.isValid()) return -1; 
+    if (!dateB.isValid()) return -1;
 
     if (dateA.isBefore(dateB)) return order === "asc" ? -1 : 1;
     if (dateA.isAfter(dateB)) return order === "asc" ? 1 : -1;
@@ -121,18 +125,27 @@ const ItTable = ({ informes, onDelete }) => {
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <Link to={`/update-it/${informe.id_it}`}>
-                <IconButton color="warning" sx={{ ml: 1 }}>
-                  <EditIcon />
+
+              {/* Mostrar botón de editar solo si el rol no es 4 */}
+              {userRole !== 4 && (
+                <Link to={`/update-it/${informe.id_it}`}>
+                  <IconButton color="warning" sx={{ ml: 1 }}>
+                    <EditIcon />
+                  </IconButton>
+                </Link>
+              )}
+
+              {/* Solo mostrar el botón de eliminar si el usuario tiene rol 2 */}
+              {userRole === 2 && (
+                <IconButton
+                  color="error"
+                  sx={{ ml: 1 }}
+                  onClick={() => onDelete(informe.id_it)}
+                >
+                  <DeleteIcon />
                 </IconButton>
-              </Link>
-              <IconButton
-                color="error"
-                sx={{ ml: 1 }}
-                onClick={() => onDelete(informe.id_it)}
-              >
-                <DeleteIcon />
-              </IconButton>
+              )}
+
               <IconButton
                 color="primary"
                 sx={{ ml: 1 }}
