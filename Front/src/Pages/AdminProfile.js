@@ -17,7 +17,7 @@ import AdminLayout from "../Components/Layout/AdminLayout";
 import PersonIcon from "@mui/icons-material/Person"; // Ícono de persona para representar el usuario
 import "../Styles/UserProfilePage.css";
 
-const UserProfilePage = () => {
+const AdminProfilePage = () => {
   const { id_usuario } = useParams();
   const [user, setUser] = useState(null);
   const [roles, setRoles] = useState([]);
@@ -167,7 +167,7 @@ const UserProfilePage = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate("/users")}
+            onClick={() => navigate("/admin")}
           >
             Volver a la lista de usuarios
           </Button>
@@ -177,4 +177,4 @@ const UserProfilePage = () => {
   );
 };
 
-export default UserProfilePage;
+export default AdminProfilePage;

@@ -282,7 +282,22 @@ const GastoFormModal = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="modal-content">
+      <div
+        className="modal-content"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          backgroundColor: "white",
+          padding: "20px",
+          borderRadius: "8px",
+          width: "90%",
+          maxWidth: "800px",
+          maxHeight: "80vh", // Limita la altura máxima del modal
+          overflowY: "auto", // Habilita la barra de desplazamiento vertical
+        }}
+      >
         <h2>
           {editing
             ? "Formulario para editar Gasto"
@@ -402,7 +417,7 @@ const GastoFormModal = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">$</InputAdornment>
-                  ), // Agregar el símbolo "$" a la izquierda
+                  ), // Agregar el símbolo "$"
                 }}
               />
 
@@ -419,7 +434,7 @@ const GastoFormModal = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">$</InputAdornment>
-                  ), // Agregar el símbolo "$" a la izquierda
+                  ), // Agregar el símbolo "$"
                 }}
               />
 
@@ -436,7 +451,7 @@ const GastoFormModal = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">$</InputAdornment>
-                  ), // Agregar el símbolo "$" a la izquierda
+                  ), // Agregar el símbolo "$"
                 }}
               />
               <TextField
@@ -472,7 +487,7 @@ const GastoFormModal = ({
                 </Select>
               </FormControl>
               <TextField
-                label="observacion"
+                label="Observación"
                 value={formData.observacion}
                 onChange={(e) => handleChangeName(e, "observacion")}
                 fullWidth

@@ -13,14 +13,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
 
-const MaquinaTable = ({
-  maquinas,
-  onDelete,
-  onEdit,
-  getClienteName,
-}) => {
+const MaquinaTable = ({ maquinas, onDelete, onEdit, getClienteName }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRole = user ? user.rol : null;
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -81,20 +79,25 @@ const MaquinaTable = ({
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <IconButton
-                color="warning"
-                sx={{ ml: 1 }}
-                onClick={() => onEdit(maquina)}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                sx={{ ml: 1 }}
-                onClick={() => onDelete(maquina.id_maquina)}
-              >
-                <DeleteIcon />
-              </IconButton>
+              {userRole !== 3 && userRole !== 5 && (
+                <IconButton
+                  color="warning"
+                  sx={{ ml: 1 }}
+                  onClick={() => onEdit(maquina)}
+                >
+                  <EditIcon />
+                </IconButton>
+              )}
+
+              {userRole === 2 && (
+                <IconButton
+                  color="error"
+                  sx={{ ml: 1 }}
+                  onClick={() => onDelete(maquina.id_maquina)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
             </TableCell>
           </TableRow>
         ))}

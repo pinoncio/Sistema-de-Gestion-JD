@@ -1,22 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
-const PrivateRoute = ({ children, rolPermitido }) => {
+const PrivateRoute = ({ children, rolesPermitidos }) => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Verifica si hay token, si el usuario existe, y si el rol coincide con el rol permitido
-  if (!token || !user || user.rol !== rolPermitido) {
-    console.log("Acceso denegado. Redirigiendo a login.");
+  useEffect(() => {
+    if (!token || !user) {
+      setErrorMessage("Acceso denegado. No tienes permisos.");
+    } else if (user.rol && !rolesPermitidos.includes(user.rol)) {
+      setErrorMessage("No tienes los permisos necesarios para acceder a esta sección.");
+    }
+  }, [token, user, rolesPermitidos]);
+
+  // Si no hay token o el usuario no existe, redirige al login
+  if (!token || !user) {
     return (
       <Navigate
         to="/login"
-        state={{ error: "Acceso denegado. No tienes permisos." }}
+        state={{ error: errorMessage }}
       />
     );
   }
 
-  return children;  // Si todo está bien, renderiza los hijos (contenido protegido)
+  // Si el usuario tiene rol, pero no está en los roles permitidos
+  if (user.rol && !rolesPermitidos.includes(user.rol)) {
+    return (
+      <Navigate
+        to="/user"
+        state={{ error: errorMessage }}
+      />
+    );
+  }
+
+  return children;
 };
 
 export default PrivateRoute;

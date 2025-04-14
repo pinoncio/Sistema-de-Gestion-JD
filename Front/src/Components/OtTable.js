@@ -20,6 +20,10 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
   const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("fecha_solicitud");
 
+  // Obtener el rol del usuario desde localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRole = user ? user.rol : null;
+
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -105,18 +109,25 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
                   <VisibilityIcon />
                 </IconButton>
               </Link>
-              <Link to={`/update-ot/${orden.id_ot}`}>
-                <IconButton color="warning" sx={{ ml: 1 }}>
-                  <EditIcon />
-                </IconButton>
-              </Link>
-              <IconButton
-                color="error"
-                sx={{ ml: 1 }}
-                onClick={() => onDelete(orden.id_ot)}
-              >
-                <DeleteIcon />
-              </IconButton>
+
+              {/* Solo mostrar el botón de editar y eliminar si el rol no es 5 */}
+              {userRole !== 5 && (
+                <>
+                  <Link to={`/update-ot/${orden.id_ot}`}>
+                    <IconButton color="warning" sx={{ ml: 1 }}>
+                      <EditIcon />
+                    </IconButton>
+                  </Link>
+                  <IconButton
+                    color="error"
+                    sx={{ ml: 1 }}
+                    onClick={() => onDelete(orden.id_ot)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+              )}
+
               <IconButton
                 color="primary"
                 sx={{ ml: 1 }}

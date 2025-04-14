@@ -1,45 +1,51 @@
-import React from "react";
-import { Box, Grid2, Paper, Typography, Container } from "@mui/material";
-import { People, Category, Inventory, Assignment, Description, MonetizationOn } from "@mui/icons-material"; // Añadimos más iconos
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Grid2,
+  Paper,
+  Typography,
+  Container,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import {
+  People,
+  Category,
+  Inventory,
+  Assignment,
+  Description,
+  MonetizationOn,
+} from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
 import UserLayout from "../Components/Layout/UserLayout";
 
 const UserHome = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Añadimos más "stats" vacíos
-  const stats = [
-    {
-      icon: <People sx={{ fontSize: "6rem" }} />,
-      title: "Clientes",
-      route: "/cliente",
-    },
-    {
-      icon: <Category sx={{ fontSize: "6rem" }} />,
-      title: "Categorias",
-      route: "/categoria",
-    },
-    {
-      icon: <Inventory sx={{ fontSize: "6rem" }} />,
-      title: "Insumo",
-      route: "/insumo",
-    },
-    {
-      icon: <Assignment sx={{ fontSize: "6rem" }} />,
-      title: "Ordenes de Trabajo",
-      route: "/ots",
+  // Estado para manejar la visibilidad del Snackbar
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (location.state?.error) {
+      setErrorMessage(location.state.error);
+      setOpenSnackbar(true); // Mostrar Snackbar cuando haya un error
     }
-    ,
-    {
-      icon: <Description sx={{ fontSize: "6rem" }} />,
-      title: "Informes de Trabajo",
-      route: "/its",
-    },
-    {
-      icon: <MonetizationOn sx={{ fontSize: "6rem" }} />, 
-      title: "Gastos",
-      route: "/gastos",
-    },
+  }, [location.state?.error]);
+
+  // Función para manejar el cierre del Snackbar
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
+  const stats = [
+    { icon: <People sx={{ fontSize: "6rem" }} />, title: "Clientes", route: "/cliente" },
+    { icon: <Category sx={{ fontSize: "6rem" }} />, title: "Categorias", route: "/categoria" },
+    { icon: <Inventory sx={{ fontSize: "6rem" }} />, title: "Insumo", route: "/insumo" },
+    { icon: <Assignment sx={{ fontSize: "6rem" }} />, title: "Ordenes de Trabajo", route: "/ots" },
+    { icon: <Description sx={{ fontSize: "6rem" }} />, title: "Informes de Trabajo", route: "/its" },
+    { icon: <MonetizationOn sx={{ fontSize: "6rem" }} />, title: "Gastos", route: "/gastos" },
   ];
 
   const handleClick = (route) => {
@@ -61,6 +67,20 @@ const UserHome = () => {
             Bienvenido, al Sistema de Gestion JD
           </Typography>
 
+          {/* Mostrar Snackbar si hay mensaje de error */}
+          {errorMessage && (
+            <Snackbar
+              open={openSnackbar}
+              autoHideDuration={2000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }} // Posición en la esquina superior derecha
+            >
+              <Alert severity="error" sx={{ width: "100%" }}>
+                {errorMessage}
+              </Alert>
+            </Snackbar>
+          )}
+
           <Box
             sx={{
               bgcolor: "#f4f4f4",
@@ -74,8 +94,6 @@ const UserHome = () => {
             <Grid2 container spacing={10}>
               {stats.map((stat, index) => (
                 <Grid2 item xs={12} sm={6} md={4} lg={2} key={index}>
-                  {" "}
-                  {/* Añadimos más columnas */}
                   <Paper
                     sx={{
                       padding: 3,
@@ -84,15 +102,15 @@ const UserHome = () => {
                       alignItems: "center",
                       justifyContent: "center",
                       cursor: "pointer",
-                      bgcolor: "#e0e0e0", // Fondo gris claro
+                      bgcolor: "#e0e0e0",
                       color: "black",
                       borderRadius: 3,
                       boxShadow: "0 6px 12px rgba(0, 0, 0, 0.6)",
                       height: 240,
-                      width: 240, // Asegura que todos los stats tengan el mismo ancho
+                      width: 240,
                       transition: "transform 0.3s ease, box-shadow 0.3s ease",
                       "&:hover": {
-                        bgcolor: "#d3d3d3", // Cambio de color al pasar el ratón
+                        bgcolor: "#d3d3d3",
                         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3)",
                         transform: "scale(1.05)",
                       },

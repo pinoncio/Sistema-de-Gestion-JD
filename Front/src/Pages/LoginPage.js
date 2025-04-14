@@ -120,7 +120,8 @@ const LoginPage = () => {
       // Redirige según el rol del usuario
       if (data.rol === 1) {
         navigate("/admin");
-      } else if (data.rol === 2) {
+      } else if ([2, 3, 4, 5].includes(data.rol)) {
+        // Verifica si el rol está dentro de los permitidos
         navigate("/user");
       } else {
         throw new Error("Rol no permitido");

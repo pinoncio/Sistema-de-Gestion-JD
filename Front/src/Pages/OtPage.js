@@ -115,6 +115,9 @@ const OtPage = () => {
     }
   };
 
+  // Verifica el rol del usuario
+  const userRole = JSON.parse(localStorage.getItem("user"))?.rol;
+
   return (
     <UserLayout>
       <h1>Lista completa de órdenes de trabajo</h1>
@@ -179,17 +182,20 @@ const OtPage = () => {
           Volver
         </Button>
 
-        <Button
-          onClick={() => navigate("/create-ot")}
-          startIcon={<AddIcon />}
-          style={{
-            backgroundColor: "#f0f0f1",
-            borderRadius: "4px",
-            padding: "8px 16px",
-          }}
-        >
-          Añadir una OT
-        </Button>
+        {/* Solo permitir añadir OT si el rol es diferente de 5 */}
+        {userRole !== 5 && (
+          <Button
+            onClick={() => navigate("/create-ot")}
+            startIcon={<AddIcon />}
+            style={{
+              backgroundColor: "#f0f0f1",
+              borderRadius: "4px",
+              padding: "8px 16px",
+            }}
+          >
+            Añadir una OT
+          </Button>
+        )}
       </div>
 
       <Card className="ot-table-container">

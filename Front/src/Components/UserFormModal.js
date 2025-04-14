@@ -49,7 +49,11 @@ const UserFormModal = ({
         rut_usuario: userData.rut_usuario || "",
         email_usuario: userData.email_usuario || "",
         contrasenia_usuario: userData.contrasenia_usuario || "",
-        fecha_nacimiento_usuario: userData.fecha_nacimiento_usuario || "",
+        fecha_nacimiento_usuario: userData.fecha_nacimiento_usuario
+          ? new Date(userData.fecha_nacimiento_usuario)
+              .toISOString()
+              .split("T")[0]
+          : "",
         rol_usuario: userData.rol_usuario || "",
       });
     } else {
@@ -87,7 +91,7 @@ const UserFormModal = ({
   };
 
   const formatRUT = (rut) => {
-    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9); 
+    let cleanedRUT = rut.replace(/\D/g, "").slice(0, 9);
 
     if (cleanedRUT.length <= 8) {
       cleanedRUT = cleanedRUT.replace(/(\d{1})(\d{3})(\d{3})/, "$1.$2.$3-");
@@ -308,7 +312,7 @@ const UserFormModal = ({
                 value={formData.fecha_nacimiento_usuario}
                 onChange={(e) => {
                   const inputDate = e.target.value;
-                  const minDate = getMinDate(); // Fecha mínima permitida (18 años atrás)
+                  const minDate = getMinDate();
 
                   if (inputDate > new Date().toISOString().split("T")[0]) {
                     setErrors({

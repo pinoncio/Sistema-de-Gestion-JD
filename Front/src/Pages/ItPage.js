@@ -25,7 +25,7 @@ const ItPage = () => {
   const [informes, setInformes] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState("cliente"); // Nueva variable para el tipo de búsqueda
+  const [searchType, setSearchType] = useState("cliente");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [snackbarSeverity] = useState("success");
@@ -60,7 +60,6 @@ const ItPage = () => {
     return cliente ? cliente.nombre_razon_social : "Sin Cliente";
   };
 
-  // Filtro dinámico dependiendo del tipo de búsqueda
   const filteredInformes = informes.filter((informe) => {
     if (searchType === "cliente") {
       return getClienteName(informe.id_cliente)
@@ -112,6 +111,10 @@ const ItPage = () => {
     }
   };
 
+  // Obtener el rol del usuario
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userRole = userData?.rol || null;
+
   return (
     <UserLayout>
       <h1>Lista completa de Informes de trabajo</h1>
@@ -126,13 +129,18 @@ const ItPage = () => {
           <ToggleButton value="cliente" aria-label="Buscar por cliente">
             Buscar por Cliente
           </ToggleButton>
-          <ToggleButton value="numero_serie" aria-label="Buscar por número de serie">
+          <ToggleButton
+            value="numero_serie"
+            aria-label="Buscar por número de serie"
+          >
             Buscar por Número de Serie
           </ToggleButton>
         </ToggleButtonGroup>
 
         <TextField
-          label={`Buscar por ${searchType === "cliente" ? "cliente" : "número de serie"}`}
+          label={`Buscar por ${
+            searchType === "cliente" ? "cliente" : "número de serie"
+          }`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           fullWidth
@@ -169,17 +177,19 @@ const ItPage = () => {
           Volver
         </Button>
 
-        <Button
-          onClick={() => navigate("/create-it")}
-          startIcon={<AddIcon />}
-          style={{
-            backgroundColor: "#f0f0f1",
-            borderRadius: "4px",
-            padding: "8px 16px",
-          }}
-        >
-          Añadir una It
-        </Button>
+        {userRole !== 4 && (
+          <Button
+            onClick={() => navigate("/create-it")}
+            startIcon={<AddIcon />}
+            style={{
+              backgroundColor: "#f0f0f1",
+              borderRadius: "4px",
+              padding: "8px 16px",
+            }}
+          >
+            Añadir una It
+          </Button>
+        )}
       </div>
 
       <Card className="It-table-container">
