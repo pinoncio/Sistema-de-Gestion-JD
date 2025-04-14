@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,15 +9,53 @@ import {
   Tooltip,
   Card,
 } from "@mui/material";
-import { Facebook, Call, Instagram, Person } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom"; // Importamos useNavigate
+import { Facebook, Call, Person } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.jpg";
 
 const Header = () => {
-  const navigate = useNavigate(); // Usamos useNavigate para redirigir
+  const navigate = useNavigate();
+  const [copiedTooltip, setCopiedTooltip] = useState(false);
+
+  const copyPhoneNumber = async () => {
+    try {
+      await navigator.clipboard.writeText("+56 9 8824 0071");
+      setCopiedTooltip(true);
+      setTimeout(() => setCopiedTooltip(false), 2000);
+    } catch (err) {
+      console.error("Error al copiar el número", err);
+    }
+  };
 
   const handleLoginClick = () => {
-    navigate("/login"); // Redirige a la página de login cuando se hace clic
+    navigate("/login");
+  };
+
+  const smoothScrollTo = (targetId, duration = 700) => {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const headerOffset = 70;
+    const targetPosition =
+      target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
+
+    const easeInOutQuad = (t) => {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    };
+
+    const animation = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run =
+        easeInOutQuad(timeElapsed / duration) * distance + startPosition;
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+    };
+
+    requestAnimationFrame(animation);
   };
 
   return (
@@ -33,36 +71,29 @@ const Header = () => {
           Mantención y Reparación de Maquinaria Agrícola
         </Typography>
 
-        {/* Menú para dispositivos grandes */}
         <Box sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center" }}>
-          <Button color="inherit">Portada</Button>
-          <Button color="inherit">Nosotros</Button>
-          <Button color="inherit">Contacto</Button>
+          <Button color="inherit" onClick={() => smoothScrollTo("portada")}>
+            Portada
+          </Button>
+          <Button color="inherit" onClick={() => smoothScrollTo("nosotros")}>
+            Nosotros
+          </Button>
+          <Button color="inherit" onClick={() => smoothScrollTo("contacto")}>
+            Contacto
+          </Button>
         </Box>
 
-        {/* Iconos y número de contacto */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Tooltip title="Instagram">
-            <IconButton
-              color="inherit"
-              href="https://www.instagram.com/jdserviciotecnico"
-              target="_blank"
-            >
-              <Instagram sx={{ fontSize: 40 }} />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip title="Facebook">
             <IconButton
               color="inherit"
-              href="https://www.facebook.com/jdserviciotecnico"
+              href="https://www.facebook.com/share/15yDYrHEhC/?mibextid=wwXIfr"
               target="_blank"
             >
               <Facebook sx={{ fontSize: 40 }} />
             </IconButton>
           </Tooltip>
 
-          {/* Card para el número de contacto */}
           <Card
             sx={{
               backgroundColor: "#f1c40f",
@@ -73,27 +104,31 @@ const Header = () => {
               marginLeft: 2,
             }}
           >
-            <IconButton color="inherit" sx={{ color: "black" }}>
-              <Call />
-            </IconButton>
+            <Tooltip title={copiedTooltip ? "¡Copiado!" : "Copiar número"}>
+              <IconButton
+                color="inherit"
+                sx={{ color: "black" }}
+                onClick={copyPhoneNumber}
+              >
+                <Call />
+              </IconButton>
+            </Tooltip>
             <Typography variant="body2" sx={{ color: "black", marginLeft: 1 }}>
-              +56997425801
+              +56 9 8824 0071
             </Typography>
           </Card>
 
-          {/* Botón de Iniciar sesión */}
           <Button
             color="inherit"
             sx={{
               marginLeft: 2,
               "&:hover": {
-                backgroundColor: "#e74c3c", // Rojo brillante
-                color: "#fff", // Cambia el texto a blanco en hover
+                backgroundColor: "#e74c3c",
+                color: "#fff",
               },
             }}
-            onClick={handleLoginClick} // Evento para redirigir
+            onClick={handleLoginClick}
           >
-            {/* Aquí simplemente usas el ícono directamente dentro del Button */}
             <Person sx={{ marginRight: 1 }} />
             Iniciar sesión
           </Button>

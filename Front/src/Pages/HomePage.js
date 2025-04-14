@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import Header from "../Components/Layout/Header";
 import { styled } from "@mui/system";
 import ContactForm from "../Components/ContactForm";
+import Footer from "../Components/Layout/Footer";
 
-// Estilo para el contenedor cuadrado de la imagen
 const ImageContainer = styled(Box)({
   width: "100%",
   maxWidth: "900px",
@@ -31,7 +31,7 @@ const Home = () => {
       <Header />
 
       {/* Hero Section */}
-      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
+      <Box id="portada" sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -52,14 +52,7 @@ const Home = () => {
           </CardContent>
 
           <Typography variant="body1" sx={{ maxWidth: 800, margin: "0 auto" }}>
-            En JDService, proporcionamos soluciones confiables y eficientes en
-            la reparación y mantención de maquinaria agrícola, asegurando que
-            nuestros clientes puedan operar con la máxima productividad y
-            seguridad en sus actividades agrícolas. Nos comprometemos a ofrecer
-            un servicio de calidad, basado en la experiencia, la innovación y la
-            atención personalizada, con el objetivo de extender la vida útil de
-            la maquinaria y contribuir al desarrollo sostenible del sector
-            agrícola.
+            En JDService, proporcionamos soluciones confiables y eficientes en la reparación y mantención de maquinaria agrícola, asegurando que nuestros clientes puedan operar con la máxima productividad y seguridad en sus actividades agrícolas. Nos comprometemos a ofrecer un servicio de calidad, basado en la experiencia, la innovación y la atención personalizada, con el objetivo de extender la vida útil de la maquinaria y contribuir al desarrollo sostenible del sector agrícola.
           </Typography>
 
           {/* Contenedor cuadrado para la imagen */}
@@ -71,15 +64,17 @@ const Home = () => {
           </ImageContainer>
         </motion.div>
       </Box>
+
       <hr
         style={{
-          width: "50%", // Ancho de la línea (puedes ajustarlo como desees)
-          margin: "20px auto", // Centrado de la línea con márgenes en la parte superior e inferior
+          width: "50%", // Ancho de la línea
+          margin: "20px auto", // Centrado de la línea
           border: "1px solid #ccc", // Color y grosor de la línea
         }}
       />
+
       {/* Sección "Sobre Nosotros" */}
-      <Box sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
+      <Box id="nosotros" sx={{ textAlign: "center", padding: 5, backgroundColor: "#ffffff" }}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -103,32 +98,21 @@ const Home = () => {
           </Card>
 
           <Typography variant="body1" sx={{ maxWidth: 800, margin: "0 auto" }}>
-            En JDService, nos especializamos en ofrecer soluciones integrales y
-            de alta calidad en la reparación y mantenimiento de maquinaria
-            agrícola. Con más de 15 años de experiencia en el sector, nos
-            comprometemos a proporcionar un servicio confiable y personalizado
-            para cada uno de nuestros clientes. Sabemos que la maquinaria
-            agrícola es esencial para el funcionamiento eficiente de cualquier
-            empresa del sector, por lo que nos aseguramos de que nuestros
-            servicios no solo prolonguen la vida útil de sus equipos, sino que
-            también optimicen su rendimiento. Nuestra misión es contribuir al
-            crecimiento sostenible de la agricultura, ofreciendo un soporte
-            técnico profesional que garantice la productividad y seguridad de
-            las operaciones agrícolas. Contamos con un equipo altamente
-            capacitado y en constante formación, siempre al día con las últimas
-            innovaciones tecnológicas en el campo.
+            En JDService, nos especializamos en ofrecer soluciones integrales y de alta calidad en la reparación y mantenimiento de maquinaria agrícola. Con más de 15 años de experiencia en el sector, nos comprometemos a proporcionar un servicio confiable y personalizado para cada uno de nuestros clientes. Sabemos que la maquinaria agrícola es esencial para el funcionamiento eficiente de cualquier empresa del sector, por lo que nos aseguramos de que nuestros servicios no solo prolonguen la vida útil de sus equipos, sino que también optimicen su rendimiento. Nuestra misión es contribuir al crecimiento sostenible de la agricultura, ofreciendo un soporte técnico profesional que garantice la productividad y seguridad de las operaciones agrícolas. Contamos con un equipo altamente capacitado y en constante formación, siempre al día con las últimas innovaciones tecnológicas en el campo.
           </Typography>
         </motion.div>
       </Box>
+
       <hr
         style={{
-          width: "50%", // Ancho de la línea (puedes ajustarlo como desees)
-          margin: "20px auto", // Centrado de la línea con márgenes en la parte superior e inferior
+          width: "50%", // Ancho de la línea
+          margin: "20px auto", // Centrado de la línea
           border: "1px solid #ccc", // Color y grosor de la línea
         }}
       />
+
       {/* Sección de contacto */}
-      <Box sx={{ marginTop: 6, textAlign: "center" }}>
+      <Box id="contacto" sx={{ marginTop: 6, textAlign: "center" }}>
         <Card
           sx={{
             maxWidth: 900,
@@ -154,6 +138,9 @@ const Home = () => {
           <ContactForm />
         </motion.div>
       </Box>
+
+      {/* Footer solo en Home */}
+      <Footer />
     </div>
   );
 };

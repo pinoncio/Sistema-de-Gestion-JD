@@ -1,11 +1,9 @@
-/*
+// routes.js
 const express = require("express");
-const { sendEmail } = require("../controllers/emailController");
-
 const router = express.Router();
+const  sendEmail  = require("../controllers/emailcontroller");
 
 // Ruta para enviar un correo
-router.post("/send-email", sendEmail);
+router.post("/send-email", sendEmail.sendEmail);
 
 module.exports = router;
-*/

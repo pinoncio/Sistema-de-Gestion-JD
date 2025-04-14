@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, Alert } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Box,
+  Typography,
+  Snackbar,
+  SnackbarContent,
+} from "@mui/material";
 import api from "../Services/apiService";
 
 const ContactForm = () => {
@@ -10,47 +17,31 @@ const ContactForm = () => {
     message: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: "", message: "" });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const validateForm = () => {
-    const { name, phone, email, message } = formData;
-    if (!name || !phone || !email || !message) {
-      setFeedback({
-        type: "error",
-        message: "Todos los campos son obligatorios",
-      });
-      return false;
-    }
-    return true;
-  };
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarColor, setSnackbarColor] = useState("green"); // verde por defecto
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    setLoading(true);
-    setFeedback({ type: "", message: "" });
 
     try {
-      await api.post("/email/send-email", formData);
-      setFeedback({
-        type: "success",
-        message: "Formulario enviado correctamente",
-      });
-      setFormData({ name: "", phone: "", email: "", message: "" });
+      const response = await api.post("/email/send-email", formData);
+      console.log(response.data.message);
+
+      setSnackbarMessage("Correo enviado correctamente");
+      setSnackbarColor("green");
+      setOpenSnackbar(true);
     } catch (error) {
-      setFeedback({
-        type: "error",
-        message: error.response?.data?.error || "Error al enviar el formulario",
-      });
-    } finally {
-      setLoading(false);
+      console.error(error);
+      setSnackbarMessage("Error al enviar el correo");
+      setSnackbarColor("red");
+      setOpenSnackbar(true);
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   return (
@@ -58,12 +49,6 @@ const ContactForm = () => {
       <Typography variant="h6" gutterBottom>
         Formulario de Contacto
       </Typography>
-
-      {feedback.message && (
-        <Alert severity={feedback.type} sx={{ marginBottom: 2 }}>
-          {feedback.message}
-        </Alert>
-      )}
 
       <form onSubmit={handleSubmit}>
         <TextField
@@ -105,11 +90,28 @@ const ContactForm = () => {
           type="submit"
           variant="contained"
           color="primary"
-          disabled={loading}
+          sx={{ width: "100%" }}
         >
-          {loading ? "Enviando..." : "Enviar"}
+          Enviar
         </Button>
       </form>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          sx={{
+            backgroundColor: snackbarColor,
+            color: "white",
+            fontWeight: "bold",
+            borderRadius: "8px",
+          }}
+        />
+      </Snackbar>
     </Box>
   );
 };

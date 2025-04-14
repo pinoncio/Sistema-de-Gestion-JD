@@ -12,7 +12,7 @@ const informaciondepagoroutes = require("./routes/informacionpagoroute");
 const categoriaroutes = require("./routes/categoriaroute");
 const insumoroutes = require("./routes/insumoroute");
 const tiemporoutes = require("./routes/controltiemporoute");
-//const emailroutes = require("./routes/emailroute");
+const emailroutes = require("./routes/emailroute");
 const otroutes = require("./routes/otroute");
 const itroutes = require("./routes/informeroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
@@ -64,14 +64,14 @@ class server {
     this.app.use("/api/informacion", informaciondepagoroutes);
     this.app.use("/api/categoria", categoriaroutes);
     this.app.use("/api/insumo", insumoroutes);
-    //this.app.use("/api/email", emailroutes);
+    this.app.use("/api/email", emailroutes);
     this.app.use("/api/ots", otroutes);
     this.app.use("/api/otinsumo", otinsumoroutes);
     this.app.use("/api/producto", productoroutes);
     this.app.use("/api/its", itroutes);
     this.app.use("/api/tiempo", tiemporoutes);
     this.app.use("/api/maquina", maquinaroutes);
-    this.app.use("/api/gasto", gastoroutes); // Cambié 'costoroutes' a 'gastoroutes'
+    this.app.use("/api/gasto", gastoroutes);
   }
 
   middlewares() {
