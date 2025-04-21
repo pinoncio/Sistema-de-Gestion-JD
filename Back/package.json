@@ -1,7 +1,8 @@
 {
   "name": "back",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
+  "homepage": "http://jdservice.cl/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,9 +17,9 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.10.1",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "resend": "^4.3.0",
     "sequelize": "^6.37.5"
   },
   "directories": {

@@ -18,7 +18,7 @@ const itroutes = require("./routes/informeroute");
 const otinsumoroutes = require("./routes/otinsumoroute");
 const productoroutes = require("./routes/productoroute");
 const maquinaroutes = require("./routes/maquinaroute");
-const gastoroutes = require("./routes/gastoroute"); // Cambié 'costoroutes' a 'gastoroutes'
+const gastoroutes = require("./routes/gastoroute");
 
 // importar modelos
 const { usuario } = require("./models/usermodel");
@@ -36,8 +36,8 @@ const { producto } = require("./models/productomodel");
 const { it } = require("./models/informemodel");
 const { controltiempo } = require("./models/controltiempomodel");
 const { maquina } = require("./models/maquinamodel");
-const { gasto } = require("./models/gastomodel"); // Cambié 'costo' a 'gasto'
-const { otgasto } = require("./models/otgastomodel"); // Cambié 'otcosto' a 'otgasto'
+const { gasto } = require("./models/gastomodel"); 
+const { otgasto } = require("./models/otgastomodel"); 
 
 class server {
   constructor() {

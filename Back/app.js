@@ -3,7 +3,7 @@ const server = require("./src/server");  // Importar la instancia de Server
 const PORT = process.env.PORT || 3001;
 
 // Iniciar el servidor
-server.listen();  // Llamamos a 'listen' directamente desde la instancia
+server.listen(PORT);  // Llamamos a 'listen' directamente desde la instancia
 
 // Manejador de la señal SIGINT (Ctrl + C)
 process.on('SIGINT', (signal) => {
