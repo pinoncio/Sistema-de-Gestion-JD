@@ -46,7 +46,11 @@ const AdminHome = () => {
         }}
       >
         <Container>
-          <Typography variant="h4" gutterBottom sx={{ fontSize: "2.5rem" }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ fontSize: "2.5rem", textAlign: "center" }}
+          >
             Bienvenido, Administrador
           </Typography>
 
@@ -61,10 +65,15 @@ const AdminHome = () => {
             }}
           >
             {/* Grid de paneles informativos */}
-            <Grid2 container spacing={10}>
+            <Grid2
+              container
+              spacing={4}
+              justifyContent="center" // Centramos los elementos en pantallas grandes
+              alignItems="center" // Alineamos verticalmente en pantallas pequeñas
+              direction={{ xs: "column", sm: "row" }} // Para pantallas pequeñas, los elementos estarán en columna
+            >
               {stats.map((stat, index) => (
-                <Grid2 item xs={12} sm={6} md={4} lg={2} key={index}>
-                  {/* Añadimos más columnas */}
+                <Grid2 item xs={12} sm={6} md={4} lg={3} key={index}>
                   <Paper
                     sx={{
                       padding: 3,

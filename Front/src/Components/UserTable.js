@@ -12,7 +12,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import moment from "moment";
 
 const UserTable = ({
@@ -52,85 +52,103 @@ const UserTable = ({
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "nombre_usuario"}
-              direction={orderBy === "nombre_usuario" ? order : "asc"}
-              onClick={() => handleRequestSort("nombre_usuario")}
-            >
-              Nombre
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "apellido_usuario"}
-              direction={orderBy === "apellido_usuario" ? order : "asc"}
-              onClick={() => handleRequestSort("apellido_usuario")}
-            >
-              Apellido
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>RUT</TableCell>
-          <TableCell>Email</TableCell>
-          <TableCell>Fecha de nacimiento</TableCell>
-          <TableCell>Rol</TableCell>
-          <TableCell>Estado</TableCell>
-          <TableCell>
-            <IconButton onClick={() => {}}>
-              {/* Placeholder for sorting indicator */}
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {stableSort(usuarios, comparator).map((usuario) => (
-          <TableRow key={usuario.id_usuario}>
-            <TableCell>{usuario.nombre_usuario}</TableCell>
-            <TableCell>{usuario.apellido_usuario}</TableCell>
-            <TableCell>{usuario.rut_usuario}</TableCell>
-            <TableCell>{usuario.email_usuario}</TableCell>
-            <TableCell>
-              {moment(usuario.fecha_nacimiento_usuario).format("DD/MM/YYYY")}
-            </TableCell>
-            <TableCell>{getRoleName(usuario.rol_usuario)}</TableCell>
-            <TableCell>
-              <Switch
-                checked={usuario.estado_usuario} // This value should reflect the state from the backend
-                onChange={() =>
-                  onToggleStatus(usuario.id_usuario, !usuario.estado_usuario)
-                }
-                name="estado"
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </TableCell>
-            <TableCell>
-              <Link to={`/perfil/${usuario.id_usuario}`}>
-                <IconButton >
-                  <VisibilityIcon />
+    <div>
+      <style>
+        {`
+          .highlight {
+            background-color: rgba(255, 235, 20, 0.2); /* Amarillo opaco */
+            font-weight: normal;
+          }
+        `}
+      </style>
+
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "nombre_usuario"}
+                  direction={orderBy === "nombre_usuario" ? order : "asc"}
+                  onClick={() => handleRequestSort("nombre_usuario")}
+                >
+                  Nombre
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "apellido_usuario"}
+                  direction={orderBy === "apellido_usuario" ? order : "asc"}
+                  onClick={() => handleRequestSort("apellido_usuario")}
+                >
+                  Apellido
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>RUT</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Fecha de nacimiento</TableCell>
+              <TableCell>Rol</TableCell>
+              <TableCell>Estado</TableCell>
+              <TableCell>
+                <IconButton onClick={() => {}}>
+                  {/* Placeholder for sorting indicator */}
                 </IconButton>
-              </Link>
-              <IconButton
-                color="warning"
-                style={{ marginLeft: "10px" }}
-                onClick={() => onEdit(usuario)}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                style={{ marginLeft: "10px" }}
-                onClick={() => onDelete(usuario.id_usuario)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(usuarios, comparator).map((usuario) => (
+              <TableRow key={usuario.id_usuario}>
+                <TableCell>{usuario.nombre_usuario}</TableCell>
+                <TableCell>{usuario.apellido_usuario}</TableCell>
+                <TableCell>{usuario.rut_usuario}</TableCell>
+                <TableCell>{usuario.email_usuario}</TableCell>
+                <TableCell>
+                  {moment(usuario.fecha_nacimiento_usuario).format(
+                    "DD/MM/YYYY"
+                  )}
+                </TableCell>
+                <TableCell>{getRoleName(usuario.rol_usuario)}</TableCell>
+                <TableCell>
+                  <Switch
+                    checked={usuario.estado_usuario} // This value should reflect the state from the backend
+                    onChange={() =>
+                      onToggleStatus(
+                        usuario.id_usuario,
+                        !usuario.estado_usuario
+                      )
+                    }
+                    name="estado"
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Link to={`/perfil/${usuario.id_usuario}`}>
+                    <IconButton>
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Link>
+                  <IconButton
+                    color="warning"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => onEdit(usuario)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => onDelete(usuario.id_usuario)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 

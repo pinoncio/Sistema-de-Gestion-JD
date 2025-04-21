@@ -92,112 +92,116 @@ const GastoTable = ({ gastos, onDelete, onEdit, getClienteName }) => {
         `}
       </style>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === "id_gasto"}
-                direction={orderBy === "id_gasto" ? order : "asc"}
-                onClick={() => handleRequestSort("id_gasto")}
-              >
-                ID Gasto
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === "item_gasto"}
-                direction={orderBy === "item_gasto" ? order : "asc"}
-                onClick={() => handleRequestSort("item_gasto")}
-              >
-                Ítem de Gasto
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>OT</TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === "fecha_compra"}
-                direction={filterByDate === "asc" ? "asc" : "desc"}
-                onClick={handleDateSort}
-              >
-                Fecha de Compra
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>Método de Pago</TableCell>
-            <TableCell>Pago Neto</TableCell>
-            <TableCell>IVA</TableCell>
-            <TableCell>Total Pagado</TableCell>
-            <TableCell>N° Factura</TableCell>
-            <TableCell>Proveedor</TableCell>
-            <TableCell>Cliente</TableCell>
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stableSort(gastos, comparator).map((gasto) => {
-            const ot = gasto.ots && gasto.ots[0];
-            const isEditable = isEditableGasto(gasto);
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "id_gasto"}
+                  direction={orderBy === "id_gasto" ? order : "asc"}
+                  onClick={() => handleRequestSort("id_gasto")}
+                >
+                  ID Gasto
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "item_gasto"}
+                  direction={orderBy === "item_gasto" ? order : "asc"}
+                  onClick={() => handleRequestSort("item_gasto")}
+                >
+                  Ítem de Gasto
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>OT</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "fecha_compra"}
+                  direction={filterByDate === "asc" ? "asc" : "desc"}
+                  onClick={handleDateSort}
+                >
+                  Fecha de Compra
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>Método de Pago</TableCell>
+              <TableCell>Pago Neto</TableCell>
+              <TableCell>IVA</TableCell>
+              <TableCell>Total Pagado</TableCell>
+              <TableCell>N° Factura</TableCell>
+              <TableCell>Proveedor</TableCell>
+              <TableCell>Cliente</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(gastos, comparator).map((gasto) => {
+              const ot = gasto.ots && gasto.ots[0];
+              const isEditable = isEditableGasto(gasto);
 
-            return (
-              <TableRow key={gasto.id_gasto}>
-                <TableCell>N°{gasto.id_gasto}</TableCell>
-                <TableCell>{gasto.item_gasto}</TableCell>
-                <TableCell>{ot ? `N°${ot.id_ot}` : gasto.sin_ot || "No disponible"}</TableCell>
-                <TableCell>{gasto.fecha_compra}</TableCell>
-                <TableCell className={isEditable ? "highlight" : ""}>
-                  {gasto.metodo_pago}
-                </TableCell>
-                <TableCell >
-                  {new Intl.NumberFormat("es-CL", {
-                    style: "currency",
-                    currency: "CLP",
-                  }).format(gasto.pago_neto)}
-                </TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat("es-CL", {
-                    style: "currency",
-                    currency: "CLP",
-                  }).format(gasto.iva)}
-                </TableCell>
-                <TableCell>
-                  {new Intl.NumberFormat("es-CL", {
-                    style: "currency",
-                    currency: "CLP",
-                  }).format(gasto.total_pagado)}
-                </TableCell>
-                <TableCell className={isEditable ? "highlight" : ""}>
-                  {gasto.nro_factura}
-                </TableCell>
-                <TableCell className={isEditable ? "highlight" : ""}>
-                  {gasto.proveedor}
-                </TableCell>
-                <TableCell>{getClienteName(gasto.id_cliente)}</TableCell>
-                <TableCell>
-                  <Link to={`/gastoProfile/${gasto.id_gasto}`}>
-                    <IconButton>
-                      <VisibilityIcon />
+              return (
+                <TableRow key={gasto.id_gasto}>
+                  <TableCell>N°{gasto.id_gasto}</TableCell>
+                  <TableCell>{gasto.item_gasto}</TableCell>
+                  <TableCell>
+                    {ot ? `N°${ot.id_ot}` : gasto.sin_ot || "No disponible"}
+                  </TableCell>
+                  <TableCell>{gasto.fecha_compra}</TableCell>
+                  <TableCell className={isEditable ? "highlight" : ""}>
+                    {gasto.metodo_pago}
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("es-CL", {
+                      style: "currency",
+                      currency: "CLP",
+                    }).format(gasto.pago_neto)}
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("es-CL", {
+                      style: "currency",
+                      currency: "CLP",
+                    }).format(gasto.iva)}
+                  </TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("es-CL", {
+                      style: "currency",
+                      currency: "CLP",
+                    }).format(gasto.total_pagado)}
+                  </TableCell>
+                  <TableCell className={isEditable ? "highlight" : ""}>
+                    {gasto.nro_factura}
+                  </TableCell>
+                  <TableCell className={isEditable ? "highlight" : ""}>
+                    {gasto.proveedor}
+                  </TableCell>
+                  <TableCell>{getClienteName(gasto.id_cliente)}</TableCell>
+                  <TableCell>
+                    <Link to={`/gastoProfile/${gasto.id_gasto}`}>
+                      <IconButton>
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Link>
+                    <IconButton
+                      color="warning"
+                      sx={{ ml: 1 }}
+                      onClick={() => onEdit(gasto)}
+                    >
+                      <EditIcon />
                     </IconButton>
-                  </Link>
-                  <IconButton
-                    color="warning"
-                    sx={{ ml: 1 }}
-                    onClick={() => onEdit(gasto)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    sx={{ ml: 1 }}
-                    onClick={() => onDelete(gasto.id_gasto)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                    <IconButton
+                      color="error"
+                      sx={{ ml: 1 }}
+                      onClick={() => onDelete(gasto.id_gasto)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

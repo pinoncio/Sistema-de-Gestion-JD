@@ -51,95 +51,108 @@ const OtTable = ({ ordenes, onDelete, getClienteName }) => {
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>N° OT</TableCell>
-          <TableCell>Cliente</TableCell>
-          <TableCell>Tipo documento</TableCell>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "fecha_solicitud"}
-              direction={orderBy === "fecha_solicitud" ? order : "asc"}
-              onClick={() => handleRequestSort("fecha_solicitud")}
-            >
-              Fecha solicitud
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "fecha_entrega"}
-              direction={orderBy === "fecha_entrega" ? order : "asc"}
-              onClick={() => handleRequestSort("fecha_entrega")}
-            >
-              Fecha entrega
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>Tipo OT</TableCell>
-          <TableCell>N° de serie</TableCell>
-          <TableCell>Observacion final</TableCell>
-          <TableCell>Total</TableCell>
-          <TableCell>Acciones</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {stableSort(ordenes, comparator).map((orden, index) => (
-          <TableRow key={orden.id_ot || index}>
-            <TableCell>N°{orden.id_ot}</TableCell>
-            <TableCell>{getClienteName(orden.id_cliente)}</TableCell>
-            <TableCell>{orden.tipo_documento}</TableCell>
-            <TableCell>
-              {moment(orden.fecha_solicitud).format("DD/MM/YYYY")}
-            </TableCell>
-            <TableCell>
-              {moment(orden.fecha_entrega).format("DD/MM/YYYY")}
-            </TableCell>
-            <TableCell>{orden.tipo_ot}</TableCell>
-            <TableCell>{orden.numero_serie}</TableCell>
-            <TableCell>{orden.observacion_final}</TableCell>
-            <TableCell>
-              {new Intl.NumberFormat("es-CL", {
-                style: "currency",
-                currency: "CLP",
-              }).format(orden.total)}
-            </TableCell>
-            <TableCell>
-              <Link to={`/otProfile/${orden.id_ot}`}>
-                <IconButton>
-                  <VisibilityIcon />
-                </IconButton>
-              </Link>
+    <div>
+      <style>
+        {`
+          .highlight {
+            background-color: rgba(255, 235, 20, 0.2); /* Amarillo opaco */
+            font-weight: normal;
+          }
+        `}
+      </style>
 
-              {/* Solo mostrar el botón de editar y eliminar si el rol no es 5 */}
-              {userRole !== 5 && (
-                <>
-                  <Link to={`/update-ot/${orden.id_ot}`}>
-                    <IconButton color="warning" sx={{ ml: 1 }}>
-                      <EditIcon />
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>N° OT</TableCell>
+              <TableCell>Cliente</TableCell>
+              <TableCell>Tipo documento</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "fecha_solicitud"}
+                  direction={orderBy === "fecha_solicitud" ? order : "asc"}
+                  onClick={() => handleRequestSort("fecha_solicitud")}
+                >
+                  Fecha solicitud
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "fecha_entrega"}
+                  direction={orderBy === "fecha_entrega" ? order : "asc"}
+                  onClick={() => handleRequestSort("fecha_entrega")}
+                >
+                  Fecha entrega
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>Tipo OT</TableCell>
+              <TableCell>N° de serie</TableCell>
+              <TableCell>Observacion final</TableCell>
+              <TableCell>Total</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(ordenes, comparator).map((orden, index) => (
+              <TableRow key={orden.id_ot || index}>
+                <TableCell>N°{orden.id_ot}</TableCell>
+                <TableCell>{getClienteName(orden.id_cliente)}</TableCell>
+                <TableCell>{orden.tipo_documento}</TableCell>
+                <TableCell>
+                  {moment(orden.fecha_solicitud).format("DD/MM/YYYY")}
+                </TableCell>
+                <TableCell>
+                  {moment(orden.fecha_entrega).format("DD/MM/YYYY")}
+                </TableCell>
+                <TableCell>{orden.tipo_ot}</TableCell>
+                <TableCell>{orden.numero_serie}</TableCell>
+                <TableCell>{orden.observacion_final}</TableCell>
+                <TableCell>
+                  {new Intl.NumberFormat("es-CL", {
+                    style: "currency",
+                    currency: "CLP",
+                  }).format(orden.total)}
+                </TableCell>
+                <TableCell>
+                  <Link to={`/otProfile/${orden.id_ot}`}>
+                    <IconButton>
+                      <VisibilityIcon />
                     </IconButton>
                   </Link>
-                  <IconButton
-                    color="error"
-                    sx={{ ml: 1 }}
-                    onClick={() => onDelete(orden.id_ot)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </>
-              )}
 
-              <IconButton
-                color="primary"
-                sx={{ ml: 1 }}
-                onClick={() => generatePdf(orden.id_ot)}
-              >
-                <PictureAsPdfIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                  {/* Solo mostrar el botón de editar y eliminar si el rol no es 5 */}
+                  {userRole !== 5 && (
+                    <>
+                      <Link to={`/update-ot/${orden.id_ot}`}>
+                        <IconButton color="warning" sx={{ ml: 1 }}>
+                          <EditIcon />
+                        </IconButton>
+                      </Link>
+                      <IconButton
+                        color="error"
+                        sx={{ ml: 1 }}
+                        onClick={() => onDelete(orden.id_ot)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )}
+
+                  <IconButton
+                    color="primary"
+                    sx={{ ml: 1 }}
+                    onClick={() => generatePdf(orden.id_ot)}
+                  >
+                    <PictureAsPdfIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 

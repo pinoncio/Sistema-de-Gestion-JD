@@ -45,64 +45,77 @@ const MaquinaTable = ({ maquinas, onDelete, onEdit, getClienteName }) => {
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "nombre_maquina"}
-              direction={orderBy === "nombre_maquina" ? order : "asc"}
-              onClick={() => handleRequestSort("nombre_maquina")}
-            >
-              Nombre Maquina
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>Modelo Maquina</TableCell>
-          <TableCell>N° Serie</TableCell>
-          <TableCell>N° Motor</TableCell>
-          <TableCell>Cliente Asignado</TableCell>
-          <TableCell>Acciones</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {stableSort(maquinas, comparator).map((maquina) => (
-          <TableRow key={maquina.id_maquina}>
-            <TableCell>{maquina.nombre_maquina}</TableCell>
-            <TableCell>{maquina.modelo_maquina}</TableCell>
-            <TableCell>{maquina.numero_serie}</TableCell>
-            <TableCell>{maquina.numero_motor}</TableCell>
-            <TableCell>{getClienteName(maquina.id_cliente)}</TableCell>
+    <div>
+      <style>
+        {`
+          .highlight {
+            background-color: rgba(255, 235, 20, 0.2); /* Amarillo opaco */
+            font-weight: normal;
+          }
+        `}
+      </style>
 
-            <TableCell>
-              <Link to={`/maquinaProfile/${maquina.id_maquina}`}>
-                <IconButton>
-                  <VisibilityIcon />
-                </IconButton>
-              </Link>
-              {userRole !== 3 && userRole !== 5 && (
-                <IconButton
-                  color="warning"
-                  sx={{ ml: 1 }}
-                  onClick={() => onEdit(maquina)}
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "nombre_maquina"}
+                  direction={orderBy === "nombre_maquina" ? order : "asc"}
+                  onClick={() => handleRequestSort("nombre_maquina")}
                 >
-                  <EditIcon />
-                </IconButton>
-              )}
+                  Nombre Maquina
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>Modelo Maquina</TableCell>
+              <TableCell>N° Serie</TableCell>
+              <TableCell>N° Motor</TableCell>
+              <TableCell>Cliente Asignado</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(maquinas, comparator).map((maquina) => (
+              <TableRow key={maquina.id_maquina}>
+                <TableCell>{maquina.nombre_maquina}</TableCell>
+                <TableCell>{maquina.modelo_maquina}</TableCell>
+                <TableCell>{maquina.numero_serie}</TableCell>
+                <TableCell>{maquina.numero_motor}</TableCell>
+                <TableCell>{getClienteName(maquina.id_cliente)}</TableCell>
 
-              {userRole === 2 && (
-                <IconButton
-                  color="error"
-                  sx={{ ml: 1 }}
-                  onClick={() => onDelete(maquina.id_maquina)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                <TableCell>
+                  <Link to={`/maquinaProfile/${maquina.id_maquina}`}>
+                    <IconButton>
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Link>
+                  {userRole !== 3 && userRole !== 5 && (
+                    <IconButton
+                      color="warning"
+                      sx={{ ml: 1 }}
+                      onClick={() => onEdit(maquina)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+
+                  {userRole === 2 && (
+                    <IconButton
+                      color="error"
+                      sx={{ ml: 1 }}
+                      onClick={() => onDelete(maquina.id_maquina)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 

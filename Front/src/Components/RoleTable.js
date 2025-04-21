@@ -46,45 +46,58 @@ const RoleTable = ({
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>
-            <TableSortLabel
-              active={orderBy === "nombre"}
-              direction={orderBy === "nombre" ? order : "asc"}
-              onClick={() => handleRequestSort("nombre")}
-            >
-              Nombre
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>Acciones</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {stableSort(roles, comparator).map((rol) => (
-          <TableRow key={rol.id_rol}>
-            <TableCell>{rol.nombre_rol}</TableCell>
-            <TableCell>
-              <IconButton
-                color="warning"
-                style={{ marginLeft: "10px" }}
-                onClick={() => onEdit(rol)}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                style={{ marginLeft: "10px" }}
-                onClick={() => onDelete(rol.id_rol)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div>
+      <style>
+        {`
+          .highlight {
+            background-color: rgba(255, 235, 20, 0.2); /* Amarillo opaco */
+            font-weight: normal;
+          }
+        `}
+      </style>
+
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "nombre"}
+                  direction={orderBy === "nombre" ? order : "asc"}
+                  onClick={() => handleRequestSort("nombre")}
+                >
+                  Nombre
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(roles, comparator).map((rol) => (
+              <TableRow key={rol.id_rol}>
+                <TableCell>{rol.nombre_rol}</TableCell>
+                <TableCell>
+                  <IconButton
+                    color="warning"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => onEdit(rol)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => onDelete(rol.id_rol)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 
