@@ -40,12 +40,36 @@ const UserHome = () => {
   };
 
   const stats = [
-    { icon: <People sx={{ fontSize: "6rem" }} />, title: "Clientes", route: "/cliente" },
-    { icon: <Category sx={{ fontSize: "6rem" }} />, title: "Categorias", route: "/categoria" },
-    { icon: <Inventory sx={{ fontSize: "6rem" }} />, title: "Insumo", route: "/insumo" },
-    { icon: <Assignment sx={{ fontSize: "6rem" }} />, title: "Ordenes de Trabajo", route: "/ots" },
-    { icon: <Description sx={{ fontSize: "6rem" }} />, title: "Informes de Trabajo", route: "/its" },
-    { icon: <MonetizationOn sx={{ fontSize: "6rem" }} />, title: "Gastos", route: "/gastos" },
+    {
+      icon: <People sx={{ fontSize: "6rem" }} />,
+      title: "Clientes",
+      route: "/cliente",
+    },
+    {
+      icon: <Category sx={{ fontSize: "6rem" }} />,
+      title: "Categorias",
+      route: "/categoria",
+    },
+    {
+      icon: <Inventory sx={{ fontSize: "6rem" }} />,
+      title: "Insumo",
+      route: "/insumo",
+    },
+    {
+      icon: <Assignment sx={{ fontSize: "6rem" }} />,
+      title: "Ordenes de Trabajo",
+      route: "/ots",
+    },
+    {
+      icon: <Description sx={{ fontSize: "6rem" }} />,
+      title: "Informes de Trabajo",
+      route: "/its",
+    },
+    {
+      icon: <MonetizationOn sx={{ fontSize: "6rem" }} />,
+      title: "Gastos",
+      route: "/gastos",
+    },
   ];
 
   const handleClick = (route) => {
@@ -63,8 +87,16 @@ const UserHome = () => {
         }}
       >
         <Container>
-          <Typography variant="h4" gutterBottom sx={{ fontSize: "2.5rem" }}>
-            Bienvenido, al Sistema de Gestion JD
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: "2.5rem",
+              textAlign: { xs: "center", sm: "left" }, // CENTRAR EN PANTALLAS PEQUEÑAS
+              mb: 4,
+            }}
+          >
+            Bienvenido, al Sistema de Gestión JD
           </Typography>
 
           {/* Mostrar Snackbar si hay mensaje de error */}
@@ -90,10 +122,17 @@ const UserHome = () => {
               mb: 4,
             }}
           >
-            {/* Grid de paneles informativos */}
-            <Grid2 container spacing={10}>
+            <Grid2 container spacing={4} justifyContent="center">
               {stats.map((stat, index) => (
-                <Grid2 item xs={12} sm={6} md={4} lg={2} key={index}>
+                <Grid2
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={2}
+                  key={index}
+                  sx={{ display: "flex", justifyContent: "center" }}
+                >
                   <Paper
                     sx={{
                       padding: 3,
@@ -106,8 +145,8 @@ const UserHome = () => {
                       color: "black",
                       borderRadius: 3,
                       boxShadow: "0 6px 12px rgba(0, 0, 0, 0.6)",
-                      height: 240,
-                      width: 240,
+                      width: { xs: 280, sm: 240 },
+                      height: { xs: 280, sm: 240 },
                       transition: "transform 0.3s ease, box-shadow 0.3s ease",
                       "&:hover": {
                         bgcolor: "#d3d3d3",
@@ -120,7 +159,10 @@ const UserHome = () => {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {stat.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ fontSize: "1.25rem" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontSize: "1.25rem", textAlign: "center" }}
+                    >
                       {stat.title}
                     </Typography>
                   </Paper>

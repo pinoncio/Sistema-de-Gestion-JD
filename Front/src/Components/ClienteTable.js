@@ -50,7 +50,9 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
   };
 
   return (
-    <Box sx={{ overflowX: 'auto' }}> {/* Contenedor para habilitar desplazamiento horizontal */}
+    <Box sx={{ overflowX: "auto" }}>
+      {" "}
+      {/* Contenedor para habilitar desplazamiento horizontal */}
       <Table>
         <TableHead>
           <TableRow>
@@ -89,7 +91,7 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
                   onChange={() =>
                     onToggleStatus(cliente.id_cliente, !cliente.cliente_vigente)
                   }
-                  disabled={userRol === 3} // Desactivar el switch si el rol es 3
+                  disabled={userRol === 3}
                 />
               </TableCell>
               <TableCell>
@@ -98,12 +100,13 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
                     <VisibilityIcon />
                   </IconButton>
                 </Link>
-                {userRol !== 3 && ( // Solo si el rol NO es 3, se muestra el botón de editar
+                {userRol !== 3 && userRol !== 5 && (
                   <IconButton color="warning" onClick={() => onEdit(cliente)}>
                     <EditIcon />
                   </IconButton>
                 )}
-                {userRol === 2 && ( // Solo el rol 2 puede ver el botón de eliminar
+
+                {userRol === 2 && ( 
                   <IconButton
                     color="error"
                     onClick={() => onDelete(cliente.id_cliente)}

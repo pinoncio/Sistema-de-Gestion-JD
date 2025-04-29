@@ -87,7 +87,7 @@ const App = () => {
           <Route
             path="/cliente"
             element={
-              <PrivateRoute rolesPermitidos={[1, 2, 3, 4]}>
+              <PrivateRoute rolesPermitidos={[1, 2, 3, 4, 5]}>
                 <ClientePage />
               </PrivateRoute>
             }
@@ -95,7 +95,7 @@ const App = () => {
           <Route
             path="/clienteProfile/:id_cliente"
             element={
-              <PrivateRoute rolesPermitidos={[1, 2, 3, 4]}>
+              <PrivateRoute rolesPermitidos={[1, 2, 3, 4, 5]}>
                 <ClientProfilePage />
               </PrivateRoute>
             }

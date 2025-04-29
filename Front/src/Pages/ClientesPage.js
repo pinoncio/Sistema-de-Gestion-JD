@@ -77,7 +77,18 @@ const ClientePage = () => {
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al crear el cliente:", error);
-      setSnackbarMessage("Ha ocurrido un error al crear el cliente.");
+
+      // Verificar si el error proviene del RUT ya existente
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.msg === "El RUT ingresado ya está en uso."
+      ) {
+        setSnackbarMessage("El RUT ingresado ya está en uso.");
+      } else {
+        setSnackbarMessage("Ha ocurrido un error al crear el cliente.");
+      }
+
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -89,17 +100,29 @@ const ClientePage = () => {
       console.log("Cliente actualizado exitosamente:", response.data);
       setOpen(false);
       fetchClientes();
-
+  
       setSnackbarMessage("Cliente actualizado exitosamente!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al actualizar el cliente:", error);
-      setSnackbarMessage("Ha ocurrido un error al actualizar el cliente.");
+  
+      // Verifica si el error tiene una respuesta del backend
+      if (error.response && error.response.data) {
+        const errorMsg =
+          error.response.data.msg || "Ha ocurrido un error al actualizar el cliente.";
+        setSnackbarMessage(errorMsg);
+      } else {
+        setSnackbarMessage("Ha ocurrido un error al actualizar el cliente.");
+      }
+  
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
   };
+  
+  
+  
 
   const handleFormSubmit = async (formData) => {
     try {

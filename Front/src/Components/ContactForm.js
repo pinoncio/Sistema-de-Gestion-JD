@@ -31,6 +31,12 @@ const ContactForm = () => {
       setSnackbarMessage("Correo enviado correctamente");
       setSnackbarColor("green");
       setOpenSnackbar(true);
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
     } catch (error) {
       console.error(error);
       setSnackbarMessage("Error al enviar el correo");
@@ -57,6 +63,7 @@ const ContactForm = () => {
           name="name"
           value={formData.name}
           onChange={handleChange}
+          required
           sx={{ marginBottom: 2 }}
         />
         <TextField
@@ -65,6 +72,7 @@ const ContactForm = () => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
+          required
           sx={{ marginBottom: 2 }}
         />
         <TextField
@@ -74,6 +82,7 @@ const ContactForm = () => {
           type="email"
           value={formData.email}
           onChange={handleChange}
+          required
           sx={{ marginBottom: 2 }}
         />
         <TextField
@@ -84,6 +93,7 @@ const ContactForm = () => {
           onChange={handleChange}
           multiline
           rows={4}
+          required
           sx={{ marginBottom: 2 }}
         />
         <Button

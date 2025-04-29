@@ -194,6 +194,7 @@ const updateCliente = async (req, res) => {
   const { id_cliente } = req.params;
   const {
     codigo_cliente,
+    rut,
     nombre_razon_social,
     nombre_fantasia,
     giro,
@@ -207,8 +208,10 @@ const updateCliente = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
+    // Buscar el cliente
     const clienteData = await cliente.findOne({
       where: { id_cliente },
+      transaction,
     });
 
     if (!clienteData) {
@@ -217,9 +220,25 @@ const updateCliente = async (req, res) => {
       });
     }
 
+    // Verificar si el rut ya está registrado en otro cliente
+    if (rut) {
+      const existingRut = await cliente.findOne({
+        where: { rut },
+        transaction,
+      });
+
+      if (existingRut && existingRut.id_cliente !== id_cliente) {
+        return res.status(400).json({
+          msg: `El RUT ${rut} ya está registrado en otro cliente.`,
+        });
+      }
+    }
+
+    // Actualización de datos generales del cliente, incluyendo el rut
     await clienteData.update(
       {
         codigo_cliente,
+        rut, 
         nombre_razon_social,
         nombre_fantasia,
         giro,
@@ -230,30 +249,90 @@ const updateCliente = async (req, res) => {
       { transaction }
     );
 
+    // Actualización del contacto comercial
     if (contacto_comercial) {
-      await contactocomercial.upsert(
-        {
-          id_cliente,
-          contacto_comercial: contacto_comercial.contacto_comercial,
-          correo_electronico_comercial:
-            contacto_comercial.correo_electronico_comercial,
-          telefono_fijo: contacto_comercial.telefono_fijo,
-          telefono_celular: contacto_comercial.telefono_celular,
-        },
-        { transaction }
-      );
+      const {
+        id_contacto_comercial,
+        contacto_comercial: nombre_contacto,
+        correo_electronico_comercial,
+        telefono_fijo,
+        telefono_celular
+      } = contacto_comercial;
+
+      if (id_contacto_comercial) {
+        // Intentamos encontrar y editar
+        const contactoExistente = await contactocomercial.findOne({
+          where: {
+            id_contacto_comercial: id_contacto_comercial,
+            id_cliente: id_cliente, // importante: debe pertenecer al cliente
+          },
+          transaction,
+        });
+
+        if (!contactoExistente) {
+          // Si no lo encuentra, algo está mal
+          await transaction.rollback();
+          return res.status(404).json({
+            msg: `No se encontró contacto comercial con id ${id_contacto_comercial} para el cliente ${id_cliente}`,
+          });
+        }
+
+        // Si lo encontró, lo actualiza
+        await contactoExistente.update(
+          {
+            contacto_comercial: nombre_contacto || null,
+            correo_electronico_comercial: correo_electronico_comercial || null,
+            telefono_fijo: telefono_fijo || null,
+            telefono_celular: telefono_celular || null,
+          },
+          { transaction }
+        );
+      } else {
+        // Si no se mandó un ID, entendemos que quiere crear uno nuevo
+        await contactocomercial.create(
+          {
+            id_cliente,
+            contacto_comercial: nombre_contacto || null,
+            correo_electronico_comercial: correo_electronico_comercial || null,
+            telefono_fijo: telefono_fijo || null,
+            telefono_celular: telefono_celular || null,
+          },
+          { transaction }
+        );
+      }
     }
 
+    // Actualización de la información de pago
     if (informacion_de_pago) {
-      await informaciondepago.upsert(
-        {
-          id_cliente,
-          nombre_responsable: informacion_de_pago.nombre_responsable,
-          correo_electronico: informacion_de_pago.correo_electronico,
-          telefono_responsable: informacion_de_pago.telefono_responsable,
-        },
-        { transaction }
-      );
+      if (informacion_de_pago.id_informacion) {
+        // Editar información de pago existente
+        const infoPagoExistente = await informaciondepago.findByPk(
+          informacion_de_pago.id_informacion,
+          { transaction }
+        );
+
+        if (infoPagoExistente) {
+          await infoPagoExistente.update(
+            {
+              nombre_responsable: informacion_de_pago.nombre_responsable || "",
+              correo_electronico: informacion_de_pago.correo_electronico || "",
+              telefono_responsable: informacion_de_pago.telefono_responsable || "",
+            },
+            { transaction }
+          );
+        }
+      } else {
+        // Crear nueva info de pago si no tiene ID
+        await informaciondepago.create(
+          {
+            id_cliente,
+            nombre_responsable: informacion_de_pago.nombre_responsable || "",
+            correo_electronico: informacion_de_pago.correo_electronico || "",
+            telefono_responsable: informacion_de_pago.telefono_responsable || "",
+          },
+          { transaction }
+        );
+      }
     }
 
     await transaction.commit();
@@ -263,10 +342,21 @@ const updateCliente = async (req, res) => {
     });
   } catch (error) {
     await transaction.rollback();
+
+    // Aquí mostramos más detalles del error
     console.error("Error al actualizar el cliente:", error);
+
+    // Si el error tiene errores de validación, los mostramos
+    if (error.errors && error.errors.length > 0) {
+      error.errors.forEach((validationError) => {
+        console.log(`Error de validación: Campo: ${validationError.path}, Mensaje: ${validationError.message}`);
+      });
+    }
+
     res.status(400).json({
       msg: "Error al actualizar el cliente.",
       error: error.message || error,
+      stack: error.stack || "No stack available", 
     });
   }
 };

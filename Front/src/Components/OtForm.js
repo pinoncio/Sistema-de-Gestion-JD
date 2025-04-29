@@ -97,7 +97,6 @@ const OrderForm = () => {
   };
 
   const [errors, setErrors] = useState({});
-  const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateNumber = (value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value);
 
   const handleChange = (e, field) => {
@@ -130,13 +129,38 @@ const OrderForm = () => {
     setErrors({ ...errors, [field]: "" });
   };
 
+  // Validación general solo letras y espacios
+  const validateName = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+
+  // Validación para observaciones, descripciones y comentarios
+  // (letras, espacios, números, puntos y símbolo &)
+  const validateTextWithDotsAndNumbers = (value) =>
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ0-9\s.&]+$/.test(value);
+
   const handleNameChange = (e, field) => {
     const { value } = e.target;
-    if (validateName(value) || value === "") {
+
+    // Campos con validación extendida
+    const extendedFields = [
+      "observacion_inicial",
+      "observacion_final",
+      "descripcion",
+      "comentario",
+    ];
+
+    const isValid = extendedFields.includes(field)
+      ? validateTextWithDotsAndNumbers(value)
+      : validateName(value);
+
+    if (isValid || value === "") {
       setFormData({ ...formData, [field]: value });
       setErrors({ ...errors, [field]: "" });
-    } else
-      setErrors({ ...errors, [field]: "Solo se permiten letras y espacios." });
+    } else {
+      const errorMsg = extendedFields.includes(field)
+        ? "Solo se permiten letras, números, espacios, puntos y el símbolo &."
+        : "Solo se permiten letras y espacios.";
+      setErrors({ ...errors, [field]: errorMsg });
+    }
   };
 
   const handleDateChange = (e, field) => {

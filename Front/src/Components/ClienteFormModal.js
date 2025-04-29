@@ -138,11 +138,11 @@ const ClienteFormModal = ({
 
   const validateCodigoCliente = (value) => /^[A-Za-z0-9]+$/.test(value);
   const validateNombreRazonSocial = (value) =>
-    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ0-9\s&.,\-/()]+$/.test(value);
   const validateNombreFantasia = (value) =>
-    /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
+    /^[A-Za-zÁáÉéÍíÓóÚúÑñ0-9\s&.,\-/()]+$/.test(value);
   const validateGiro = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
-  const validateDireccion = (value) => /^[A-Za-z0-9.#\s]+$/.test(value);
+  const validateDireccion = (value) => /^.*$/.test(value);
   const validateCiudad = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateComuna = (value) => /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value);
   const validateContactoComercial = (value) =>
@@ -173,7 +173,8 @@ const ClienteFormModal = ({
     } else {
       setErrors({
         ...errors,
-        nombre_razon_social: "Solo se permiten letras y espacios.",
+        nombre_razon_social:
+          "Solo se permiten letras, números, espacios y algunos símbolos como . , - / & ( ).",
       });
     }
   };
@@ -186,7 +187,8 @@ const ClienteFormModal = ({
     } else {
       setErrors({
         ...errors,
-        nombre_fantasia: "Solo se permiten letras y espacios.",
+        nombre_fantasia:
+          "Solo se permiten letras, números, espacios y algunos símbolos como . , - / & ( ).",
       });
     }
   };
@@ -209,7 +211,7 @@ const ClienteFormModal = ({
     } else {
       setErrors({
         ...errors,
-        direccion: "Solo se permiten letras, números, puntos, # y espacios.",
+        direccion: "Dirección inválida.",
       });
     }
   };
@@ -610,6 +612,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.contacto_comercial}
                 error={!!errors.contacto_comercial}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="Correo Electrónico"
@@ -620,6 +623,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.correo_electronico_comercial}
                 error={!!errors.correo_electronico_comercial}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="Teléfono Fijo"
@@ -630,6 +634,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.telefono_fijo}
                 error={!!errors.telefono_fijo}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="Teléfono Celular"
@@ -640,6 +645,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.telefono_celular}
                 error={!!errors.telefono_celular}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
@@ -654,6 +660,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.nombre_responsable}
                 error={!!errors.nombre_responsable}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="Correo Electrónico"
@@ -664,6 +671,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.correo_electronico}
                 error={!!errors.correo_electronico}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="Teléfono Responsable"
@@ -674,6 +682,7 @@ const ClienteFormModal = ({
                 margin="normal"
                 helperText={errors.telefono_responsable}
                 error={!!errors.telefono_responsable}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
           </Grid>

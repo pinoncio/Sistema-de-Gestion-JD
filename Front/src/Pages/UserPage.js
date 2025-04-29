@@ -95,7 +95,17 @@ const UserPage = () => {
       setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al crear el usuario:", error);
-      setSnackbarMessage("Ha ocurrido un error al crear el usuario.");
+
+      // Verifica si el error tiene una respuesta del backend
+      if (error.response && error.response.data) {
+        const errorMsg =
+          error.response.data.msg ||
+          "Ha ocurrido un error al crear el usuario.";
+        setSnackbarMessage(errorMsg); // Usa el mensaje específico del backend
+      } else {
+        setSnackbarMessage("Ha ocurrido un error al crear el usuario.");
+      }
+
       setSnackbarSeverity("error"); // Set severity to error
       setSnackbarOpen(true);
     }
@@ -294,14 +304,14 @@ const UserPage = () => {
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity={snackbarSeverity} // Use dynamic severity
+          severity={snackbarSeverity} 
           sx={{
             width: "auto",
             fontSize: "1.2rem",
             padding: "16px",
           }}
         >
-          {snackbarMessage}
+          {snackbarMessage} 
         </Alert>
       </Snackbar>
     </AdminLayout>

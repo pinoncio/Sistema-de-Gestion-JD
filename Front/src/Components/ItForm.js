@@ -953,99 +953,121 @@ const ItForm = () => {
               />
             </Grid>
             <Grid item xs={12} sx={{ textAlign: "center" }}>
-              <Divider sx={{ marginY: 2 }} />
-              <h2>Control Tiempo</h2>
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Fecha de visita"
-                type="date"
-                fullWidth
-                value={currentTiempo.fecha}
-                onChange={(e) => handleCurrentTiempoChange(e, "fecha")}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  min: getMinDate(), // Fecha mínima permitida: 7 días atrás
-                }}
-              />
-            </Grid>
+  <Divider sx={{ marginY: 2 }} />
+  <h2>Control Tiempo</h2>
+</Grid>
+<Grid item xs={2}>
+  <TextField
+    label="Fecha de visita"
+    type="date"
+    fullWidth
+    value={currentTiempo.fecha}
+    onChange={(e) => handleCurrentTiempoChange(e, "fecha")}
+    InputLabelProps={{
+      shrink: true,
+    }}
+    inputProps={{
+      min: getMinDate(),
+    }}
+  />
+</Grid>
 
-            <Grid item xs={2}>
-              <TextField
-                label="Viaje de ida"
-                fullWidth
-                value={currentTiempo.viaje_ida}
-                onChange={(e) => handleCurrentTiempoChange(e, "viaje_ida")}
-                error={!!errors.viaje_ida}
-                helperText={errors.viaje_ida}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Horas de trabajo"
-                fullWidth
-                value={currentTiempo.trabajo}
-                onChange={(e) => handleCurrentTiempoChange(e, "trabajo")}
-                error={!!errors.trabajo}
-                helperText={errors.trabajo}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Viaje de vuelta"
-                fullWidth
-                value={currentTiempo.viaje_vuelta}
-                onChange={(e) => handleCurrentTiempoChange(e, "viaje_vuelta")}
-                error={!!errors.viaje_vuelta}
-                helperText={errors.viaje_vuelta}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Total horas de viaje"
-                fullWidth
-                value={currentTiempo.total_hh_viaje}
-                error={!!errors.total_hh_viaje}
-                helperText={errors.total_hh_viaje}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                disabled
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Total de horas hombre"
-                fullWidth
-                value={currentTiempo.total_hh_trabajo}
-                error={!!errors.total_hh_trabajo}
-                helperText={errors.total_hh_trabajo}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                disabled
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddTiempo}
-              >
-                Agregar Control de Tiempo
-              </Button>
-            </Grid>
+<Grid item xs={2}>
+  <TextField
+    label="Viaje de ida"
+    fullWidth
+    value={currentTiempo.viaje_ida}
+    onChange={(e) => handleCurrentTiempoChange(e, "viaje_ida")}
+    error={!!errors.viaje_ida}
+    helperText={errors.viaje_ida}
+    placeholder="Ej: 2h, 30m y/o 1h 30m"
+    InputLabelProps={{
+      shrink: true,
+    }}
+    FormHelperTextProps={{ style: { textAlign: 'center' } }}
+  />
+  <div style={{ textAlign: 'center', fontSize: '0.75rem', marginTop: '4px' }}>
+    <em>Ejemplos: 2h (2 horas), 30m (30 minutos) o 1h 30m (1 hora y 30 minutos)</em>
+  </div>
+</Grid>
+
+<Grid item xs={2}>
+  <TextField
+    label="Horas de trabajo"
+    fullWidth
+    value={currentTiempo.trabajo}
+    onChange={(e) => handleCurrentTiempoChange(e, "trabajo")}
+    error={!!errors.trabajo}
+    helperText={errors.trabajo}
+    placeholder="Ej: 3h, 40m y/o 1h 40m"
+    InputLabelProps={{
+      shrink: true,
+    }}
+    FormHelperTextProps={{ style: { textAlign: 'center' } }}
+  />
+  <div style={{ textAlign: 'center', fontSize: '0.75rem', marginTop: '4px' }}>
+    <em>Ejemplos: 3h (3 horas), 40m (40 minutos) o 1h 40m (1 hora y 40 minutos)</em>
+  </div>
+</Grid>
+
+<Grid item xs={2}>
+  <TextField
+    label="Viaje de vuelta"
+    fullWidth
+    value={currentTiempo.viaje_vuelta}
+    onChange={(e) => handleCurrentTiempoChange(e, "viaje_vuelta")}
+    error={!!errors.viaje_vuelta}
+    helperText={errors.viaje_vuelta}
+    placeholder="Ej: 3h, 40m y/o 1h 40m"
+    InputLabelProps={{
+      shrink: true,
+    }}
+    FormHelperTextProps={{ style: { textAlign: 'center' } }}
+  />
+  <div style={{ textAlign: 'center', fontSize: '0.75rem', marginTop: '4px' }}>
+    <em>Ejemplos: 3h (3 horas), 40m (40 minutos) o 1h 40m (1 hora y 40 minutos)</em>
+  </div>
+</Grid>
+
+<Grid item xs={2}>
+  <TextField
+    label="Total horas de viaje"
+    fullWidth
+    value={currentTiempo.total_hh_viaje}
+    error={!!errors.total_hh_viaje}
+    helperText={errors.total_hh_viaje}
+    InputLabelProps={{
+      shrink: true,
+    }}
+    disabled
+  />
+</Grid>
+
+<Grid item xs={2}>
+  <TextField
+    label="Total de horas hombre"
+    fullWidth
+    value={currentTiempo.total_hh_trabajo}
+    error={!!errors.total_hh_trabajo}
+    helperText={errors.total_hh_trabajo}
+    InputLabelProps={{
+      shrink: true,
+    }}
+    disabled
+  />
+</Grid>
+
+<Grid item xs={12}>
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleAddTiempo}
+  >
+    Agregar Control de Tiempo
+  </Button>
+</Grid>
+
+
             <Grid item xs={12}>
               <TableContainer component={Paper} sx={{ marginTop: 2 }}>
                 <Table size="small">
