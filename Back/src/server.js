@@ -96,8 +96,8 @@ class server {
       await it.sync({ alter: true });
       await controltiempo.sync({ alter: true });
       await maquina.sync({ alter: true});
-      await gasto.sync({ alter: true}); // Cambié 'costo' a 'gasto'
-      await otgasto.sync({ alter: true}); // Cambié 'otcosto' a 'otgasto'
+      await gasto.sync({ alter: true}); 
+      await otgasto.sync({ alter: true}); 
       console.log("base de datos sincronizada correctamente.");
     } catch (error) {
       console.log(
@@ -109,5 +109,5 @@ class server {
   }
 }
 
-// asegúrate de exportar la instancia del servidor
+
 module.exports = new server();
