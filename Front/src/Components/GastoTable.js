@@ -6,6 +6,7 @@ import {
   TableRow,
   TableCell,
   TableSortLabel,
+  Tooltip,
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -175,26 +176,32 @@ const GastoTable = ({ gastos, onDelete, onEdit, getClienteName }) => {
                     {gasto.proveedor}
                   </TableCell>
                   <TableCell>{getClienteName(gasto.id_cliente)}</TableCell>
-                  <TableCell>
-                    <Link to={`/gastoProfile/${gasto.id_gasto}`}>
-                      <IconButton>
-                        <VisibilityIcon />
+                  <TableCell className="text-right">
+                    <Tooltip content="Ver detalle">
+                      <Link to={`/gastoProfile/${gasto.id_gasto}`}>
+                        <IconButton data-testid="ver-btn">
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Link>
+                    </Tooltip>
+                    <Tooltip content="Editar gasto">
+                      <IconButton
+                        color="warning"
+                        onClick={() => onEdit(gasto)}
+                        data-testid="editar-btn"
+                      >
+                        <EditIcon />
                       </IconButton>
-                    </Link>
-                    <IconButton
-                      color="warning"
-                      sx={{ ml: 1 }}
-                      onClick={() => onEdit(gasto)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      sx={{ ml: 1 }}
-                      onClick={() => onDelete(gasto.id_gasto)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    </Tooltip>
+                    <Tooltip content="Eliminar gasto">
+                      <IconButton
+                        color="error"
+                        onClick={() => onDelete(gasto.id_gasto)}
+                        data-testid="eliminar-btn"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               );

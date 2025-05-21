@@ -303,16 +303,18 @@ const GastoFormModal = ({
             ? "Formulario para editar Gasto"
             : "Formulario para ingresar Gasto"}
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form aria-label="form-gasto" onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
               <FormControl fullWidth margin="normal">
-                <InputLabel>Seleccionar N° OT</InputLabel>
+                <InputLabel id="select-ot-label">Seleccionar N° OT</InputLabel>
                 <Select
+                  labelId="select-ot-label"
                   label="Seleccionar N° OT"
                   value={formData.id_ot}
                   onChange={handleChangeOt}
                   disabled={!isAssociatedWithOt}
+                  inputProps={{ "aria-label": "OT" }}
                 >
                   {ots.map((ot) => (
                     <MenuItem key={ot.id_ot} value={ot.id_ot}>
@@ -345,6 +347,7 @@ const GastoFormModal = ({
               )}
 
               <TextField
+                id="nombre-gasto"
                 label="Nombre del Gasto"
                 value={formData.item_gasto}
                 onChange={(e) => handleChangeName(e, "item_gasto")}
@@ -357,6 +360,7 @@ const GastoFormModal = ({
               />
 
               <TextField
+                id="detalle"
                 label="Detalle"
                 value={formData.detalle}
                 onChange={(e) => handleChangeName(e, "detalle")}
@@ -368,6 +372,7 @@ const GastoFormModal = ({
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
+                id="fecha_compra"
                 label="Fecha de Compra"
                 value={formData.fecha_compra}
                 onChange={(e) => handleDateChange(e, "fecha_compra")}
@@ -378,8 +383,8 @@ const GastoFormModal = ({
                 InputLabelProps={{ shrink: true }}
                 error={!!errors.fecha_compra}
               />
-
               <TextField
+                id="metodo_pago"
                 label="Método de Pago"
                 value={formData.metodo_pago}
                 onChange={(e) => handleChangeName(e, "metodo_pago")}
@@ -391,6 +396,7 @@ const GastoFormModal = ({
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
+                id="nro_factura"
                 label="Número de Factura"
                 type="number"
                 value={formData.nro_factura}
@@ -402,9 +408,11 @@ const GastoFormModal = ({
                 helperText={errors.nro_factura && errors.nro_factura}
                 InputLabelProps={{ shrink: true }}
               />
-            </div>
-            <div className="form-group">
+
+              {/* ... siguiente grupo ... */}
+
               <TextField
+                id="pago_neto"
                 label="Pago Neto"
                 value={formatNumberWithDots(formData.pago_neto)} // Mostrar con puntos de miles
                 onChange={(e) => handleChangeNumber(e, "pago_neto")}
@@ -417,11 +425,11 @@ const GastoFormModal = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">$</InputAdornment>
-                  ), // Agregar el símbolo "$"
+                  ),
                 }}
               />
-
               <TextField
+                id="iva"
                 label="IVA"
                 value={formData.iva}
                 fullWidth
@@ -437,8 +445,8 @@ const GastoFormModal = ({
                   ), // Agregar el símbolo "$"
                 }}
               />
-
               <TextField
+                id="total_pagado"
                 label="Total Pagado"
                 value={formData.total_pagado}
                 fullWidth
@@ -455,6 +463,7 @@ const GastoFormModal = ({
                 }}
               />
               <TextField
+                id="proveedor"
                 label="Proveedor"
                 value={formData.proveedor}
                 onChange={(e) => handleChangeName(e, "proveedor")}
@@ -467,14 +476,16 @@ const GastoFormModal = ({
               />
 
               <FormControl fullWidth margin="normal">
-                <InputLabel>Seleccionar Cliente</InputLabel>
+                <InputLabel id="select-cliente-label">
+                  Seleccionar Cliente
+                </InputLabel>
                 <Select
-                  label="Seleccionar Cliente"
+                  labelId="select-cliente-label"
                   value={formData.id_cliente}
                   onChange={(e) =>
                     setFormData({ ...formData, id_cliente: e.target.value })
                   }
-                  InputLabelProps={{ shrink: !!formData.id_cliente }}
+                  inputProps={{ "aria-label": "Cliente" }}
                 >
                   {clientes.map((cliente) => (
                     <MenuItem
@@ -486,6 +497,7 @@ const GastoFormModal = ({
                   ))}
                 </Select>
               </FormControl>
+
               <TextField
                 label="Observación"
                 value={formData.observacion}

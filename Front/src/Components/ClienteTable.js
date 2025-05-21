@@ -9,6 +9,7 @@ import {
   Switch,
   IconButton,
   Box,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -94,25 +95,37 @@ const ClienteTable = ({ clientes, onDelete, onToggleStatus, onEdit }) => {
                   disabled={userRol === 3}
                 />
               </TableCell>
-              <TableCell>
-                <Link to={`/clienteProfile/${cliente.id_cliente}`}>
-                  <IconButton>
-                    <VisibilityIcon />
-                  </IconButton>
-                </Link>
+              <TableCell className="text-right">
+                <Tooltip content="Ver detalle">
+                  <Link to={`/clienteProfile/${cliente.id_cliente}`}>
+                    <IconButton data-testid="ver-btn">
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Link>
+                </Tooltip>
+
                 {userRol !== 3 && userRol !== 5 && (
-                  <IconButton color="warning" onClick={() => onEdit(cliente)}>
-                    <EditIcon />
-                  </IconButton>
+                  <Tooltip content="Editar cliente">
+                    <IconButton
+                      color="warning"
+                      onClick={() => onEdit(cliente)}
+                      data-testid="editar-btn"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
                 )}
 
-                {userRol === 2 && ( 
-                  <IconButton
-                    color="error"
-                    onClick={() => onDelete(cliente.id_cliente)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                {userRol === 2 && (
+                  <Tooltip content="Eliminar cliente">
+                    <IconButton
+                      color="error"
+                      onClick={() => onDelete(cliente.id_cliente)}
+                      data-testid="eliminar-btn"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 )}
               </TableCell>
             </TableRow>
