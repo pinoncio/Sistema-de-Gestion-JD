@@ -91,6 +91,7 @@ const MaquinaFormModal = ({
         ...errors,
         GENERALES: "Todos los campos obligatorios deben ser llenados.",
       });
+      setOpenSnackbar(true);
       return;
     }
 
@@ -132,8 +133,10 @@ const MaquinaFormModal = ({
           <div className="form-row">
             <div className="form-group">
               <FormControl fullWidth margin="normal">
-                <InputLabel>Cliente</InputLabel>
+                <InputLabel id="cliente-label">Cliente</InputLabel>
                 <Select
+                  labelId="cliente-label"
+                  id="cliente-select"
                   label="Cliente"
                   value={formData.id_cliente}
                   onChange={(e) =>
@@ -150,6 +153,7 @@ const MaquinaFormModal = ({
                   ))}
                 </Select>
               </FormControl>
+
               <TextField
                 label="Nombre de la Máquina"
                 value={formData.nombre_maquina}
@@ -224,7 +228,7 @@ const MaquinaFormModal = ({
           open={openSnackbar}
           autoHideDuration={3000}
           onClose={handleSnackbarClose}
-          message={errors.generales}
+          message={errors.GENERALES}
         />
       </div>
     </Modal>

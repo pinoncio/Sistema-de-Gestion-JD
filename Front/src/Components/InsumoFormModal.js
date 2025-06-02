@@ -176,8 +176,10 @@ const InsumoFormModal = ({
           <div className="form-row">
             <div className="form-group">
               <FormControl fullWidth margin="normal">
-                <InputLabel>Categoria</InputLabel>
+                <InputLabel id="categoria-label">Categoria</InputLabel>
                 <Select
+                  labelId="categoria-label"
+                  id="categoria-select"
                   label="Categoria"
                   value={formData.id_categoria}
                   onChange={(e) =>
@@ -194,6 +196,7 @@ const InsumoFormModal = ({
                   ))}
                 </Select>
               </FormControl>
+
               <TextField
                 label="Tipo de Insumo"
                 value={formData.tipo_insumo}
@@ -269,7 +272,7 @@ const InsumoFormModal = ({
                 }
                 error={!!errors.costo_unidad}
               />
-              
+
               <TextField
                 label="Sub Total"
                 value={formData.sub_total}

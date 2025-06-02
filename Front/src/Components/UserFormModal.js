@@ -349,22 +349,31 @@ const UserFormModal = ({
           </div>
           <div className="form-group">
             <FormControl fullWidth margin="normal">
-              <InputLabel>Rol</InputLabel>
+              <InputLabel id="rol-label">Rol</InputLabel>
               <Select
+                labelId="rol-label"
+                id="rol-select"
                 label="Rol"
                 value={formData.rol_usuario}
                 onChange={(e) =>
                   setFormData({ ...formData, rol_usuario: e.target.value })
                 }
               >
-                {roles.map((role) => (
-                  <MenuItem key={role.id_rol} value={role.id_rol}>
-                    {role.nombre_rol}
-                  </MenuItem>
-                ))}
+                {Array.isArray(roles) &&
+                  roles.map((role) => (
+                    <MenuItem key={role.id_rol} value={role.id_rol}>
+                      {role.nombre_rol}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </div>
+          {errors.GENERALES && (
+            <Alert severity="error" role="alert">
+              {errors.GENERALES}
+            </Alert>
+          )}
+          
           <div className="form-actions">
             <Button type="submit">{editing ? "Actualizar" : "Crear"}</Button>
             <Button onClick={onClose}>Cancelar</Button>
@@ -374,11 +383,7 @@ const UserFormModal = ({
             autoHideDuration={6000}
             onClose={handleSnackbarClose}
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            <Alert severity="error" onClose={handleSnackbarClose}>
-              La contraseña debe tener al menos 8 caracteres.
-            </Alert>
-          </Snackbar>
+          ></Snackbar>
         </form>
       </div>
     </Modal>
